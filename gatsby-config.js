@@ -9,15 +9,15 @@
  */
 module.exports = {
   siteMetadata: {
-    title: `Gatsby Starter Blog`,
+    title: `分かりやすい技術ブログ`,
     author: {
-      name: `Kyle Mathews`,
-      summary: `who lives and works in San Francisco building useful things.`,
+      name: `nisioka`,
+      summary: `オレンジ好きの中で最強のエンジニアになりたい。`,
     },
-    description: `A starter blog demonstrating what Gatsby can do.`,
-    siteUrl: `https://gatsbystarterblogsource.gatsbyjs.io/`,
+    description: `誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。`,
+    siteUrl: `http://localhost/`, //FIXME
     social: {
-      twitter: `kylemathews`,
+      twitter: `nisioka55`,
     },
   },
   plugins: [
@@ -119,6 +119,31 @@ module.exports = {
         // theme_color: `#663399`,
         display: `minimal-ui`,
         icon: `src/images/gatsby-icon.png`, // This path is relative to the root of the site.
+      },
+    },
+    {
+      /**
+       * First up is the WordPress source plugin that connects Gatsby
+       * to your WordPress site.
+       *
+       * visit the plugin docs to learn more
+       * https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-source-wordpress/README.md
+       *
+       */
+      resolve: `gatsby-source-wordpress`,
+      options: {
+        // the only required plugin option for WordPress is the GraphQL url.
+        url:
+            process.env.WPGRAPHQL_URL ||
+            `http://localhost/graphql`,
+        type: {
+          __all: {
+            limit: process.env.NODE_ENV === `development` ? 5 : null
+          }
+        },
+        develop: {
+          hardCacheMediaFiles: true,
+        },
       },
     },
   ],

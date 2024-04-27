@@ -6,10 +6,31 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 
 const BlogPostTemplate = ({
-  data: { previous, next, site, markdownRemark: post },
+  data: { site, markdownRemark, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
   location,
 }) => {
   const siteTitle = site.siteMetadata?.title || `Title`
+  const post = {
+    id: markdownRemark?.id || wpPost?.id,
+    title: markdownRemark?.frontmatter.title || wpPost?.title,
+    html: markdownRemark?.html || wpPost?.content,
+    excerpt: markdownRemark?.excerpt || wpPost?.excerpt,
+    slug: markdownRemark?.fields.slug || wpPost?.slug,
+    date: markdownRemark?.frontmatter.date || wpPost?.date,
+    description: markdownRemark?.frontmatter.description,
+    altText: wpPost?.featuredImage?.node.altText || "",
+    gatsbyImage: wpPost?.featuredImage?.node.gatsbyImage || null,
+  }
+  const previous = {
+    id: mdPrevious?.id || wpPrevious?.id,
+    title: mdPrevious?.frontmatter.title || wpPrevious?.title,
+    slug: mdPrevious?.fields.slug || wpPrevious?.slug,
+  }
+  const next = {
+    id: mdNext?.id || wpNext?.id,
+    title: mdNext?.frontmatter.title || wpNext?.title,
+    slug: mdNext?.fields.slug || wpNext?.slug,
+  }
 
   return (
     <Layout location={location} title={siteTitle}>
@@ -19,8 +40,8 @@ const BlogPostTemplate = ({
         itemType="http://schema.org/Article"
       >
         <header>
-          <h1 itemProp="headline">{post.frontmatter.title}</h1>
-          <p>{post.frontmatter.date}</p>
+          <h1 itemProp="headline">{post.title}</h1>
+          <p>{post.date}</p>
         </header>
         <section
           dangerouslySetInnerHTML={{ __html: post.html }}
@@ -43,15 +64,15 @@ const BlogPostTemplate = ({
         >
           <li>
             {previous && (
-              <Link to={previous.fields.slug} rel="prev">
-                ← {previous.frontmatter.title}
+              <Link to={previous.slug} rel="prev">
+                ← {previous.title}
               </Link>
             )}
           </li>
           <li>
             {next && (
-              <Link to={next.fields.slug} rel="next">
-                {next.frontmatter.title} →
+              <Link to={next.slug} rel="next">
+                {next.title} →
               </Link>
             )}
           </li>
@@ -61,11 +82,16 @@ const BlogPostTemplate = ({
   )
 }
 
-export const Head = ({ data: { markdownRemark: post } }) => {
+export const Head = ({ data: { mdPost, wpPost } }) => {
+  const post = {
+    id: mdPost?.id || wpPost?.id,
+    title: mdPost?.frontmatter.title || wpPost?.title,
+    slug: mdPost?.fields.slug || wpPost?.slug,
+  }
   return (
     <Seo
-      title={post.frontmatter.title}
-      description={post.frontmatter.description || post.excerpt}
+      title={post.title}
+      description={post.excerpt}
     />
   )
 }
@@ -85,15 +111,18 @@ export const pageQuery = graphql`
     }
     markdownRemark(id: { eq: $id }) {
       id
-      excerpt(pruneLength: 160)
+      excerpt
       html
+      fields {
+        slug
+      }
       frontmatter {
         title
-        date(formatString: "MMMM DD, YYYY")
+        date(formatString: "YYYY/MM/DD")
         description
       }
     }
-    previous: markdownRemark(id: { eq: $previousPostId }) {
+    mdPrevious: markdownRemark(id: { eq: $previousPostId }) {
       fields {
         slug
       }
@@ -101,13 +130,35 @@ export const pageQuery = graphql`
         title
       }
     }
-    next: markdownRemark(id: { eq: $nextPostId }) {
+    mdNext: markdownRemark(id: { eq: $nextPostId }) {
       fields {
         slug
       }
       frontmatter {
         title
       }
+    }
+    wpPost {
+      id
+      title
+      content
+      excerpt
+      slug
+      date(formatString: "YYYY/MM/DD")
+      featuredImage{
+        node{
+          altText
+          gatsbyImage(width: 960)
+        }
+      }
+    }
+    wpPrevious: wpPost(id: { eq: $previousPostId }) {
+      title
+      slug
+    }
+    wpNext: wpPost(id: { eq: $nextPostId }) {
+      title
+      slug
     }
   }
 `

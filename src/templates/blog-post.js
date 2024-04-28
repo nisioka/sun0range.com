@@ -138,7 +138,7 @@ export const pageQuery = graphql`
         title
       }
     }
-    wpPost {
+    wpPost(id: { eq: $id }) {
       id
       title
       content

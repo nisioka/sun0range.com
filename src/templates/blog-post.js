@@ -9,7 +9,6 @@ const BlogPostTemplate = ({
   data: { site, markdownRemark, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
   location,
 }) => {
-  const siteTitle = site.siteMetadata?.title || `Title`
   const post = {
     id: markdownRemark?.id || wpPost?.id,
     title: markdownRemark?.frontmatter.title || wpPost?.title,
@@ -33,7 +32,7 @@ const BlogPostTemplate = ({
   }
 
   return (
-    <Layout location={location} title={siteTitle}>
+    <Layout location={location}>
       <article
         className="blog-post"
         itemScope

@@ -11,7 +11,6 @@ const styleTextRight = {
 }
 
 const BlogIndex = ({ data, location }) => {
-  const siteTitle = data.site.siteMetadata?.title || `Title`
   const mdPosts = data.allMarkdownRemark.nodes
   const wpPosts = data.allWpPost.nodes
   const posts = mdPosts.map(post => {
@@ -36,7 +35,7 @@ const BlogIndex = ({ data, location }) => {
 
   if (posts.length === 0) {
     return (
-      <Layout location={location} title={siteTitle}>
+      <Layout location={location}>
         <Bio />
         <p>
           No blog posts found. Add markdown posts to "content/blog" (or the
@@ -48,7 +47,7 @@ const BlogIndex = ({ data, location }) => {
   }
 
   return (
-    <Layout location={location} title={siteTitle}>
+    <Layout location={location}>
       <Bio />
       <ol style={{ listStyle: `none` }}>
         {posts.map(post => {

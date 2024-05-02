@@ -11,7 +11,7 @@ const styleTextRight = {
 }
 
 const BlogIndex = ({ data, location }) => {
-  const mdPosts = data.allMarkdownRemark.nodes
+  const mdPosts = data.allMdx.nodes
   const wpPosts = data.allWpPost.nodes
   const posts = mdPosts.map(post => {
     return {
@@ -102,7 +102,7 @@ export const pageQuery = graphql`
         title
       }
     }
-    allMarkdownRemark(sort: { frontmatter: { date: DESC } }) {
+    allMdx(sort: { frontmatter: { date: DESC } }) {
       nodes {
         excerpt
         fields {

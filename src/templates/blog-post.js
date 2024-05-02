@@ -6,17 +6,17 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 
 const BlogPostTemplate = ({
-  data: { site, markdownRemark, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
-  location,
+  data: { site, mdx, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
+  location, children
 }) => {
   const post = {
-    id: markdownRemark?.id || wpPost?.id,
-    title: markdownRemark?.frontmatter.title || wpPost?.title,
-    html: markdownRemark?.html || wpPost?.content,
-    excerpt: markdownRemark?.excerpt || wpPost?.excerpt,
-    slug: markdownRemark?.fields.slug || wpPost?.slug,
-    date: markdownRemark?.frontmatter.date || wpPost?.date,
-    description: markdownRemark?.frontmatter.description,
+    id: mdx?.id || wpPost?.id,
+    title: mdx?.frontmatter.title || wpPost?.title,
+    body: mdx?.body || wpPost?.content,
+    excerpt: mdx?.excerpt || wpPost?.excerpt,
+    slug: mdx?.fields.slug || wpPost?.slug,
+    date: mdx?.frontmatter.date || wpPost?.date,
+    description: mdx?.frontmatter.description,
     altText: wpPost?.featuredImage?.node.altText || "",
     gatsbyImage: wpPost?.featuredImage?.node.gatsbyImage || null,
   }
@@ -42,10 +42,12 @@ const BlogPostTemplate = ({
           <h1 itemProp="headline">{post.title}</h1>
           <p>{post.date}</p>
         </header>
-        <section
-          dangerouslySetInnerHTML={{ __html: post.html }}
-          itemProp="articleBody"
-        />
+        {children ||  // MDX or Wordpress content
+          <section
+            dangerouslySetInnerHTML={{ __html: post.body }}
+            itemProp="articleBody"
+          />
+        }
         <hr />
         <footer>
           <Bio />
@@ -108,10 +110,10 @@ export const pageQuery = graphql`
         title
       }
     }
-    markdownRemark(id: { eq: $id }) {
+    mdx(id: { eq: $id }) {
       id
       excerpt
-      html
+      body
       fields {
         slug
       }
@@ -121,7 +123,7 @@ export const pageQuery = graphql`
         description
       }
     }
-    mdPrevious: markdownRemark(id: { eq: $previousPostId }) {
+    mdPrevious: mdx(id: { eq: $previousPostId }) {
       fields {
         slug
       }
@@ -129,7 +131,7 @@ export const pageQuery = graphql`
         title
       }
     }
-    mdNext: markdownRemark(id: { eq: $nextPostId }) {
+    mdNext: mdx(id: { eq: $nextPostId }) {
       fields {
         slug
       }

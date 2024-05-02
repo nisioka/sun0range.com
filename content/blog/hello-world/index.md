@@ -164,7 +164,7 @@ Paragraph:
 
     Code
 
-<!-- -->
+{/*<!-- -->*/}
 
     Paragraph:
 

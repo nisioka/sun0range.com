@@ -83,7 +83,6 @@ module.exports = {
                   date: node.frontmatter.date,
                   url: site.siteMetadata.siteUrl + node.fields.slug,
                   guid: site.siteMetadata.siteUrl + node.fields.slug,
-                  custom_elements: [{ "content:encoded": node.html }],
                 })
               })
             },
@@ -91,7 +90,6 @@ module.exports = {
               allMdx(sort: {frontmatter: {date: DESC}}) {
                 nodes {
                   excerpt
-                  html
                   fields {
                     slug
                   }
@@ -137,11 +135,11 @@ module.exports = {
         url:
             process.env.WPGRAPHQL_URL ||
             `http://localhost/graphql`,
-        type: {
-          __all: {
-            limit: process.env.NODE_ENV === `development` ? 5 : null
-          }
-        },
+        // type: {
+        //   __all: {
+        //     limit: process.env.NODE_ENV === `development` ? 5 : null
+        //   }
+        // },
         develop: {
           hardCacheMediaFiles: true,
         },

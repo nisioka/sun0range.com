@@ -29,6 +29,10 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
           internal {
             contentFilePath
           }
+          frontmatter {
+            featuredImagePath
+            nodeType
+          }
         }
       }
       allWpPost(sort: { date: DESC }) {
@@ -52,13 +56,15 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     return {
       id: post.id,
       slug: post.fields.slug,
-      component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`
+      component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`,
+      featuredImagePath: post.frontmatter.featuredImagePath,
     }
   }).concat(result.data.allWpPost.nodes.map(post => {
     return {
       id: post.id,
       slug: post.slug,
       component: blogPost,
+      featuredImagePath: null,
     }
   }));
 
@@ -78,6 +84,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
           id: post.id,
           previousPostId,
           nextPostId,
+          imagePath: post.featuredImagePath,
         },
       })
     })
@@ -138,6 +145,10 @@ exports.createSchemaCustomization = ({ actions }) => {
       title: String
       description: String
       date: Date @dateformat
+      nodeType: String
+      category: String
+      tags: [String]
+      featuredImagePath: String
     }
 
     type Fields {

@@ -3,9 +3,10 @@ import { Link, graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
+import { GatsbyImage, getImage } from "gatsby-plugin-image"
 
 const BlogPostTemplate = ({
-  data: { site, mdx, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
+  data: { site, allFile, mdx, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
   location, children
 }) => {
   const post = {
@@ -17,7 +18,7 @@ const BlogPostTemplate = ({
     date: mdx?.frontmatter.date || wpPost?.date,
     description: mdx?.frontmatter.description,
     altText: wpPost?.featuredImage?.node.altText || "",
-    gatsbyImage: wpPost?.featuredImage?.node.gatsbyImage || null,
+    gatsbyImage: wpPost?.featuredImage?.node.gatsbyImage || getImage(allFile.edges[0]?.node.childImageSharp),
   }
   const previous = {
     id: mdPrevious?.id || wpPrevious?.id,
@@ -41,6 +42,11 @@ const BlogPostTemplate = ({
           <h1 itemProp="headline">{post.title}</h1>
           <p>{post.date}</p>
         </header>
+        <GatsbyImage
+          image={post.gatsbyImage}
+          alt={post.title.toString()}
+        />
+
         {children ||  // MDX or Wordpress content
           <section
             dangerouslySetInnerHTML={{ __html: post.body }}
@@ -102,10 +108,30 @@ export const pageQuery = graphql`
     $id: String!
     $previousPostId: String
     $nextPostId: String
+    $imagePath: String
   ) {
     site {
       siteMetadata {
         title
+      }
+    }
+    allFile(
+      filter: {
+        relativePath: { eq: $imagePath }
+        # ↓ 画像を格納してある場所がimages（gatsby-config.jsで指定した名）
+        sourceInstanceName: { eq: "images" }
+      }
+    ) {
+      edges {
+        node {
+          childImageSharp {
+            gatsbyImageData(
+              width: 1000
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
       }
     }
     mdx(id: { eq: $id }) {

@@ -3,13 +3,20 @@ import { Link, graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import {GatsbyImage } from "gatsby-plugin-image";
+import { GatsbyImage, getImage } from "gatsby-plugin-image"
 
 const styleTextRight = {
   textAlign: "right",
 }
 
 const BlogIndex = ({ data, location }) => {
+  let allFeaturedImages = {}
+  data.allFile.edges.forEach(node => {
+    console.log(node.node.relativePath)
+    console.log(node.node.childImageSharp.gatsbyImageData.toString())
+    allFeaturedImages[node.node.relativePath] = node.node.childImageSharp.gatsbyImageData
+  })
+  console.log(allFeaturedImages.toString())
   const mdPosts = data.allMdx.nodes
   const wpPosts = data.allWpPost.nodes
   const posts = mdPosts.map(post => {
@@ -19,7 +26,8 @@ const BlogIndex = ({ data, location }) => {
       slug: post.fields.slug,
       date: post.frontmatter.date,
       description: post.frontmatter.description,
-      altText: "",
+      altText: post.frontmatter.featuredImagePath,
+      gatsbyImage: getImage(allFeaturedImages[post.frontmatter.featuredImagePath || "featured/defaultThumbnail.png"]),
     }
   }).concat(wpPosts.map(post => {
     return {
@@ -28,7 +36,7 @@ const BlogIndex = ({ data, location }) => {
       slug: post.slug,
       date: post.date,
       altText: post.featuredImage?.node.altText || "",
-      gatsbyImage: post.featuredImage?.node.gatsbyImage || null,
+      gatsbyImage: post.featuredImage?.node.gatsbyImage || getImage(allFeaturedImages["featured/defaultThumbnail.png"]),
     }
   }));
 
@@ -63,7 +71,7 @@ const BlogIndex = ({ data, location }) => {
                       <span itemProp="headline">{title}</span>
                     </Link>
                   </h2>
-                  <div style={styleTextRight}><small>{post.date}</small></div>
+                  <div style={styleTextRight}><small><time>{post.date}</time></small></div>
                 </header>
                 <section>
                   <GatsbyImage alt={post.altText} image={post.gatsbyImage} />
@@ -99,6 +107,25 @@ export const pageQuery = graphql`
         title
       }
     }
+    allFile(
+      filter: {
+        sourceInstanceName: { eq: "images" }
+      }
+    ) {
+      edges {
+        node {
+          relativePath
+          childImageSharp {
+            gatsbyImageData(
+              width: 100,
+              height: 100
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
+      }
+    }
     allMdx(sort: { frontmatter: { date: DESC } }) {
       nodes {
         excerpt
@@ -109,6 +136,7 @@ export const pageQuery = graphql`
           title
           date(formatString: "YYYY/MM/DD")
           description
+          featuredImagePath
         }
       }
     }
@@ -121,7 +149,12 @@ export const pageQuery = graphql`
         featuredImage{
           node{
             altText
-            gatsbyImage(width: 100, height: 100)
+            gatsbyImage(
+              width: 100,
+              height: 100
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
           }
         }
       }

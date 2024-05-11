@@ -5,6 +5,9 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
 
+const styleTextRight = {
+  textAlign: "right",
+}
 const BlogPostTemplate = ({
   data: { site, allFile, mdx, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
   location, children
@@ -40,7 +43,11 @@ const BlogPostTemplate = ({
       >
         <header>
           <h1 itemProp="headline">{post.title}</h1>
-          <p>{post.date}</p>
+          <p>
+            <div style={styleTextRight}><small>
+              <time>{post.date}</time>
+            </small></div>
+          </p>
         </header>
         <GatsbyImage
           image={post.gatsbyImage}
@@ -118,7 +125,6 @@ export const pageQuery = graphql`
     allFile(
       filter: {
         relativePath: { eq: $imagePath }
-        # ↓ 画像を格納してある場所がimages（gatsby-config.jsで指定した名）
         sourceInstanceName: { eq: "images" }
       }
     ) {
@@ -126,7 +132,7 @@ export const pageQuery = graphql`
         node {
           childImageSharp {
             gatsbyImageData(
-              width: 1000
+              width: 960
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED
             )

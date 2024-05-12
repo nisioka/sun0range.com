@@ -1,13 +1,8 @@
-import * as React from "react"
 import { Link, graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { GatsbyImage, getImage } from "gatsby-plugin-image"
-
-const styleTextRight = {
-  textAlign: "right",
-}
+import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
 
 const BlogIndex = ({ data, location }) => {
   let allFeaturedImages = {}
@@ -71,7 +66,7 @@ const BlogIndex = ({ data, location }) => {
                       <span itemProp="headline">{title}</span>
                     </Link>
                   </h2>
-                  <div style={styleTextRight}><small><time>{post.date}</time></small></div>
+                  <div style={{ textAlign: `right` }}><small><time>{post.date}</time></small></div>
                 </header>
                 <section>
                   <GatsbyImage alt={post.altText} image={post.gatsbyImage} />
@@ -100,6 +95,51 @@ export default BlogIndex
  */
 export const Head = () => <Seo title="All posts" />
 
+type AllNode = {
+  site: {
+    siteMetadata: {
+      title: string
+    }
+  }
+  allFile: {
+    edges: Array<{
+      node: {
+        relativePath: string
+        childImageSharp: {
+          gatsbyImageData: IGatsbyImageData
+        }
+      }
+    }>
+  }
+  allMdx: {
+    nodes: Array<{
+      excerpt: string
+      fields: {
+        slug: string
+      }
+      frontmatter: {
+        title: string
+        date: string
+        description: string
+        featuredImagePath: string
+      }
+    }>
+  }
+  allWpPost: {
+    nodes: Array<{
+      title: string
+      excerpt: string
+      slug: string
+      date: string
+      featuredImage: {
+        node: {
+          altText: string
+          gatsbyImage: IGatsbyImageData
+        }
+      }
+    }>
+  }
+}
 export const pageQuery = graphql`
   {
     site {

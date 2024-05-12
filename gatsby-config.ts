@@ -3,11 +3,13 @@
  *
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
  */
+// gatsby-config.ts
+import type { GatsbyConfig } from "gatsby"
 
 /**
  * @type {import('gatsby').GatsbyConfig}
  */
-module.exports = {
+const config: GatsbyConfig = {
   siteMetadata: {
     title: `分かりやすい技術ブログ`,
     author: {
@@ -117,7 +119,7 @@ module.exports = {
         // https://css-tricks.com/meta-theme-color-and-trickery/
         // theme_color: `#663399`,
         display: `minimal-ui`,
-        icon: `static/fabicon.webp`, // This path is relative to the root of the site.
+        icon: `static/favicon.webp`, // This path is relative to the root of the site.
       },
     },
     {

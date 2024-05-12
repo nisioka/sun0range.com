@@ -1,5 +1,3 @@
-import * as React from "react"
-
 import { siteMetadata } from "../../gatsby-config"
 
 const Footer = () => {

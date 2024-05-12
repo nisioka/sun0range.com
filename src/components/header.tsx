@@ -1,4 +1,3 @@
-import * as React from "react"
 import {siteMetadata} from "../../gatsby-config";
 import {Link} from "gatsby";
 import styled from "styled-components"
@@ -24,13 +23,19 @@ const Header = ({location}) => {
           <nav>
             <ul>
               <li>
-                <Link to="/blogs/">ブログ</Link>
+                <Link to="/">技術系</Link>
               </li>
               <li>
-                <Link to="/about/">About Me</Link>
+                <Link to="/">イベントレポート</Link>
               </li>
               <li>
-                <Link to="/contact/">Contact</Link>
+                <Link to="/">生活</Link>
+              </li>
+              <li>
+                <Link to="/">用語集</Link>
+              </li>
+              <li>
+                <Link to="/how-about-this-blog/">このブログについて</Link>
               </li>
             </ul>
           </nav>

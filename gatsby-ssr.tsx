@@ -4,9 +4,11 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-ssr/
  */
 
+import { GatsbySSR } from "gatsby"
+
 /**
  * @type {import('gatsby').GatsbySSR['onRenderBody']}
  */
-exports.onRenderBody = ({ setHtmlAttributes }) => {
+export const onRenderBody: GatsbySSR['onRenderBody'] = ({ setHtmlAttributes }) => {
   setHtmlAttributes({ lang: `ja` })
 }

@@ -4,6 +4,35 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
  */
 
+type feedArgument = {
+  query: {
+    site: {
+      siteMetadata: siteMetadata
+    }
+    allMdx: allMdx
+  }
+}
+
+type siteMetadata = {
+  title: string
+  description: string
+  siteUrl: string
+  site_url: string
+}
+
+type allMdx = {
+  nodes: {
+    frontmatter: {
+      title: string
+      date: string
+    }
+    excerpt: string
+    fields: {
+      slug: string
+    }
+  }[]
+}
+
 /**
  * @type {import('gatsby').GatsbyConfig}
  */
@@ -76,7 +105,7 @@ module.exports = {
         `,
         feeds: [
           {
-            serialize: ({ query: { site, allMdx } }) => {
+            serialize: ({ query: { site, allMdx } }: feedArgument) => {
               return allMdx.nodes.map(node => {
                 return Object.assign({}, node.frontmatter, {
                   description: node.excerpt,

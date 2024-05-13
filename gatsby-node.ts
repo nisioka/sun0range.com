@@ -4,21 +4,45 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-node/
  */
 
-const path = require(`path`)
-const { createFilePath } = require(`gatsby-source-filesystem`)
+import path from "path"
+import { GatsbyNode } from "gatsby"
+import { createFilePath } from "gatsby-source-filesystem"
 
 // Define the template for blog post
-const blogPost = path.resolve(`./src/templates/blog-post.js`)
+const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
 
 /**
  * @type {import('gatsby').GatsbyNode['createPages']}
  */
-exports.createPages = async ({ graphql, actions, reporter }) => {
+export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions, reporter }) => {
   const { createPage } = actions
 
+  type AllPost = {
+    allMdx: {
+      nodes: {
+        id: string
+        fields: {
+          slug: string
+        }
+        internal: {
+          contentFilePath: string
+        }
+        frontmatter: {
+          featuredImagePath: string
+          nodeType: string
+        }
+      }[]
+    }
+    allWpPost: {
+      nodes: {
+        id: string
+        slug: string
+      }[]
+    }
+  }
 
   // Get all markdown blog posts sorted by date
-  const result = await graphql(`
+  const result = await graphql<AllPost>(`
     {
       allMdx(sort: { frontmatter: { date: ASC } }, limit: 1000) {
         nodes {
@@ -52,14 +76,22 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
     return
   }
 
-  const posts = result.data.allMdx.nodes.map(post => {
-    return {
+  type Post = {
+    id: string
+    slug: string
+    component: string
+    featuredImagePath: string | null
+  }
+
+  const posts = result.data?.allMdx.nodes.map(post => {
+    const mdx: Post = {
       id: post.id,
       slug: post.fields.slug,
       component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`,
       featuredImagePath: post.frontmatter.featuredImagePath,
     }
-  }).concat(result.data.allWpPost.nodes.map(post => {
+    return mdx
+  }).concat(result.data?.allWpPost.nodes.map(post => {
     return {
       id: post.id,
       slug: post.slug,
@@ -72,7 +104,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
   // But only if there's at least one markdown file found at "content/blog" (defined in gatsby-config.js)
   // `context` is available in the template as a prop and as a variable in GraphQL
 
-  if (posts.length > 0) {
+  if (posts && posts.length > 0) {
     posts.forEach((post, index) => {
       const previousPostId = index === 0 ? null : posts[index - 1].id
       const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id
@@ -94,7 +126,7 @@ exports.createPages = async ({ graphql, actions, reporter }) => {
 /**
  * @type {import('gatsby').GatsbyNode['onCreateNode']}
  */
-exports.onCreateNode = ({ node, actions, getNode }) => {
+export const onCreateNode: GatsbyNode['onCreateNode'] = ({ node, actions, getNode }) => {
   const { createNodeField } = actions
 
   if (node.internal.type === `Mdx`) {
@@ -111,7 +143,7 @@ exports.onCreateNode = ({ node, actions, getNode }) => {
 /**
  * @type {import('gatsby').GatsbyNode['createSchemaCustomization']}
  */
-exports.createSchemaCustomization = ({ actions }) => {
+export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] = ({ actions }) => {
   const { createTypes } = actions
 
   // Explicitly define the siteMetadata {} object
@@ -121,21 +153,6 @@ exports.createSchemaCustomization = ({ actions }) => {
   // This way the "Mdx" queries will return `null` even when no
   // blog posts are stored inside "content/blog" instead of returning an error
   createTypes(`
-    type SiteSiteMetadata {
-      author: Author
-      siteUrl: String
-      social: Social
-    }
-
-    type Author {
-      name: String
-      summary: String
-    }
-
-    type Social {
-      twitter: String
-    }
-
     type Mdx implements Node {
       frontmatter: Frontmatter
       fields: Fields

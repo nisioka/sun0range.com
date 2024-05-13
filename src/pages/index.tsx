@@ -3,24 +3,71 @@ import { Link, graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { GatsbyImage, getImage } from "gatsby-plugin-image"
+import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
 
-const styleTextRight = {
-  textAlign: "right",
+type BlogIndexProps = {
+  data: {
+    allFile: {
+      edges: {
+        node: {
+          relativePath: string
+          childImageSharp: {
+            gatsbyImageData: any
+          }
+        }
+      }[]
+    }
+    allMdx: {
+      nodes: {
+        excerpt: string
+        fields: {
+          slug: string
+        }
+        frontmatter: {
+          title: string
+          date: string
+          description: string
+          featuredImagePath: string
+        }
+      }[]
+    }
+    allWpPost: {
+      nodes: {
+        title: string
+        excerpt: string
+        slug: string
+        date: string
+        featuredImage: {
+          node: {
+            altText: string
+            gatsbyImage: IGatsbyImageData | null
+          }
+        }
+      }[]
+    }
+  }
+  location: Location
 }
 
-const BlogIndex = ({ data, location }) => {
-  let allFeaturedImages = {}
+const BlogIndex = ({ data, location }: BlogIndexProps) => {
+  let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
   data.allFile.edges.forEach(node => {
-    console.log(node.node.relativePath)
-    console.log(node.node.childImageSharp.gatsbyImageData.toString())
     allFeaturedImages[node.node.relativePath] = node.node.childImageSharp.gatsbyImageData
   })
-  console.log(allFeaturedImages.toString())
-  const mdPosts = data.allMdx.nodes
+
+  type Post = {
+    title: string
+    excerpt: string
+    slug: string
+    date: string
+    description?: string
+    altText: string
+    gatsbyImage: IGatsbyImageData | undefined
+  }
+  const mdxPosts = data.allMdx.nodes
   const wpPosts = data.allWpPost.nodes
-  const posts = mdPosts.map(post => {
-    return {
+  const posts = mdxPosts.map(post => {
+    const mdx: Post = {
       title: post.frontmatter.title,
       excerpt: post.excerpt,
       slug: post.fields.slug,
@@ -29,6 +76,7 @@ const BlogIndex = ({ data, location }) => {
       altText: post.frontmatter.featuredImagePath,
       gatsbyImage: getImage(allFeaturedImages[post.frontmatter.featuredImagePath || "featured/defaultThumbnail.png"]),
     }
+    return mdx
   }).concat(wpPosts.map(post => {
     return {
       title: post.title,
@@ -71,10 +119,14 @@ const BlogIndex = ({ data, location }) => {
                       <span itemProp="headline">{title}</span>
                     </Link>
                   </h2>
-                  <div style={styleTextRight}><small><time>{post.date}</time></small></div>
+                  <div style={{ textAlign: "right" }}><small>
+                    <time>{post.date}</time>
+                  </small></div>
                 </header>
                 <section>
-                  <GatsbyImage alt={post.altText} image={post.gatsbyImage} />
+                  {typeof post.gatsbyImage === "undefined" ||
+                    <GatsbyImage alt={post.altText} image={post.gatsbyImage} />
+                  }
                   <p
                     dangerouslySetInnerHTML={{
                       __html: post.description || post.excerpt,
@@ -102,11 +154,6 @@ export const Head = () => <Seo title="All posts" />
 
 export const pageQuery = graphql`
   {
-    site {
-      siteMetadata {
-        title
-      }
-    }
     allFile(
       filter: {
         sourceInstanceName: { eq: "images" }

@@ -3,23 +3,48 @@
  *
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
  */
+import type { GatsbyConfig } from "gatsby"
+
+type feedArgument = {
+  query: {
+    site: {
+      siteMetadata: SiteMetadata
+    }
+    allMdx: allMdx
+  }
+}
+
+type allMdx = {
+  nodes: {
+    frontmatter: {
+      title: string
+      date: string
+    }
+    excerpt: string
+    fields: {
+      slug: string
+    }
+  }[]
+}
+
+const siteMetadata: SiteMetadata = {
+  title: `分かりやすい技術ブログ`,
+  author: {
+    name: `nisioka`,
+    summary: `オレンジ好きの中で最強のエンジニアになりたい。`,
+  },
+  description: `誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。`,
+  siteUrl: `https://sun0range.tech.server-on.net/`,
+  social: {
+    twitter: `nisioka55`,
+  },
+}
 
 /**
  * @type {import('gatsby').GatsbyConfig}
  */
-module.exports = {
-  siteMetadata: {
-    title: `分かりやすい技術ブログ`,
-    author: {
-      name: `nisioka`,
-      summary: `オレンジ好きの中で最強のエンジニアになりたい。`,
-    },
-    description: `誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。`,
-    siteUrl: `http://localhost/`, //FIXME
-    social: {
-      twitter: `nisioka55`,
-    },
-  },
+const config: GatsbyConfig = {
+  siteMetadata: siteMetadata,
   plugins: [
     `gatsby-plugin-image`,
     {
@@ -76,7 +101,7 @@ module.exports = {
         `,
         feeds: [
           {
-            serialize: ({ query: { site, allMdx } }) => {
+            serialize: ({ query: { site, allMdx } }: feedArgument) => {
               return allMdx.nodes.map(node => {
                 return Object.assign({}, node.frontmatter, {
                   description: node.excerpt,
@@ -117,7 +142,7 @@ module.exports = {
         // https://css-tricks.com/meta-theme-color-and-trickery/
         // theme_color: `#663399`,
         display: `minimal-ui`,
-        icon: `static/fabicon.webp`, // This path is relative to the root of the site.
+        icon: `static/favicon.webp`, // This path is relative to the root of the site.
       },
     },
     {
@@ -147,3 +172,4 @@ module.exports = {
     },
   ],
 }
+export default config

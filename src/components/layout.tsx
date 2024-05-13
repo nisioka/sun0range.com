@@ -2,7 +2,11 @@ import * as React from "react"
 import Header from "./header";
 import Footer from "./footer";
 
-const Layout = ({ location, children }) => {
+type LayoutProps = {
+  location: Location
+  children: React.ReactNode
+}
+const Layout = ({ location, children }: LayoutProps) => {
   const rootPath = `${__PATH_PREFIX__}/`
   const isRootPath = location.pathname === rootPath
 

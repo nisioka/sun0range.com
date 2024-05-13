@@ -6,29 +6,15 @@
  */
 
 import * as React from "react"
-import { useStaticQuery, graphql } from "gatsby"
 import { StaticImage } from "gatsby-plugin-image"
+import config from "../../gatsby-config"
 
 const Bio = () => {
-  const data = useStaticQuery(graphql`
-    query BioQuery {
-      site {
-        siteMetadata {
-          author {
-            name
-            summary
-          }
-          social {
-            twitter
-          }
-        }
-      }
-    }
-  `)
+  const { siteMetadata }  = config as { siteMetadata: SiteMetadata }
 
-  // Set these values by editing "siteMetadata" in gatsby-config.js
-  const author = data.site.siteMetadata?.author
-  const social = data.site.siteMetadata?.social
+  // Set these values by editing "siteMetadata" in gatsby-config
+  const author = siteMetadata?.author
+  const social = siteMetadata?.social
 
   return (
     <div className="bio">

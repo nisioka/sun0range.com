@@ -3,21 +3,15 @@
  *
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
  */
+import type { GatsbyConfig } from "gatsby"
 
 type feedArgument = {
   query: {
     site: {
-      siteMetadata: siteMetadata
+      siteMetadata: SiteMetadata
     }
     allMdx: allMdx
   }
-}
-
-type siteMetadata = {
-  title: string
-  description: string
-  siteUrl: string
-  site_url: string
 }
 
 type allMdx = {
@@ -33,22 +27,24 @@ type allMdx = {
   }[]
 }
 
+const siteMetadata: SiteMetadata = {
+  title: `分かりやすい技術ブログ`,
+  author: {
+    name: `nisioka`,
+    summary: `オレンジ好きの中で最強のエンジニアになりたい。`,
+  },
+  description: `誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。`,
+  siteUrl: `https://sun0range.tech.server-on.net/`,
+  social: {
+    twitter: `nisioka55`,
+  },
+}
+
 /**
  * @type {import('gatsby').GatsbyConfig}
  */
-module.exports = {
-  siteMetadata: {
-    title: `分かりやすい技術ブログ`,
-    author: {
-      name: `nisioka`,
-      summary: `オレンジ好きの中で最強のエンジニアになりたい。`,
-    },
-    description: `誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。`,
-    siteUrl: `http://localhost/`, //FIXME
-    social: {
-      twitter: `nisioka55`,
-    },
-  },
+const config: GatsbyConfig = {
+  siteMetadata: siteMetadata,
   plugins: [
     `gatsby-plugin-image`,
     {
@@ -176,3 +172,4 @@ module.exports = {
     },
   ],
 }
+export default config

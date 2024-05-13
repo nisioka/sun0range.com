@@ -9,7 +9,7 @@ import { GatsbyNode } from "gatsby"
 import { createFilePath } from "gatsby-source-filesystem"
 
 // Define the template for blog post
-const blogPost = path.resolve(`./src/templates/blog-post.js`)
+const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
 
 /**
  * @type {import('gatsby').GatsbyNode['createPages']}
@@ -153,21 +153,6 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
   // This way the "Mdx" queries will return `null` even when no
   // blog posts are stored inside "content/blog" instead of returning an error
   createTypes(`
-    type SiteSiteMetadata {
-      author: Author
-      siteUrl: String
-      social: Social
-    }
-
-    type Author {
-      name: String
-      summary: String
-    }
-
-    type Social {
-      twitter: String
-    }
-
     type Mdx implements Node {
       frontmatter: Frontmatter
       fields: Fields

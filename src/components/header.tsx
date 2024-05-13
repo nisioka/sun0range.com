@@ -1,21 +1,18 @@
 import * as React from "react"
-import {siteMetadata} from "../../gatsby-config";
+import config from "../../gatsby-config";
 import {Link} from "gatsby";
 import styled from "styled-components"
 
-const Header = ({location}) => {
+const Header = ({location}: { location: Location }) => {
   const rootPath = `${__PATH_PREFIX__}/`
   const isRootPath = location.pathname === rootPath
+  const { siteMetadata }  = config as { siteMetadata: SiteMetadata }
   let siteName
 
   if (isRootPath) {
     siteName = <h1 className="logo">{siteMetadata.title}</h1>
   } else {
-    siteName = (
-        <p className="logo">
-          <Link to={rootPath}>{siteMetadata.title}</Link>
-        </p>
-    )
+    siteName = <p className="logo"><Link to={rootPath}>{siteMetadata.title}</Link></p>
   }
   return (
       <HeaderWrapper>

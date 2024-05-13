@@ -6,27 +6,20 @@
  */
 
 import * as React from "react"
-import { useStaticQuery, graphql } from "gatsby"
+import config from "../../gatsby-config"
 
-const Seo = ({ description, title, children }) => {
-  const { site } = useStaticQuery(
-    graphql`
-      query {
-        site {
-          siteMetadata {
-            title
-            description
-            social {
-              twitter
-            }
-          }
-        }
-      }
-    `
-  )
+type SeoProps = {
+  title: string
+  description?: string
+  children?: React.ReactNode
+}
 
-  const metaDescription = description || site.siteMetadata.description
-  const defaultTitle = site.siteMetadata?.title
+const Seo = ({ title, description, children }: SeoProps) => {
+  const { siteMetadata }  = config as { siteMetadata: SiteMetadata }
+
+  const metaDescription = description || siteMetadata?.description as string || ""
+  const defaultTitle = siteMetadata?.title
+
 
   return (
     <>
@@ -38,7 +31,7 @@ const Seo = ({ description, title, children }) => {
       <meta name="twitter:card" content="summary" />
       <meta
         name="twitter:creator"
-        content={site.siteMetadata?.social?.twitter || ``}
+        content={siteMetadata?.social?.twitter || ``}
       />
       <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={metaDescription} />

@@ -5,13 +5,85 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
 
-const styleTextRight = {
-  textAlign: "right",
+type MdxPost = {
+  id: string
+  excerpt: string
+  body: string
+  fields: {
+    slug: string
+  }
+  frontmatter: {
+    title: string
+    date: string
+    description: string
+  }
 }
+
+type WpPost = {
+  id: string
+  title: string
+  content: string
+  excerpt: string
+  slug: string
+  date: string
+  featuredImage: {
+    node: {
+      altText: string
+      gatsbyImage: any
+    }
+  }
+}
+
+type BlogPostTemplateProps = {
+  data: {
+    allFile: {
+      edges: {
+        node: {
+          childImageSharp: {
+            gatsbyImageData: any
+          }
+        }
+      }[]
+    }
+    mdx: MdxPost
+    mdPrevious: {
+      id: string
+      fields: {
+        slug: string
+      }
+      frontmatter: {
+        title: string
+      }
+    }
+    mdNext: {
+      id: string
+      fields: {
+        slug: string
+      }
+      frontmatter: {
+        title: string
+      }
+    }
+    wpPost: WpPost
+    wpPrevious: {
+      id: string
+      title: string
+      slug: string
+    }
+    wpNext: {
+      id: string
+      title: string
+      slug: string
+    }
+  }
+  location: Location
+  children: React.ReactNode
+}
+
 const BlogPostTemplate = ({
-  data: { site, allFile, mdx, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
+  data: { allFile, mdx, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
   location, children
-}) => {
+}: BlogPostTemplateProps) => {
   const post = {
     id: mdx?.id || wpPost?.id,
     title: mdx?.frontmatter.title || wpPost?.title,
@@ -44,7 +116,7 @@ const BlogPostTemplate = ({
         <header>
           <h1 itemProp="headline">{post.title}</h1>
           <p>
-            <div style={styleTextRight}><small>
+            <div style={{ textAlign: "right" }}><small>
               <time>{post.date}</time>
             </small></div>
           </p>
@@ -94,11 +166,19 @@ const BlogPostTemplate = ({
   )
 }
 
-export const Head = ({ data: { mdPost, wpPost } }) => {
+type HeadProps = {
+  data: {
+    mdPost: MdxPost
+    wpPost: WpPost
+  }
+}
+
+export const Head = ({ data: { mdPost, wpPost } }: HeadProps) => {
   const post = {
     id: mdPost?.id || wpPost?.id,
     title: mdPost?.frontmatter.title || wpPost?.title,
     slug: mdPost?.fields.slug || wpPost?.slug,
+    excerpt: mdPost?.excerpt || wpPost?.excerpt,
   }
   return (
     <Seo
@@ -117,11 +197,6 @@ export const pageQuery = graphql`
     $nextPostId: String
     $imagePath: String
   ) {
-    site {
-      siteMetadata {
-        title
-      }
-    }
     allFile(
       filter: {
         relativePath: { eq: $imagePath }

@@ -98,12 +98,12 @@ const BlogPostTemplate = ({
   const previous = {
     id: mdPrevious?.id || wpPrevious?.id,
     title: mdPrevious?.frontmatter.title || wpPrevious?.title,
-    slug: mdPrevious?.fields.slug || wpPrevious?.slug,
+    slug: mdPrevious?.fields.slug || "/" + wpPrevious?.slug,
   }
   const next = {
     id: mdNext?.id || wpNext?.id,
     title: mdNext?.frontmatter.title || wpNext?.title,
-    slug: mdNext?.fields.slug || wpNext?.slug,
+    slug: mdNext?.fields.slug || "/" + wpNext?.slug,
   }
 
   return (

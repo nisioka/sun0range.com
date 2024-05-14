@@ -32,10 +32,12 @@ const siteMetadata: SiteMetadata = {
   author: {
     name: `nisioka`,
     summary: `オレンジ好きの中で最強のエンジニアになりたい。`,
+    avatarImagePath: 'src/static/24okBlock.webp'
   },
   description: `誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。`,
   siteUrl: `https://sun0range.tech.server-on.net/`,
   social: {
+    github: `nisioka`,
     twitter: `nisioka55`,
   },
 }

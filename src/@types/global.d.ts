@@ -5,10 +5,12 @@ type SiteMetadata = {
   author: {
     name: string
     summary: string
+    avatarImagePath: string
   }
   description: string
   siteUrl: string
   social: {
+    github: string
     twitter: string
   }
 };

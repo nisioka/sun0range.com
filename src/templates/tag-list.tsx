@@ -1,0 +1,133 @@
+import * as React from "react"
+
+import { graphql, Link } from "gatsby"
+import { PageContext } from "gatsby/internal"
+import mergePosts from "../utilFunction"
+import Layout from "../components/layout"
+import Seo from "../components/seo"
+import { GatsbyImage } from "gatsby-plugin-image"
+import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
+
+const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext, data: any, location: Location}) => {
+  const tagName = pageContext.tag as string
+  const posts = mergePosts(data.allMdx, data.allWpPost, data.allFile)
+  const title = `【${tagName}】タグ 一覧`
+
+  if (posts.length === 0) {
+    return (
+      <Layout location={location}>
+        <Seo title={title} />
+        <p>
+          そのタグの記事はありません。
+        </p>
+      </Layout>
+    )
+  }
+
+  return (
+    <Layout location={location}>
+      <Seo title={title} />
+      <ContentsListHeader>
+        <h1>{title}</h1>
+        <p>{posts.length} 記事あります</p>
+      </ContentsListHeader>
+      <ContentsOrderedListWrapper>
+        {posts.map(post => {
+          return (
+            <li key={post.slug}>
+              <article
+                className="post-list-item"
+                itemType="http://schema.org/Article"
+              >
+                <Link to={post.slug}>
+                  <h2>
+                    <span>{post.title}</span>
+                  </h2>
+                  <section>
+                    <div><small>
+                      <time>{post.date}</time>
+                    </small></div>
+                    <div className="thumbnail">
+                      {typeof post.gatsbyImage === "undefined" ||
+                        <GatsbyImage alt={post.altText} image={post.gatsbyImage} className="thumbnail" />
+                      }
+                    </div>
+                    <p
+                      dangerouslySetInnerHTML={{ __html: post.excerpt }}
+                    />
+                  </section>
+                </Link>
+              </article>
+            </li>
+          )
+        })}
+      </ContentsOrderedListWrapper>
+    </Layout>
+  )
+}
+
+export default CategoryList
+
+export const pageQuery = graphql`
+  query( $tag: String) {
+    allMdx(
+      sort: { frontmatter: { date: DESC } }
+      filter: { frontmatter: { tags: { in: [$tag] } } }
+    ) {
+      totalCount
+      nodes {
+        excerpt
+        fields {
+          slug
+        }
+        frontmatter {
+          title
+          date(formatString: "YYYY/MM/DD")
+          description
+          featuredImagePath
+        }
+      }
+    }
+    allWpPost(
+      sort: { date: DESC }
+      filter: { tags: { nodes: { elemMatch: { name: { eq: $tag } } } } }
+    ) {
+      nodes {
+        title
+        excerpt
+        slug
+        date(formatString: "YYYY/MM/DD")
+        featuredImage{
+          node{
+            altText
+            gatsbyImage(
+              width: 100,
+              height: 100
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
+      }
+    }
+    allFile(
+      filter: {
+        sourceInstanceName: { eq: "images" }
+      }
+    ) {
+      edges {
+        node {
+          relativePath
+          childImageSharp {
+            gatsbyImageData(
+              width: 100,
+              height: 100
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
+      }
+    }
+  }
+`

@@ -11,6 +11,7 @@ import { createFilePath } from "gatsby-source-filesystem"
 // Define the template for blog post
 const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
 const categoryList = path.resolve(`./src/templates/category-list.tsx`)
+const tagList = path.resolve(`./src/templates/tag-list.tsx`)
 
 /**
  * @type {import('gatsby').GatsbyNode['createPages']}
@@ -164,6 +165,24 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
         component: categoryList,
         context: {
           category
+        }
+      })
+    })
+
+    // tag一覧追加
+    let tags = posts.reduce((tags, post) => {
+      post.tags.forEach(tag => {
+        tags = (tag && !tags.includes(tag)) ? tags.concat(tag) : tags
+      });
+      return tags
+    }, [] as string[])
+    // tag分ページを作成
+    tags.forEach(tag => {
+      createPage({
+        path: `/tag/${tag}/`,
+        component: tagList,
+        context: {
+          tag
         }
       })
     })

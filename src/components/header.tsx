@@ -2,7 +2,6 @@ import * as React from "react"
 import config from "../../gatsby-config";
 import {Link} from "gatsby";
 import styled from "styled-components"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 
 const Header = ({location}: { location: Location }) => {
   const rootPath = `${__PATH_PREFIX__}/`
@@ -42,7 +41,7 @@ const Header = ({location}: { location: Location }) => {
               <li><Link to="/category/生活">生活</Link></li>
               <li><Link to="/category/用語集">用語集</Link></li>
               <li><Link to="/management/how-about-this-blog">このブログについて</Link></li>
-              <li className="close" onClick={handleClick}><span><FontAwesomeIcon icon={"xmark"}/>閉じる</span></li>
+              <li className="close" onClick={handleClick}><span>閉じる</span></li>
             </ul>
           </nav>
         </div>

@@ -4,89 +4,20 @@ import { Link, graphql } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
+import mergePosts from "../utilFunction"
 
 type BlogIndexProps = {
   data: {
-    allFile: {
-      edges: {
-        node: {
-          relativePath: string
-          childImageSharp: {
-            gatsbyImageData: any
-          }
-        }
-      }[]
-    }
-    allMdx: {
-      nodes: {
-        excerpt: string
-        fields: {
-          slug: string
-        }
-        frontmatter: {
-          title: string
-          date: string
-          description: string
-          featuredImagePath: string
-        }
-      }[]
-    }
-    allWpPost: {
-      nodes: {
-        title: string
-        excerpt: string
-        slug: string
-        date: string
-        featuredImage: {
-          node: {
-            altText: string
-            gatsbyImage: IGatsbyImageData | null
-          }
-        }
-      }[]
-    }
+    allMdx: AllMdx
+    allWpPost: AllWpPost
+    allFile: AllFile
   }
   location: Location
 }
 
 const BlogIndex = ({ data, location }: BlogIndexProps) => {
-  let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
-  data.allFile.edges.forEach(node => {
-    allFeaturedImages[node.node.relativePath] = node.node.childImageSharp.gatsbyImageData
-  })
 
-  type Post = {
-    title: string
-    excerpt: string
-    slug: string
-    date: string
-    description?: string
-    altText: string
-    gatsbyImage: IGatsbyImageData | undefined
-  }
-  const mdxPosts = data.allMdx.nodes
-  const wpPosts = data.allWpPost.nodes
-  const posts = mdxPosts.map(post => {
-    const mdx: Post = {
-      title: post.frontmatter.title,
-      excerpt: post.excerpt,
-      slug: post.fields.slug,
-      date: post.frontmatter.date,
-      description: post.frontmatter.description,
-      altText: post.frontmatter.featuredImagePath,
-      gatsbyImage: getImage(allFeaturedImages[post.frontmatter.featuredImagePath || "featured/defaultThumbnail.png"]),
-    }
-    return mdx
-  }).concat(wpPosts.map(post => {
-    return {
-      title: post.title,
-      excerpt: post.excerpt,
-      slug: post.slug,
-      date: post.date,
-      altText: post.featuredImage?.node.altText || "",
-      gatsbyImage: post.featuredImage?.node.gatsbyImage || getImage(allFeaturedImages["featured/defaultThumbnail.png"]),
-    }
-  }));
+  const posts = mergePosts(data.allMdx, data.allWpPost, data.allFile)
 
   if (posts.length === 0) {
     return (

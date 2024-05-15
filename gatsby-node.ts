@@ -10,6 +10,7 @@ import { createFilePath } from "gatsby-source-filesystem"
 
 // Define the template for blog post
 const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
+const categoryList = path.resolve(`./src/templates/category-list.tsx`)
 
 /**
  * @type {import('gatsby').GatsbyNode['createPages']}
@@ -30,6 +31,8 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
         frontmatter: {
           featuredImagePath: string
           nodeType: string
+          category: string
+          tags: string[]
         }
       }[]
     }
@@ -37,6 +40,16 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
       nodes: {
         id: string
         slug: string
+        categories: {
+          nodes: {
+            name: string
+          }[]
+        }
+        tags: {
+          nodes: {
+            name: string
+          }[]
+        }
       }[]
     }
   }
@@ -56,6 +69,8 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
           frontmatter {
             featuredImagePath
             nodeType
+            category
+            tags
           }
         }
       }
@@ -63,6 +78,16 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
         nodes {
           id
           slug
+          categories {
+            nodes {
+              name
+            }
+          }
+          tags {
+            nodes {
+              name
+            }
+          }
         }
       }
     }
@@ -81,6 +106,8 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
     slug: string
     component: string
     featuredImagePath: string | null
+    category: string
+    tags: string[]
   }
 
   const posts = result.data?.allMdx.nodes.map(post => {
@@ -89,6 +116,8 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
       slug: post.fields.slug,
       component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`,
       featuredImagePath: post.frontmatter.featuredImagePath,
+      category: post.frontmatter.category,
+      tags: post.frontmatter.tags,
     }
     return mdx
   }).concat(result.data?.allWpPost.nodes.map(post => {
@@ -97,6 +126,8 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
       slug: post.slug,
       component: blogPost,
       featuredImagePath: null,
+      category: post.categories.nodes[0].name,
+      tags: post.tags.nodes.map(tag => tag.name),
     }
   }));
 
@@ -118,6 +149,22 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
           nextPostId,
           imagePath: post.featuredImagePath,
         },
+      })
+    })
+
+    // カテゴリ一覧追加
+    let categories = posts.reduce((categories, post) => {
+      return (post.category && !categories.includes(post.category)) ? categories.concat(post.category) : categories
+    }, [] as string[])
+    console.log(categories) // FIXME: デバッグ
+    // カテゴリ分ページを作成
+    categories.forEach(category => {
+      createPage({
+        path: `/category/${category}/`,
+        component: categoryList,
+        context: {
+          category
+        }
       })
     })
   }

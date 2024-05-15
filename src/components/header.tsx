@@ -24,16 +24,16 @@ const Header = ({location}: { location: Location }) => {
                 <Link to="/">ホーム</Link>
               </li>
               <li>
-                <Link to="/">技術系</Link>
+                <Link to="/category/技術/">技術系</Link>
               </li>
               <li>
-                <Link to="/">イベントレポート</Link>
+                <Link to="/category/イベントレポート/">イベントレポート</Link>
               </li>
               <li>
-                <Link to="/">生活</Link>
+                <Link to="/category/生活/">生活</Link>
               </li>
               <li>
-                <Link to="/">用語集</Link>
+                <Link to="/category/用語集/">用語集</Link>
               </li>
               <li>
                 <Link to="/management/how-about-this-blog">このブログについて</Link>

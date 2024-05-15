@@ -102,7 +102,7 @@ const BlogPostTemplate = ({
     title: mdx?.frontmatter.title || wpPost?.title,
     body: mdx?.body || wpPost?.content,
     excerpt: mdx?.excerpt || wpPost?.excerpt,
-    slug: mdx?.fields.slug || wpPost?.slug,
+    slug: mdx?.fields.slug || "/" + wpPost?.slug,
     date: mdx?.frontmatter.date || wpPost?.date,
     description: mdx?.frontmatter.description,
     altText: wpPost?.featuredImage?.node.altText || "",

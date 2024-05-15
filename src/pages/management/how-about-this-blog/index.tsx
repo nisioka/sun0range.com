@@ -5,6 +5,8 @@ import Seo from "../../../components/seo"
 import Age from "../../../components/age"
 import Bio from "../../../components/bio"
 import { Link } from "gatsby"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faGolang, faJava, faPython, faReact } from "@fortawesome/free-brands-svg-icons"
 
 const HowAboutThisBlog = ({ location }: { location: Location }) => {
 
@@ -28,6 +30,18 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
         常に学ぶ姿勢を持ち、最先端技術の理解を深めていくことを心掛けています。
       </p>
 
+      <h3>主な使用言語</h3>
+      <ul>
+        <li>Java<FontAwesomeIcon icon={faJava}/>：業務レベル</li>
+        <li>SQL：業務レベル</li>
+        <li>C/C#：趣味レベル(学生時代に使用していた)</li>
+        <li>Go<FontAwesomeIcon icon={faGolang}/>：趣味レベル(趣味でWebアプリケーションを実装。業務でも少し読むレベル)</li>
+        <li>Python<FontAwesomeIcon icon={faPython}/>：趣味レベル(趣味で簡単なツールを書いたり)</li>
+        <li>HTML/CSS/JavaScript：趣味レベル(Webアプリ実装経験があるためそれなりに。リッチなデザインについてはノータッチ)</li>
+        <li>React<FontAwesomeIcon icon={faReact}/>：趣味レベル(趣味でWebアプリケーションを実装。業務でも少し読むレベル)</li>
+        <li>Ruby：趣味レベル(Ruby on Railsのチュートリアルをやった)</li>
+      </ul>
+
       <h3>主な資格</h3>
       <ul>
         <li>DBスペシャリスト</li>
@@ -39,6 +53,12 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
 
       <h3>略歴</h3>
       <ul>
+        <li><p>
+          2011年3月：千葉大学 工学部 画像科学科 卒業。
+        </p></li>
+        <li><p>
+          2013年3月：千葉大学 大学院融合科学研究科(修士課程) 卒業。
+        </p></li>
         <li><p>
           2013年4月：独立系SIer(システムインテグレータ)会社に就職。主に金融・カード関連のWebアプリケーション開発(Java)案件に従事。社内新人研修講師を担当したりも。
         </p></li>

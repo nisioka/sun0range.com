@@ -10,7 +10,7 @@ const Header = ({location}: { location: Location }) => {
   let siteName
 
   if (isRootPath) {
-    siteName = <h1 className="logo">{siteMetadata.title}</h1>
+    siteName = <p className="logo">{siteMetadata.title}</p>
   } else {
     siteName = <p className="logo"><Link to={rootPath}>{siteMetadata.title}</Link></p>
   }
@@ -47,5 +47,38 @@ const Header = ({location}: { location: Location }) => {
 export default Header
 
 const HeaderWrapper = styled.header`
-  //ここにcssを記述していく
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+
+  .container {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    margin: 0;
+    font-weight: bold;
+
+    a {
+      text-decoration: none;
+      color: var(--black);
+    }
+  }
+
+  nav ul {
+    margin: 0;
+    list-style: none;
+    display: flex;
+
+    li {
+      padding: var(--paddingBaseTop) 0 0 var(--paddingBaseLeft);
+
+      a {
+        text-decoration: none;
+        color: var(--black);
+        font-weight: bold;
+      }
+    }
+  }
 `

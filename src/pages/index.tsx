@@ -3,8 +3,9 @@ import { Link, graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
+import { GatsbyImage } from "gatsby-plugin-image"
 import mergePosts from "../utilFunction"
+import { ContentsOrderedListWrapper } from "../style"
 
 type BlogIndexProps = {
   data: {
@@ -33,43 +34,40 @@ const BlogIndex = ({ data, location }: BlogIndexProps) => {
 
   return (
     <Layout location={location}>
-      <ol style={{ listStyle: `none` }}>
+      <ContentsOrderedListWrapper>
         {posts.map(post => {
-          const title = post.title || post.slug
-
           return (
             <li key={post.slug}>
               <article
                 className="post-list-item"
-                itemScope
                 itemType="https://schema.org/Article"
               >
-                <header>
+                <Link to={post.slug} itemProp="url">
                   <h2>
-                    <Link to={post.slug} itemProp="url">
-                      <span itemProp="headline">{title}</span>
-                    </Link>
+                    <span itemProp="headline">{post.title}</span>
                   </h2>
-                  <div style={{ textAlign: "right" }}><small>
-                    <time>{post.date}</time>
-                  </small></div>
-                </header>
-                <section>
-                  {typeof post.gatsbyImage === "undefined" ||
-                    <GatsbyImage alt={post.altText} image={post.gatsbyImage} />
-                  }
-                  <p
-                    dangerouslySetInnerHTML={{
-                      __html: post.description || post.excerpt,
-                    }}
-                    itemProp="description"
-                  />
-                </section>
+                  <section>
+                    <div style={{ textAlign: "right" }}><small>
+                      <time>{post.date}</time>
+                    </small></div>
+                    <div className="thumbnail">
+                      {typeof post.gatsbyImage === "undefined" ||
+                        <GatsbyImage alt={post.altText} image={post.gatsbyImage} />
+                      }
+                    </div>
+                    <p
+                      dangerouslySetInnerHTML={{
+                        __html: post.excerpt
+                      }}
+                      itemProp="description"
+                    />
+                  </section>
+                </Link>
               </article>
             </li>
           )
         })}
-      </ol>
+      </ContentsOrderedListWrapper>
     </Layout>
   )
 }

@@ -6,6 +6,7 @@ import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
 import mergePosts from "../utilFunction"
 import { ContentsOrderedListWrapper } from "../style"
+import Pagination from "../components/pagination"
 
 type BlogIndexProps = {
   data: {
@@ -32,10 +33,13 @@ const BlogIndex = ({ data, location }: BlogIndexProps) => {
     )
   }
 
+  const POST_PER_PAGE = 12
+  const maxPage = Math.ceil(posts.length / POST_PER_PAGE)
+
   return (
     <Layout location={location}>
       <ContentsOrderedListWrapper>
-        {posts.map(post => {
+        {posts.slice(0, POST_PER_PAGE).map(post => {
           return (
             <li key={post.slug}>
               <article
@@ -68,6 +72,7 @@ const BlogIndex = ({ data, location }: BlogIndexProps) => {
           )
         })}
       </ContentsOrderedListWrapper>
+      <Pagination maxPage={maxPage} current={1}/>
     </Layout>
   )
 }

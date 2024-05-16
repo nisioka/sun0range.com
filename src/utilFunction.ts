@@ -27,8 +27,9 @@ function mergePosts(allMdx: AllMdx, allWpPost: AllWpPost, allFile?: AllFile) {
       altText: post.featuredImage?.node.altText || "",
       gatsbyImage: post.featuredImage?.node.gatsbyImage || getImage(allFeaturedImages["featured/defaultThumbnail.png"])
     }
-  }))
-  return posts as CommonPost[]
+  })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) as CommonPost[]
+
+  return posts
 }
 
 export default mergePosts

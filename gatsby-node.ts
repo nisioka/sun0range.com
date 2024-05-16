@@ -10,6 +10,7 @@ import { createFilePath } from "gatsby-source-filesystem"
 
 // Define the template for blog post
 const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
+const pageList = path.resolve(`./src/templates/page-list.tsx`)
 const categoryList = path.resolve(`./src/templates/category-list.tsx`)
 const tagList = path.resolve(`./src/templates/tag-list.tsx`)
 
@@ -153,11 +154,26 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
       })
     })
 
+    // 記事一覧追加
+    const POST_PER_PAGE = 12
+    const maxPage = Math.ceil(posts.length / POST_PER_PAGE)
+    for (let pageNumber = 1; pageNumber < maxPage + 1; pageNumber++) {
+      createPage({
+        path: `/page/${pageNumber}`,
+        component: pageList,
+        context: {
+          limit: POST_PER_PAGE,
+          skip: (pageNumber - 1) * POST_PER_PAGE,
+          current: pageNumber,
+          maxPage: maxPage,
+        },
+      })
+    }
+
     // カテゴリ一覧追加
     let categories = posts.reduce((categories, post) => {
       return (post.category && !categories.includes(post.category)) ? categories.concat(post.category) : categories
     }, [] as string[])
-    console.log(categories) // FIXME: デバッグ
     // カテゴリ分ページを作成
     categories.forEach(category => {
       createPage({

@@ -357,5 +357,17 @@ const Dl = styled.dl`
       margin-left: 15px;
       margin-bottom: 5px;
     }
+
+    a {
+      text-decoration: none;
+      border-radius: 3px;
+      color: #fff;
+      background: var(--orange);
+      padding: 2px 5px;
+
+      &:hover {
+        opacity: .5;
+      }
+    }
   }
 `

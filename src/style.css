@@ -57,6 +57,7 @@
   --color-heading-black: black;
   --color-accent: #d1dce5;
   --black: #333;
+  --orange: #FF8C00FF;
   --paddingBaseTop: 15px;
   --paddingBaseLeft: 20px;
   --paddingBase: var(--paddingBaseTop);

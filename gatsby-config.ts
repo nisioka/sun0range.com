@@ -48,6 +48,28 @@ const siteMetadata: SiteMetadata = {
 const config: GatsbyConfig = {
   siteMetadata: siteMetadata,
   plugins: [
+    {
+      resolve: `gatsby-plugin-google-gtag`,
+      options: {
+        trackingIds: [
+          "G-G75Y1FWLC0",//GOOGLE_ANALYTICS_TRACKING_ID,
+          "pub-3123919168024595",//GOOGLE_ADSENSE_ID,
+        ],
+        pluginConfig: {
+          head: true,
+        },
+      },
+    },
+    {
+      resolve: `gatsby-plugin-sitemap`,
+      options: {
+        output: `/`,
+        excludes: [
+          `/page/*`,
+          `/404?(.*)`,
+        ],
+      },
+    },
     `gatsby-plugin-image`,
     {
       resolve: `gatsby-source-filesystem`,

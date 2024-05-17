@@ -72,6 +72,7 @@ export const Head = ({ pageContext, location }: {pageContext: PageContext, locat
   return (
     <Seo
       title={`【${pageContext.category}】カテゴリー 一覧`}
+      description={`【${pageContext.category}】カテゴリーの記事一覧です`}
       location={location}
     />
   )

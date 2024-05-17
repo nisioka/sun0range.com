@@ -111,6 +111,6 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
   )
 }
 
-export const Head = () => <Seo title={"このブログについて"} />
+export const Head = ({ location }: { location: Location }) => <Seo title={"このブログについて"} location={location} />
 
 export default HowAboutThisBlog

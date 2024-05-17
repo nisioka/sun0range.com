@@ -16,7 +16,6 @@ type SiteMetadata = {
 };
 
 type AllMdx = {
-  totalCount?: number
   nodes: {
     excerpt: string
     fields: {
@@ -32,7 +31,6 @@ type AllMdx = {
 }
 
 type AllWpPost = {
-  totalCount?: number
   nodes: {
     title: string
     excerpt: string
@@ -66,4 +64,46 @@ type CommonPost = {
   description?: string
   altText: string
   gatsbyImage: IGatsbyImageData | undefined
+}
+
+type MdxPost = {
+  id: string
+  excerpt: string
+  body: string
+  fields: {
+    slug: string
+  }
+  frontmatter: {
+    title: string
+    date: string
+    description: string
+    featuredImagePath: string
+    category: string
+    tags: string[]
+  }
+}
+
+type WpPost = {
+  id: string
+  title: string
+  content: string
+  excerpt: string
+  slug: string
+  date: string
+  featuredImage: {
+    node: {
+      altText: string
+      gatsbyImage: any
+    }
+  }
+  categories: {
+    nodes: {
+      name: string
+    }[]
+  }
+  tags: {
+    nodes: {
+      name: string
+    }[]
+  }
 }

@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { graphql, Link } from "gatsby"
 import { PageContext } from "gatsby/internal"
-import mergePosts from "../utilFunction"
+import { mergePosts } from "../utilFunction"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
@@ -15,7 +15,6 @@ const PageList = ({ pageContext, data, location }: {pageContext: PageContext, da
 
   return (
     <Layout location={location}>
-      <Seo title={title} />
       <ContentsListHeader>
         <h1>{title}</h1>
         {/*<p>{posts} 記事あります</p>*/}
@@ -58,6 +57,16 @@ const PageList = ({ pageContext, data, location }: {pageContext: PageContext, da
 
 export default PageList
 
+export const Head = ({ location }: {location: Location}) => {
+
+  return (
+    <Seo
+      title={`記事一覧`}
+      location={location}
+    />
+  )
+}
+
 export const pageQuery = graphql`
   query( $limit: Int!, $skip: Int!) {
     allMdx(
@@ -65,7 +74,6 @@ export const pageQuery = graphql`
       skip: $skip
       sort: { frontmatter: { date: DESC } }
     ) {
-      totalCount
       nodes {
         excerpt
         fields {
@@ -84,7 +92,6 @@ export const pageQuery = graphql`
       skip: $skip
       sort: { date: DESC }
     ) {
-      totalCount
       nodes {
         title
         excerpt

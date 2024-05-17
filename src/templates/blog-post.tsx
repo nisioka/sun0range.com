@@ -3,61 +3,13 @@ import { Link, graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { GatsbyImage, getImage } from "gatsby-plugin-image"
+import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
 import styled from "styled-components"
-
-type MdxPost = {
-  id: string
-  excerpt: string
-  body: string
-  fields: {
-    slug: string
-  }
-  frontmatter: {
-    title: string
-    date: string
-    description: string
-    category: string
-    tags: string[]
-  }
-}
-
-type WpPost = {
-  id: string
-  title: string
-  content: string
-  excerpt: string
-  slug: string
-  date: string
-  featuredImage: {
-    node: {
-      altText: string
-      gatsbyImage: any
-    }
-  }
-  categories: {
-    nodes: {
-      name: string
-    }[]
-  }
-  tags: {
-    nodes: {
-      name: string
-    }[]
-  }
-}
+import { mergePost } from "../utilFunction"
 
 type BlogPostTemplateProps = {
   data: {
-    allFile: {
-      edges: {
-        node: {
-          childImageSharp: {
-            gatsbyImageData: any
-          }
-        }
-      }[]
-    }
+    allFile: AllFile
     mdx: MdxPost
     mdPrevious: {
       id: string
@@ -197,28 +149,6 @@ const BlogPostTemplate = ({
   )
 }
 
-type HeadProps = {
-  data: {
-    mdPost: MdxPost
-    wpPost: WpPost
-  }
-}
-
-export const Head = ({ data: { mdPost, wpPost } }: HeadProps) => {
-  const post = {
-    id: mdPost?.id || wpPost?.id,
-    title: mdPost?.frontmatter.title || wpPost?.title,
-    slug: mdPost?.fields.slug || wpPost?.slug,
-    excerpt: mdPost?.excerpt || wpPost?.excerpt,
-  }
-  return (
-    <Seo
-      title={post.title}
-      description={post.excerpt}
-    />
-  )
-}
-
 export default BlogPostTemplate
 
 export const pageQuery = graphql`
@@ -312,6 +242,23 @@ export const pageQuery = graphql`
     }
   }
 `
+
+export const Head = ({
+                       data: { allFile, mdx, wpPost },
+                       location
+                     }: BlogPostTemplateProps) => {
+  const post = mergePost(mdx, wpPost, allFile)
+  return (
+    <Seo
+      title={post.title}
+      description={post.excerpt}
+      location={location}
+      imagePath={post.gatsbyImage ? post.gatsbyImage.images.fallback?.src : null}
+      post={post}
+    />
+  )
+}
+
 const Article = styled.article`
   max-width: 960px;
   margin: 0 auto;

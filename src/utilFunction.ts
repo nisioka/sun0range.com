@@ -1,13 +1,13 @@
 import { getImage, IGatsbyImageData } from "gatsby-plugin-image"
 
-function mergePosts(allMdx: AllMdx, allWpPost: AllWpPost, allFile?: AllFile) {
+export function mergePosts(allMdx: AllMdx, allWpPost: AllWpPost, allFile?: AllFile) {
   let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
   allFile && allFile.edges.forEach(node => {
     allFeaturedImages[node.node.relativePath] = node.node.childImageSharp.gatsbyImageData
   })
   const mdxPosts = allMdx.nodes
   const wpPosts = allWpPost.nodes
-  const posts = mdxPosts.map(post => {
+  return mdxPosts.map(post => {
     const mdx: CommonPost = {
       title: post.frontmatter.title,
       excerpt: post.excerpt,
@@ -28,8 +28,22 @@ function mergePosts(allMdx: AllMdx, allWpPost: AllWpPost, allFile?: AllFile) {
       gatsbyImage: post.featuredImage?.node.gatsbyImage || getImage(allFeaturedImages["featured/defaultThumbnail.png"])
     }
   })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) as CommonPost[]
-
-  return posts
 }
 
-export default mergePosts
+export function mergePost(mdx?: MdxPost, wpPost?: WpPost, allFile?: AllFile) {
+  let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
+  allFile && allFile.edges.forEach(node => {
+    allFeaturedImages[node.node.relativePath] = node.node.childImageSharp.gatsbyImageData
+  })
+  return {
+    title: mdx?.frontmatter.title || wpPost?.title,
+    excerpt: mdx?.excerpt || wpPost?.excerpt,
+    slug: mdx?.fields.slug || "/" + wpPost?.slug,
+    date: mdx?.frontmatter.date || wpPost?.date,
+    description: mdx?.frontmatter.description || "",
+    altText: mdx?.frontmatter.featuredImagePath || wpPost?.featuredImage?.node.altText || "",
+    gatsbyImage: getImage(allFeaturedImages[mdx?.frontmatter.featuredImagePath || "featured/defaultThumbnail.webp"])
+      || wpPost?.featuredImage?.node.gatsbyImage
+      || getImage(allFeaturedImages["featured/defaultThumbnail.webp"])
+  } as CommonPost
+}

@@ -4,7 +4,7 @@ import { Link, graphql } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
-import mergePosts from "../utilFunction"
+import { mergePosts } from "../utilFunction"
 import { ContentsOrderedListWrapper } from "../style"
 import Pagination from "../components/pagination"
 
@@ -84,7 +84,7 @@ export default BlogIndex
  *
  * See: https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
  */
-export const Head = () => <Seo title="All posts" />
+export const Head = ({ location }: BlogIndexProps) => <Seo title="" location={location}/>
 
 export const pageQuery = graphql`
   {

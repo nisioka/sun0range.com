@@ -7,6 +7,7 @@ import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
 import styled from "styled-components"
 import { mergePost } from "../utilFunction"
 import RelatedList from "../components/related-list"
+import TagCloud from "../components/tag-cloud"
 
 type BlogPostTemplateProps = {
   data: {
@@ -107,6 +108,7 @@ const BlogPostTemplate = ({
             return <dd key={`tag${index}`}><Link to={`/tag/${tag}/`}>{tag}</Link></dd>
           })}
         </Dl>
+        <TagCloud></TagCloud>
 
         <BlogEntry>
           {children ||  // MDX or Wordpress content

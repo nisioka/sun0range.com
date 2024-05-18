@@ -27,7 +27,7 @@ const PageList = ({ pageContext, data, location }: {pageContext: PageContext, da
                 className="post-list-item"
                 itemType="http://schema.org/Article"
               >
-                <Link to={post.slug} className="hoge">
+                <Link to={post.slug}>
                   <h2>
                     <span>{post.title}</span>
                   </h2>

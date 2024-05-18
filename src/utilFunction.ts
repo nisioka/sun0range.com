@@ -15,7 +15,9 @@ export function mergePosts(allMdx: AllMdx, allWpPost: AllWpPost, allFile?: AllFi
       date: post.frontmatter.date,
       description: post.frontmatter.description,
       altText: post.frontmatter.featuredImagePath,
-      gatsbyImage: getImage(allFeaturedImages[post.frontmatter.featuredImagePath || "featured/defaultThumbnail.png"])
+      gatsbyImage: getImage(allFeaturedImages[post.frontmatter.featuredImagePath || "featured/defaultThumbnail.png"]),
+      category: post.frontmatter.category || "",
+      tags: post.frontmatter.tags || []
     }
     return mdx
   }).concat(wpPosts.map(post => {
@@ -25,7 +27,9 @@ export function mergePosts(allMdx: AllMdx, allWpPost: AllWpPost, allFile?: AllFi
       slug: "/" + post.slug,
       date: post.date,
       altText: post.featuredImage?.node.altText || "",
-      gatsbyImage: post.featuredImage?.node.gatsbyImage || getImage(allFeaturedImages["featured/defaultThumbnail.png"])
+      gatsbyImage: post.featuredImage?.node.gatsbyImage || getImage(allFeaturedImages["featured/defaultThumbnail.png"]),
+      category: post.categories?.nodes[0]?.name || "",
+      tags: post.tags?.nodes.map(t => t.name) || []
     }
   })).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()) as CommonPost[]
 }

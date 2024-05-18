@@ -16,33 +16,11 @@ type SiteMetadata = {
 };
 
 type AllMdx = {
-  nodes: {
-    excerpt: string
-    fields: {
-      slug: string
-    }
-    frontmatter: {
-      title: string
-      date: string
-      description: string
-      featuredImagePath: string
-    }
-  }[]
+  nodes: MdxPost[]
 }
 
 type AllWpPost = {
-  nodes: {
-    title: string
-    excerpt: string
-    slug: string
-    date: string
-    featuredImage: {
-      node: {
-        altText: string
-        gatsbyImage: IGatsbyImageData | null
-      }
-    }
-  }[]
+  nodes: WpPost[]
 }
 
 type AllFile = {
@@ -64,6 +42,8 @@ type CommonPost = {
   description?: string
   altText: string
   gatsbyImage: IGatsbyImageData | undefined
+  category: string
+  tags: string[]
 }
 
 type MdxPost = {

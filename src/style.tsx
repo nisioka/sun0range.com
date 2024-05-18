@@ -3,7 +3,7 @@ import styled from "styled-components"
 export const ContentsListHeader = styled.header`
   text-align: center;
 
-  h1 {
+  h1, h2 {
     &:after {
       margin: 0 auto;
       content: '';

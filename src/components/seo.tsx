@@ -116,7 +116,7 @@ const Seo = ({ title, description, location, imagePath, post, children }: SeoPro
       <meta property="og:type" content={`${isRootPath ? "website" : "webpage"}`} />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:creator" content={siteMetadata.social.twitter} />
-      <meta name="twitter:title" content={title} />
+      <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={metaDescription} />
       {children}
     </>

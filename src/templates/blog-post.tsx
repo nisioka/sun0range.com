@@ -6,6 +6,7 @@ import Seo from "../components/seo"
 import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
 import styled from "styled-components"
 import { mergePost } from "../utilFunction"
+import RelatedList from "../components/related-list"
 
 type BlogPostTemplateProps = {
   data: {
@@ -145,6 +146,8 @@ const BlogPostTemplate = ({
           </li>
         </ul>
       </BlogPostNav>
+
+      <RelatedList slug={post.slug} category={post.category} tags={post.tags} />
     </Layout>
   )
 }

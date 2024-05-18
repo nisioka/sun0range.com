@@ -85,18 +85,23 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
       }
     `
   )
-  const shuffle = (array: CommonPost[]) => array.sort(() => Math.random() - 0.5);
-  const posts = shuffle(mergePosts(allMdx, allWpPost, allFile).filter(post => {
+
+  // 関連度計算。
+  const posts = mergePosts(allMdx, allWpPost, allFile).map(post => {
+    let point = 0
     if (post.slug !== slug) {
       // カテゴリの一致出力
-      if (post.category === category) return true
+      if (post.category === category) point++;
       // タグの一致出力。記事のタグの中に一致するものがあればtrueを返す。
       for (const tag of tags) {
-        if (post.tags.includes(tag)) return true
+        if (post.tags.includes(tag)) point += 2;
       }
     }
-    return false
-  })).slice(0, 6).sort((a, b) => a.date < b.date ? 1 : -1)
+    return { post: post, relevance: point }
+  })
+  .filter(r => r.relevance >= 2)
+  .sort((a, b) => a.relevance = b.relevance ? (a.post.date < b.post.date ? 1 : -1) : b.relevance - a.relevance)
+  .slice(0, 6).map(r => r.post)
 
   if (!posts) return <></>
 

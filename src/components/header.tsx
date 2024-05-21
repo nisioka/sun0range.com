@@ -52,6 +52,7 @@ export default Header
 
 const HeaderWrapper = styled.header`
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  background-color: #fff;
 
   .global-header {
     height: 40px;

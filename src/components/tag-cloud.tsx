@@ -1,7 +1,6 @@
 import * as React from "react"
 
 import { Link, useStaticQuery, graphql } from "gatsby"
-import { mergePosts } from "../utilFunction"
 import styled from "styled-components"
 
 const TagCloud = () => {
@@ -52,6 +51,7 @@ const TagCloud = () => {
 
   return (
     <TagCloudList>
+      <h5>タグクラウド</h5>
       {tagsView.map(tag => {
         let size
         if (tag.count > largeBoundary) {
@@ -77,7 +77,7 @@ export default TagCloud
 
 const TagCloudList = styled.ul`
   list-style: none;
-  background: #eee;
+  background-color: #fff;
 
   li {
     display: inline-block;

@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { graphql, Link } from "gatsby"
 import { PageContext } from "gatsby/internal"
-import { mergePost, mergePosts } from "../utilFunction"
+import { mergePosts } from "../utilFunction"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
@@ -16,7 +16,6 @@ const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext
   if (posts.length === 0) {
     return (
       <Layout location={location}>
-        <Seo title={title} location={location} />
         <p>
           そのカテゴリーの記事はありません。
         </p>

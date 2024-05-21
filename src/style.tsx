@@ -30,6 +30,7 @@ export const ContentsOrderedListWrapper = styled.ol`
     box-sizing: border-box;
     border: 1px solid var(--black);
     border-radius: 5px;
+    background-color: #fff;
 
     a {
       color: var(--black);
@@ -44,7 +45,7 @@ export const ContentsOrderedListWrapper = styled.ol`
     float: left;
   }
 
-  @media screen and (min-width: 512px) {
+  @media screen and (min-width: calc(512px + 160px)) {
     column-count: 2;
 
     li {
@@ -62,11 +63,16 @@ export const ContentsOrderedListWrapper = styled.ol`
       }
     }
   }
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: calc(768px + 330px)) {
     column-count: 3;
 
     li {
       width: 32%;
     }
   }
+`
+
+
+export const NormalAreaWrapper = styled.div`
+  background-color: #fff;
 `

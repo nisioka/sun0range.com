@@ -29,13 +29,13 @@ const Layout = ({ location, children }: LayoutProps) => {
         <TagCloud />
       </div>
       <div className="grid-ad1">
-        <GoogleAdsense />
+        {/*<GoogleAdsense />*/}
       </div>
       <div className="girid-author">
-        <NormalAreaWrapper>
-          <h5><a className="twitter-timeline" href="https://twitter.com/nisioka55?ref_src=twsrc%5Etfw" target="_blank">Post by nisioka55</a></h5>
-          <script async src="https://platform.twitter.com/widgets.js"></script>
-        </NormalAreaWrapper>
+        {/*<NormalAreaWrapper>*/}
+        {/*  <h5><a className="twitter-timeline" href="https://twitter.com/nisioka55?ref_src=twsrc%5Etfw" target="_blank">Post by nisioka55</a></h5>*/}
+        {/*  <script async src="https://platform.twitter.com/widgets.js"></script>*/}
+        {/*</NormalAreaWrapper>*/}
       </div>
       <div className="grid-footer">
         <Footer />

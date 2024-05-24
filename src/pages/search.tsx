@@ -62,7 +62,7 @@ const Search = ({ data, location }: {data: any, location: Location}) => {
         </div>
         <ContentsListHeader>
           <h1>サイト内検索</h1>
-          <p>{posts.length} 記事あります</p>
+          <p>{filteredData.length} 記事あります</p>
         </ContentsListHeader>
         <ContentsOrderedListWrapper>
           {filteredData.map(post => {

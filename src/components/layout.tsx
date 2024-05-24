@@ -2,7 +2,6 @@ import * as React from "react"
 import Header from "./header";
 import Footer from "./footer";
 import TagCloud from "./tag-cloud"
-import SearchInSite from "./search-in-site"
 import GoogleAdsense from "./google-adsense"
 import CategoryAll from "./category-all"
 import { NormalAreaWrapper } from "../style"
@@ -28,9 +27,6 @@ const Layout = ({ location, children }: LayoutProps) => {
       </div>
       <div className="grid-tag">
         <TagCloud />
-      </div>
-      <div className="grid-search">
-        <SearchInSite />
       </div>
       <div className="grid-ad1">
         <GoogleAdsense />

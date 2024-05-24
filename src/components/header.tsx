@@ -2,6 +2,8 @@ import * as React from "react"
 import config from "../../gatsby-config";
 import {Link} from "gatsby";
 import styled from "styled-components"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
+import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
 
 const Header = ({location}: { location: Location }) => {
   const rootPath = `${__PATH_PREFIX__}/`
@@ -30,6 +32,7 @@ const Header = ({location}: { location: Location }) => {
               <li><Link to="/category/event-report">イベントレポート</Link></li>
               <li><Link to="/category/life">生活</Link></li>
               <li><Link to="/category/glossary">用語集</Link></li>
+              <li><Link to="/search"><FontAwesomeIcon icon={faMagnifyingGlass}/>検索</Link></li>
               <li><Link to="/management/how-about-this-blog">このブログについて</Link></li>
             </ul>
           </nav>
@@ -40,6 +43,7 @@ const Header = ({location}: { location: Location }) => {
               <li><Link to="/category/event-report">イベントレポート</Link></li>
               <li><Link to="/category/life">生活</Link></li>
               <li><Link to="/category/glossary">用語集</Link></li>
+              <li><Link to="/search"><FontAwesomeIcon icon={faMagnifyingGlass} />検索</Link></li>
               <li><Link to="/management/how-about-this-blog">このブログについて</Link></li>
               <li className="close" onClick={handleClick}><span>閉じる</span></li>
             </ul>

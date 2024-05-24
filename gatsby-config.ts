@@ -47,6 +47,7 @@ const siteMetadata: SiteMetadata = {
  */
 const config: GatsbyConfig = {
   siteMetadata: siteMetadata,
+  trailingSlash: "never",
   plugins: [
     {
       resolve: `gatsby-plugin-google-gtag`,

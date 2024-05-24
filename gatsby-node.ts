@@ -7,6 +7,7 @@
 import path from "path"
 import { GatsbyNode } from "gatsby"
 import { createFilePath } from "gatsby-source-filesystem"
+import { convertCategory } from "./src/utilFunction"
 
 // Define the template for blog post
 const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
@@ -21,39 +22,8 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
   const { createPage } = actions
 
   type AllPost = {
-    allMdx: {
-      nodes: {
-        id: string
-        fields: {
-          slug: string
-        }
-        internal: {
-          contentFilePath: string
-        }
-        frontmatter: {
-          featuredImagePath: string
-          nodeType: string
-          category: string
-          tags: string[]
-        }
-      }[]
-    }
-    allWpPost: {
-      nodes: {
-        id: string
-        slug: string
-        categories: {
-          nodes: {
-            name: string
-          }[]
-        }
-        tags: {
-          nodes: {
-            name: string
-          }[]
-        }
-      }[]
-    }
+    allMdx: AllMdx
+    allWpPost: AllWpPost
   }
 
   // Get all markdown blog posts sorted by date
@@ -115,7 +85,7 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
   const posts = result.data?.allMdx.nodes.map(post => {
     const mdx: Post = {
       id: post.id,
-      slug: post.fields.slug,
+      slug: post.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
       component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`,
       featuredImagePath: post.frontmatter.featuredImagePath,
       category: post.frontmatter.category,
@@ -143,7 +113,7 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
       const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id
 
       createPage({
-        path: post.slug,
+        path: `/${convertCategory(post.category)}/${post.slug}`,
         component: post.component,
         context: {
           id: post.id,
@@ -177,7 +147,7 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
     // カテゴリ分ページを作成
     categories.forEach(category => {
       createPage({
-        path: `/category/${category}/`,
+        path: `/category/${convertCategory(category)}`,
         component: categoryList,
         context: {
           category
@@ -195,7 +165,7 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
     // tag分ページを作成
     tags.forEach(tag => {
       createPage({
-        path: `/tag/${tag}/`,
+        path: `/tag/${tag}`,
         component: tagList,
         context: {
           tag

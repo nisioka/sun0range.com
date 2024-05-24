@@ -5,7 +5,7 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
 import styled from "styled-components"
-import { mergePost } from "../utilFunction"
+import { convertCategory, mergePost } from "../utilFunction"
 import RelatedList from "../components/related-list"
 
 type BlogPostTemplateProps = {
@@ -99,7 +99,7 @@ const BlogPostTemplate = ({
         </div>
         <Dl>
           <dt>カテゴリ</dt>
-          <dd><Link to={`/category/${post.category}`}>{post.category}</Link></dd>
+          <dd><Link to={`/category/${convertCategory(post.category)}`}>{post.category}</Link></dd>
         </Dl>
         <Dl>
           <dt>タグ</dt>

@@ -4,7 +4,7 @@ import { Link, graphql } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
-import { mergePosts } from "../utilFunction"
+import { convertCategory, mergePosts } from "../utilFunction"
 import { ContentsOrderedListWrapper } from "../style"
 import Pagination from "../components/pagination"
 
@@ -46,7 +46,7 @@ const BlogIndex = ({ data, location }: BlogIndexProps) => {
                 className="post-list-item"
                 itemType="https://schema.org/Article"
               >
-                <Link to={post.slug} itemProp="url">
+                <Link to={`/${convertCategory(post.category)}/${post.slug}`} itemProp="url">
                   <h2>
                     <span itemProp="headline">{post.title}</span>
                   </h2>
@@ -118,6 +118,7 @@ export const pageQuery = graphql`
           date(formatString: "YYYY/MM/DD")
           description
           featuredImagePath
+          category
         }
       }
     }
@@ -136,6 +137,11 @@ export const pageQuery = graphql`
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED
             )
+          }
+        }
+        categories {
+          nodes {
+            name
           }
         }
       }

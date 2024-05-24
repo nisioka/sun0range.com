@@ -50,6 +50,9 @@ type MdxPost = {
   id: string
   excerpt: string
   body: string
+  internal: {
+    contentFilePath: string
+  }
   fields: {
     slug: string
   }

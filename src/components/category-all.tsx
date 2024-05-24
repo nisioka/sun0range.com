@@ -1,7 +1,8 @@
 import * as React from "react"
 
-import { Link, useStaticQuery, graphql } from "gatsby"
+import { Link } from "gatsby"
 import styled from "styled-components"
+import { convertCategory } from "../utilFunction"
 
 const CategoryAll = () => {
 
@@ -20,7 +21,7 @@ const CategoryAll = () => {
       <ul>
       {all.map((category, index) => (
         <li key={index}>
-          <Link to={`/category/${category}`}>
+          <Link to={`/category/${convertCategory(category)}`}>
             {category}
           </Link>
         </li>

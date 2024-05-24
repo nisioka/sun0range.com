@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { graphql, Link } from "gatsby"
 import { PageContext } from "gatsby/internal"
-import { mergePosts } from "../utilFunction"
+import { convertCategory, mergePosts } from "../utilFunction"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
@@ -37,7 +37,7 @@ const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext
                 className="post-list-item"
                 itemType="http://schema.org/Article"
               >
-                <Link to={post.slug}>
+                <Link to={`/${convertCategory(categoryName)}/${post.slug}`}>
                   <h2>
                     <span>{post.title}</span>
                   </h2>

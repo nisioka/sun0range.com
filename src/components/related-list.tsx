@@ -1,7 +1,7 @@
 import * as React from "react"
 import { Link, useStaticQuery, graphql } from "gatsby"
 
-import { mergePosts } from "../utilFunction"
+import { convertCategory, mergePosts } from "../utilFunction"
 import { GatsbyImage } from "gatsby-plugin-image"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 
@@ -115,7 +115,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
           return (
             <li key={post.slug}>
               <article>
-                <Link to={post.slug}>
+                <Link to={`/${convertCategory(post.category)}/${post.slug}`}>
                   <h2>
                     <span>{post.title}</span>
                   </h2>

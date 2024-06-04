@@ -172,7 +172,7 @@ export const pageQuery = graphql`
         node {
           childImageSharp {
             gatsbyImageData(
-              width: 960
+              height: 320
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED
             )
@@ -224,7 +224,7 @@ export const pageQuery = graphql`
       featuredImage{
         node{
           altText
-          gatsbyImage(width: 960)
+          gatsbyImage(height: 320)
         }
       }
       categories{

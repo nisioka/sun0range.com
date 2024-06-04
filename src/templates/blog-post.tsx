@@ -5,7 +5,7 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
 import styled from "styled-components"
-import { convertCategory, mergePost } from "../utilFunction"
+import { convertCategory, mergePost, removeHtmlTags } from "../utilFunction"
 import RelatedList from "../components/related-list"
 
 type BlogPostTemplateProps = {
@@ -54,9 +54,10 @@ const BlogPostTemplate = ({
     id: mdx?.id || wpPost?.id,
     title: mdx?.frontmatter.title || wpPost?.title,
     body: mdx?.body || wpPost?.content,
-    excerpt: mdx?.excerpt || wpPost?.excerpt,
+    excerpt: removeHtmlTags(mdx?.excerpt || wpPost?.excerpt),
     slug: mdx?.fields.slug || "/" + wpPost?.slug,
     date: mdx?.frontmatter.date || wpPost?.date,
+    dateModified: mdx?.frontmatter.dateModified || wpPost?.modified,
     description: mdx?.frontmatter.description,
     altText: wpPost?.featuredImage?.node.altText || "",
     gatsbyImage: wpPost?.featuredImage?.node.gatsbyImage || getImage(allFile.edges[0]?.node.childImageSharp),
@@ -189,6 +190,7 @@ export const pageQuery = graphql`
       frontmatter {
         title
         date(formatString: "YYYY/MM/DD")
+        dateModified(formatString: "YYYY/MM/DD")
         description
         category
         tags
@@ -218,6 +220,7 @@ export const pageQuery = graphql`
       excerpt
       slug
       date(formatString: "YYYY/MM/DD")
+      modified(formatString: "YYYY/MM/DD")
       featuredImage{
         node{
           altText

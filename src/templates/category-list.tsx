@@ -43,7 +43,7 @@ const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext
                   </h2>
                   <section>
                     <div><small>
-                      <time>{post.date}</time>
+                      <time>{post.dateModified}</time>
                     </small></div>
                     <div className="thumbnail">
                       {typeof post.gatsbyImage === "undefined" ||
@@ -80,7 +80,6 @@ export const Head = ({ pageContext, location }: {pageContext: PageContext, locat
 export const pageQuery = graphql`
   query( $category: String) {
     allMdx(
-      sort: { frontmatter: { date: DESC } }
       filter: { frontmatter: { category: { eq: $category } } }
     ) {
       nodes {
@@ -91,13 +90,13 @@ export const pageQuery = graphql`
         frontmatter {
           title
           date(formatString: "YYYY/MM/DD")
+          dateModified(formatString: "YYYY/MM/DD")
           description
           featuredImagePath
         }
       }
     }
     allWpPost(
-      sort: { date: DESC }
       filter: { categories: { nodes: { elemMatch: { name: { eq: $category } } } } }
     ) {
       nodes {
@@ -105,6 +104,7 @@ export const pageQuery = graphql`
         excerpt
         slug
         date(formatString: "YYYY/MM/DD")
+        modified(formatString: "YYYY/MM/DD")
         featuredImage{
           node{
             altText

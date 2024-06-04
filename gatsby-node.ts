@@ -26,10 +26,9 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
     allWpPost: AllWpPost
   }
 
-  // Get all markdown blog posts sorted by date
   const result = await graphql<AllPost>(`
     {
-      allMdx(sort: { frontmatter: { date: DESC } }, limit: 1000) {
+      allMdx {
         nodes {
           id
           fields {
@@ -46,7 +45,7 @@ export const createPages: GatsbyNode['createPages'] = async ({ graphql, actions,
           }
         }
       }
-      allWpPost(sort: { date: DESC }) {
+      allWpPost {
         nodes {
           id
           slug
@@ -214,6 +213,7 @@ export const createSchemaCustomization: GatsbyNode['createSchemaCustomization'] 
       title: String
       description: String
       date: Date @dateformat
+      dateModified: Date @dateformat
       nodeType: String
       category: String
       tags: [String]

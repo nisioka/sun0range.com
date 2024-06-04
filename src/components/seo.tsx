@@ -61,8 +61,8 @@ const Seo = ({ title, description, location, imagePath, post, children }: SeoPro
         inLanguage: "ja",
         url: canonicalUrl,
         name: title,
-        author,
-        publisher,
+        author: author,
+        publisher: publisher,
         image: imageUrl,
         description: metaDescription
       }
@@ -78,15 +78,15 @@ const Seo = ({ title, description, location, imagePath, post, children }: SeoPro
           "@type": "ImageObject",
           url: imageUrl,
         },
-        description: post.description,
-        datePublished: post.date,
-        dateModified: post.date, // FIXME
+        description: post.excerpt,
+        datePublished: new Date(post.date),
+        dateModified: new Date(post.dateModified),
         mainEntityOfPage: {
           "@type": "WebPage",
           "@id": canonicalUrl
         },
-        author,
-        publisher
+        author: author,
+        publisher: publisher
       }
       // @ts-ignore
       jsonLd = [...jsonLd, article]

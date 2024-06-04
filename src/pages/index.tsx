@@ -52,7 +52,7 @@ const BlogIndex = ({ data, location }: BlogIndexProps) => {
                   </h2>
                   <section>
                     <div style={{ textAlign: "right" }}><small>
-                      <time>{post.date}</time>
+                      <time>{post.dateModified}</time>
                     </small></div>
                     <div className="thumbnail">
                       {typeof post.gatsbyImage === "undefined" ||
@@ -107,7 +107,7 @@ export const pageQuery = graphql`
         }
       }
     }
-    allMdx(sort: { frontmatter: { date: DESC } }) {
+    allMdx {
       nodes {
         excerpt
         fields {
@@ -116,18 +116,20 @@ export const pageQuery = graphql`
         frontmatter {
           title
           date(formatString: "YYYY/MM/DD")
+          dateModified(formatString: "YYYY/MM/DD")
           description
           featuredImagePath
           category
         }
       }
     }
-    allWpPost(sort: { date: DESC }) {
+    allWpPost {
       nodes {
         title
         excerpt
         slug
         date(formatString: "YYYY/MM/DD")
+        modified(formatString: "YYYY/MM/DD")
         featuredImage{
           node{
             altText

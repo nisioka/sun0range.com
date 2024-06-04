@@ -10,9 +10,10 @@ export function mergePosts(allMdx: AllMdx, allWpPost: AllWpPost, allFile?: AllFi
   return mdxPosts.map(post => {
     const mdx: CommonPost = {
       title: post.frontmatter.title,
-      excerpt: post.excerpt,
+      excerpt: removeHtmlTags(post.excerpt),
       slug: post.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
       date: post.frontmatter.date,
+      dateModified: post.frontmatter.dateModified,
       description: post.frontmatter.description,
       altText: post.frontmatter.featuredImagePath,
       gatsbyImage: getImage(allFeaturedImages[post.frontmatter.featuredImagePath || "featured/defaultThumbnail.png"]),
@@ -23,9 +24,10 @@ export function mergePosts(allMdx: AllMdx, allWpPost: AllWpPost, allFile?: AllFi
   }).concat(wpPosts.map(post => {
     return {
       title: post.title,
-      excerpt: post.excerpt,
+      excerpt: removeHtmlTags(post.excerpt),
       slug: post.slug,
       date: post.date,
+      dateModified: post.modified,
       description: post.content,
       altText: post.featuredImage?.node.altText || "",
       gatsbyImage: post.featuredImage?.node.gatsbyImage || getImage(allFeaturedImages["featured/defaultThumbnail.png"]),
@@ -42,9 +44,10 @@ export function mergePost(mdx?: MdxPost, wpPost?: WpPost, allFile?: AllFile) {
   })
   return {
     title: mdx?.frontmatter.title || wpPost?.title,
-    excerpt: mdx?.excerpt || wpPost?.excerpt,
+    excerpt: removeHtmlTags(mdx?.excerpt || wpPost?.excerpt),
     slug: mdx?.fields.slug || wpPost?.slug,
     date: mdx?.frontmatter.date || wpPost?.date,
+    dateModified: mdx?.frontmatter.dateModified || wpPost?.modified,
     description: mdx?.frontmatter.description || wpPost?.content,
     altText: mdx?.frontmatter.featuredImagePath || wpPost?.featuredImage?.node.altText || "",
     gatsbyImage: getImage(allFeaturedImages[mdx?.frontmatter.featuredImagePath || "featured/defaultThumbnail.webp"])
@@ -64,4 +67,9 @@ const categoryNames: { eng: string, jp: string }[] = [
 
 export function convertCategory(japanese: string) {
   return categoryNames.find(c => c.jp === japanese.replace("/", ""))?.eng || ""
+}
+
+export function removeHtmlTags(str: string | undefined) {
+  if(!str) return "";
+  return str.replace(/<[^a-zA-Z]*\/?>/g, "")
 }

@@ -39,6 +39,7 @@ type CommonPost = {
   excerpt: string
   slug: string
   date: string
+  dateModified: string
   description?: string
   altText: string
   gatsbyImage: IGatsbyImageData | undefined
@@ -59,6 +60,7 @@ type MdxPost = {
   frontmatter: {
     title: string
     date: string
+    dateModified: string
     description: string
     featuredImagePath: string
     category: string
@@ -73,6 +75,7 @@ type WpPost = {
   excerpt: string
   slug: string
   date: string
+  modified: string
   featuredImage: {
     node: {
       altText: string

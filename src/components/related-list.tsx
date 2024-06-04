@@ -14,9 +14,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
   const { allMdx, allWpPost, allFile }: {allMdx: AllMdx, allWpPost: AllWpPost, allFile: AllFile} = useStaticQuery(
     graphql`
       query {
-        allMdx(
-          sort: { frontmatter: { date: DESC } }
-        ) {
+        allMdx {
           nodes {
             excerpt
             fields {
@@ -25,6 +23,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
             frontmatter {
               title
               date(formatString: "YYYY/MM/DD")
+              dateModified(formatString: "YYYY/MM/DD")
               description
               featuredImagePath
               category
@@ -32,14 +31,13 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
             }
           }
         }
-        allWpPost(
-          sort: { date: DESC }
-        ) {
+        allWpPost {
           nodes {
             title
             excerpt
             slug
             date(formatString: "YYYY/MM/DD")
+            modified(formatString: "YYYY/MM/DD")
             featuredImage{
               node{
                 altText
@@ -121,7 +119,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
                   </h2>
                   <section>
                     <div><small>
-                      <time>{post.date}</time>
+                      <time>{post.dateModified}</time>
                     </small></div>
                     <div className="thumbnail">
                       {typeof post.gatsbyImage === "undefined" ||

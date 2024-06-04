@@ -18,7 +18,7 @@ type allMdx = {
   nodes: {
     frontmatter: {
       title: string
-      date: string
+      dateModified: string
     }
     excerpt: string
     fields: {
@@ -130,14 +130,14 @@ const config: GatsbyConfig = {
               return allMdx.nodes.map(node => {
                 return Object.assign({}, node.frontmatter, {
                   description: node.excerpt,
-                  date: node.frontmatter.date,
+                  date: node.frontmatter.dateModified,
                   url: site.siteMetadata.siteUrl + node.fields.slug,
                   guid: site.siteMetadata.siteUrl + node.fields.slug,
                 })
               })
             },
             query: `{
-              allMdx(sort: {frontmatter: {date: DESC}}) {
+              allMdx(sort: {frontmatter: {dateModified: DESC}}) {
                 nodes {
                   excerpt
                   fields {
@@ -145,7 +145,7 @@ const config: GatsbyConfig = {
                   }
                   frontmatter {
                     title
-                    date
+                    dateModified
                   }
                 }
               }

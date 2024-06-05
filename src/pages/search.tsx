@@ -7,7 +7,7 @@ import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 import { GatsbyImage } from "gatsby-plugin-image"
 
 const Search = ({ data, location }: {data: any, location: Location}) => {
-  const posts = mergePosts(data.allMdx, data.allWpPost, data.allFile)
+  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
 
   const [state, setState] = useState({
     filteredData: [] as CommonPost[],
@@ -103,9 +103,9 @@ export default Search
 
 export const pageQuery = graphql`
   query {
-    allMdx {
+    allMarkdownRemark {
       nodes {
-        body
+        html
         fields {
           slug
         }

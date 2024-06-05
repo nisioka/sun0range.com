@@ -10,7 +10,7 @@ import Pagination from "../components/pagination"
 
 type BlogIndexProps = {
   data: {
-    allMdx: AllMdx
+    allMarkdownRemark: AllMarkdownRemark
     allWpPost: AllWpPost
     allFile: AllFile
   }
@@ -19,7 +19,7 @@ type BlogIndexProps = {
 
 const BlogIndex = ({ data, location }: BlogIndexProps) => {
 
-  const posts = mergePosts(data.allMdx, data.allWpPost, data.allFile)
+  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
 
   if (posts.length === 0) {
     return (
@@ -107,7 +107,7 @@ export const pageQuery = graphql`
         }
       }
     }
-    allMdx {
+    allMarkdownRemark {
       nodes {
         excerpt
         fields {

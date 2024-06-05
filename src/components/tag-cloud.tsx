@@ -4,10 +4,10 @@ import { Link, useStaticQuery, graphql } from "gatsby"
 import styled from "styled-components"
 
 const TagCloud = () => {
-  const { allMdx, allWpPost }: {allMdx: AllMdx, allWpPost: AllWpPost} = useStaticQuery(
+  const { allMarkdownRemark, allWpPost }: {allMarkdownRemark: AllMarkdownRemark, allWpPost: AllWpPost} = useStaticQuery(
     graphql`
       query {
-        allMdx {
+        allMarkdownRemark {
           nodes {
             frontmatter {
               tags
@@ -27,7 +27,7 @@ const TagCloud = () => {
     `
   )
 
-  const postTags = allMdx.nodes.map(post => post.frontmatter.tags)
+  const postTags = allMarkdownRemark.nodes.map(post => post.frontmatter.tags)
   .concat(allWpPost.nodes.map(post => post.tags.nodes.map(t => t.name)));
 
   const tagsBase = postTags.reduce((tagCount, post) => {

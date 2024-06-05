@@ -11,7 +11,7 @@ import RelatedList from "../components/related-list"
 type BlogPostTemplateProps = {
   data: {
     allFile: AllFile
-    mdx: MdxPost
+    markdownRemark: MdPost
     mdPrevious: {
       id: string
       fields: {
@@ -43,26 +43,25 @@ type BlogPostTemplateProps = {
     }
   }
   location: Location
-  children: React.ReactNode
 }
 
 const BlogPostTemplate = ({
-  data: { allFile, mdx, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
-  location, children
+  data: { allFile, markdownRemark: md, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
+  location
 }: BlogPostTemplateProps) => {
   const post = {
-    id: mdx?.id || wpPost?.id,
-    title: mdx?.frontmatter.title || wpPost?.title,
-    body: mdx?.body || wpPost?.content,
-    excerpt: removeHtmlTags(mdx?.excerpt || wpPost?.excerpt),
-    slug: mdx?.fields.slug || "/" + wpPost?.slug,
-    date: mdx?.frontmatter.date || wpPost?.date,
-    dateModified: mdx?.frontmatter.dateModified || wpPost?.modified,
-    description: mdx?.frontmatter.description,
+    id: md?.id || wpPost?.id,
+    title: md?.frontmatter.title || wpPost?.title,
+    content: md?.html || wpPost?.content,
+    excerpt: removeHtmlTags(md?.excerpt || wpPost?.excerpt),
+    slug: md?.fields.slug || "/" + wpPost?.slug,
+    date: md?.frontmatter.date || wpPost?.date,
+    dateModified: md?.frontmatter.dateModified || wpPost?.modified,
+    description: md?.frontmatter.description,
     altText: wpPost?.featuredImage?.node.altText || "",
     gatsbyImage: wpPost?.featuredImage?.node.gatsbyImage || getImage(allFile.edges[0]?.node.childImageSharp),
-    category: mdx?.frontmatter.category || wpPost?.categories?.nodes[0]?.name,
-    tags: mdx?.frontmatter.tags || wpPost?.tags?.nodes.map(t => t.name),
+    category: md?.frontmatter.category || wpPost?.categories?.nodes[0]?.name,
+    tags: md?.frontmatter.tags || wpPost?.tags?.nodes.map(t => t.name),
   }
   const previous = {
     id: mdPrevious?.id || wpPrevious?.id,
@@ -110,12 +109,10 @@ const BlogPostTemplate = ({
         </Dl>
 
         <BlogEntry>
-          {children ||  // MDX or Wordpress content
-            <section
-              dangerouslySetInnerHTML={{ __html: post.body }}
-              itemProp="articleBody"
-            />
-          }
+          <section
+            dangerouslySetInnerHTML={{ __html: post.content }}
+            itemProp="articleBody"
+          />
         </BlogEntry>
         <hr />
         <footer>
@@ -180,10 +177,10 @@ export const pageQuery = graphql`
         }
       }
     }
-    mdx(id: { eq: $id }) {
+    markdownRemark(id: { eq: $id }) {
       id
       excerpt
-      body
+      html
       fields {
         slug
       }
@@ -197,7 +194,7 @@ export const pageQuery = graphql`
       }
       
     }
-    mdPrevious: mdx(id: { eq: $previousPostId }) {
+    mdPrevious: markdownRemark(id: { eq: $previousPostId }) {
       fields {
         slug
       }
@@ -205,7 +202,7 @@ export const pageQuery = graphql`
         title
       }
     }
-    mdNext: mdx(id: { eq: $nextPostId }) {
+    mdNext: markdownRemark(id: { eq: $nextPostId }) {
       fields {
         slug
       }
@@ -250,10 +247,10 @@ export const pageQuery = graphql`
 `
 
 export const Head = ({
-                       data: { allFile, mdx, wpPost },
+                       data: { allFile, markdownRemark, wpPost },
                        location
                      }: BlogPostTemplateProps) => {
-  const post = mergePost(mdx, wpPost, allFile)
+  const post = mergePost(markdownRemark, wpPost, allFile)
   return (
     <Seo
       title={post.title}

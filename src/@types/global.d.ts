@@ -15,8 +15,8 @@ type SiteMetadata = {
   }
 };
 
-type AllMdx = {
-  nodes: MdxPost[]
+type AllMarkdownRemark = {
+  nodes: MdPost[]
 }
 
 type AllWpPost = {
@@ -47,10 +47,10 @@ type CommonPost = {
   tags: string[]
 }
 
-type MdxPost = {
+type MdPost = {
   id: string
   excerpt: string
-  body: string
+  html: string
   internal: {
     contentFilePath: string
   }

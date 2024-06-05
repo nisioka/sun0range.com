@@ -10,7 +10,7 @@ import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 
 const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext, data: any, location: Location}) => {
   const tagName = pageContext.tag as string
-  const posts = mergePosts(data.allMdx, data.allWpPost, data.allFile)
+  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
   const title = `【${tagName}】タグ 一覧`
 
   if (posts.length === 0) {
@@ -80,7 +80,7 @@ export const Head = ({ pageContext, location }: {pageContext: PageContext, locat
 
 export const pageQuery = graphql`
   query( $tag: String) {
-    allMdx(
+    allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
       filter: { frontmatter: { tags: { in: [$tag] } } }
     ) {

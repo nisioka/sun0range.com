@@ -11,10 +11,10 @@ type RelatedListProps = {
   tags: string[]
 }
 const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
-  const { allMdx, allWpPost, allFile }: {allMdx: AllMdx, allWpPost: AllWpPost, allFile: AllFile} = useStaticQuery(
+  const { allMarkdownRemark, allWpPost, allFile }: {allMarkdownRemark: AllMarkdownRemark, allWpPost: AllWpPost, allFile: AllFile} = useStaticQuery(
     graphql`
       query {
-        allMdx {
+        allMarkdownRemark {
           nodes {
             excerpt
             fields {
@@ -85,7 +85,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
   )
 
   // 関連度計算。
-  const posts = mergePosts(allMdx, allWpPost, allFile).map(post => {
+  const posts = mergePosts(allMarkdownRemark, allWpPost, allFile).map(post => {
     let point = 0
     if (post.slug !== slug) {
       // カテゴリの一致出力

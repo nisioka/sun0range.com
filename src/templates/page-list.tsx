@@ -10,7 +10,7 @@ import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 import Pagination from "../components/pagination"
 
 const PageList = ({ pageContext, data, location }: {pageContext: PageContext, data: any, location: Location}) => {
-  const posts = mergePosts(data.allMdx, data.allWpPost, data.allFile)
+  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
   const title = `記事一覧`
 
   return (
@@ -69,7 +69,7 @@ export const Head = ({ location }: {location: Location}) => {
 
 export const pageQuery = graphql`
   query( $limit: Int!, $skip: Int!) {
-    allMdx(
+    allMarkdownRemark(
       limit: $limit
       skip: $skip
       sort: { frontmatter: { date: DESC } }

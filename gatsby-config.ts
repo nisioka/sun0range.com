@@ -10,17 +10,18 @@ type feedArgument = {
     site: {
       siteMetadata: SiteMetadata
     }
-    allMdx: allMdx
+    allMarkdownRemark: allMarkdownRemark
   }
 }
 
-type allMdx = {
+type allMarkdownRemark = {
   nodes: {
     frontmatter: {
       title: string
       dateModified: string
     }
     excerpt: string
+    html: string
     fields: {
       slug: string
     }
@@ -87,10 +88,9 @@ const config: GatsbyConfig = {
       },
     },
     {
-      resolve: `gatsby-plugin-mdx`,
+      resolve: `gatsby-transformer-remark`,
       options: {
-        extensions: [`.mdx`, `.md`],
-        gatsbyRemarkPlugins: [
+        plugins: [
           {
             resolve: `gatsby-remark-images`,
             options: {
@@ -104,13 +104,16 @@ const config: GatsbyConfig = {
             },
           },
           `gatsby-remark-prismjs`,
+          {
+            resolve: `gatsby-remark-highlight-code`,
+          },
         ],
       },
     },
     `gatsby-transformer-sharp`,
     `gatsby-plugin-sharp`,
     {
-      resolve: `gatsby-plugin-feed-mdx`,
+      resolve: `gatsby-plugin-feed`,
       options: {
         query: `
           {
@@ -126,20 +129,22 @@ const config: GatsbyConfig = {
         `,
         feeds: [
           {
-            serialize: ({ query: { site, allMdx } }: feedArgument) => {
-              return allMdx.nodes.map(node => {
+            serialize: ({ query: { site, allMarkdownRemark } }: feedArgument) => {
+              return allMarkdownRemark.nodes.map(node => {
                 return Object.assign({}, node.frontmatter, {
                   description: node.excerpt,
                   date: node.frontmatter.dateModified,
                   url: site.siteMetadata.siteUrl + node.fields.slug,
                   guid: site.siteMetadata.siteUrl + node.fields.slug,
+                  custom_elements: [{ "content:encoded": node.html }],
                 })
               })
             },
             query: `{
-              allMdx(sort: {frontmatter: {dateModified: DESC}}) {
+              allMarkdownRemark(sort: {frontmatter: {dateModified: DESC}}) {
                 nodes {
                   excerpt
+                  html
                   fields {
                     slug
                   }
@@ -193,6 +198,12 @@ const config: GatsbyConfig = {
         develop: {
           hardCacheMediaFiles: true,
         },
+        gatsbyRemarkPlugins: [
+          `gatsby-remark-prismjs`,
+          {
+            resolve: `gatsby-remark-highlight-code`,
+          },
+        ],
       },
     },
     {
@@ -204,7 +215,17 @@ const config: GatsbyConfig = {
         // ignore: ['/ignored.css', 'prismjs/', 'docsearch.js/'], // Ignore files/folders
         // purgeOnly : ['components/', '/main.css', 'bootstrap/'], // Purge only these files/folders
       }
-    }
+    },
+    {
+      resolve: `gatsby-transformer-remark`,
+      options: {
+        plugins: [
+          {
+            resolve: `gatsby-remark-highlight-code`,
+          },
+        ],
+      },
+    },
   ],
 }
 export default config

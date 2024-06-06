@@ -3,10 +3,13 @@ import { Link, graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { GatsbyImage, getImage, IGatsbyImageData } from "gatsby-plugin-image"
+import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import styled from "styled-components"
 import { convertCategory, mergePost, removeHtmlTags } from "../utilFunction"
 import RelatedList from "../components/related-list"
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import parse, { domToReact } from "html-react-parser"
+import { ghcolors } from "react-syntax-highlighter/dist/cjs/styles/prism"
 
 type BlogPostTemplateProps = {
   data: {
@@ -19,6 +22,7 @@ type BlogPostTemplateProps = {
       }
       frontmatter: {
         title: string
+        category: string
       }
     }
     mdNext: {
@@ -28,6 +32,7 @@ type BlogPostTemplateProps = {
       }
       frontmatter: {
         title: string
+        category: string
       }
     }
     wpPost: WpPost
@@ -35,11 +40,21 @@ type BlogPostTemplateProps = {
       id: string
       title: string
       slug: string
+      categories: {
+        nodes: {
+          name: string
+        }[]
+      }
     }
     wpNext: {
       id: string
       title: string
       slug: string
+      categories: {
+        nodes: {
+          name: string
+        }[]
+      }
     }
   }
   location: Location
@@ -54,7 +69,8 @@ const BlogPostTemplate = ({
     title: md?.frontmatter.title || wpPost?.title,
     content: md?.html || wpPost?.content,
     excerpt: removeHtmlTags(md?.excerpt || wpPost?.excerpt),
-    slug: md?.fields.slug || "/" + wpPost?.slug,
+    slug: md?.fields.slug.replace(/^\//, "").replace(/\/$/, "")
+      || "/" + wpPost?.slug,
     date: md?.frontmatter.date || wpPost?.date,
     dateModified: md?.frontmatter.dateModified || wpPost?.modified,
     description: md?.frontmatter.description,
@@ -66,12 +82,14 @@ const BlogPostTemplate = ({
   const previous = {
     id: mdPrevious?.id || wpPrevious?.id,
     title: mdPrevious?.frontmatter.title || wpPrevious?.title,
-    slug: mdPrevious?.fields.slug || "/" + wpPrevious?.slug,
+    slug: mdPrevious?.fields.slug.replace(/^\//, "").replace(/\/$/, "") || wpPrevious?.slug,
+    category: mdPrevious?.frontmatter.category || wpPrevious?.categories.nodes[0].name
   }
   const next = {
     id: mdNext?.id || wpNext?.id,
     title: mdNext?.frontmatter.title || wpNext?.title,
-    slug: mdNext?.fields.slug || "/" + wpNext?.slug,
+    slug: mdNext?.fields.slug.replace(/^\//, "").replace(/\/$/, "") || wpNext?.slug,
+    category: mdNext?.frontmatter.category || wpNext?.categories?.nodes[0]?.name
   }
 
   return (
@@ -109,10 +127,9 @@ const BlogPostTemplate = ({
         </Dl>
 
         <BlogEntry>
-          <section
-            dangerouslySetInnerHTML={{ __html: post.content }}
-            itemProp="articleBody"
-          />
+          <section itemProp="articleBody">
+            {parse(post.content, {replace: replaceCode})}
+          </section>
         </BlogEntry>
         <hr />
         <footer>
@@ -129,15 +146,15 @@ const BlogPostTemplate = ({
           }}
         >
           <li>
-            {previous && (
-              <Link to={previous.slug} rel="prev">
+            {previous.slug && (
+              <Link to={`/${convertCategory(previous.category)}/${previous.slug}`} rel="prev">
                 ← {previous.title}
               </Link>
             )}
           </li>
           <li>
-            {next && (
-              <Link to={next.slug} rel="next">
+            {next.slug && (
+              <Link to={`/${convertCategory(next.category)}/${next.slug}`} rel="next">
                 {next.title} →
               </Link>
             )}
@@ -200,6 +217,7 @@ export const pageQuery = graphql`
       }
       frontmatter {
         title
+        category
       }
     }
     mdNext: markdownRemark(id: { eq: $nextPostId }) {
@@ -208,6 +226,7 @@ export const pageQuery = graphql`
       }
       frontmatter {
         title
+        category
       }
     }
     wpPost(id: { eq: $id }) {
@@ -238,10 +257,20 @@ export const pageQuery = graphql`
     wpPrevious: wpPost(id: { eq: $previousPostId }) {
       title
       slug
+      categories{
+        nodes{
+          name
+        }
+      }
     }
     wpNext: wpPost(id: { eq: $nextPostId }) {
       title
       slug
+      categories{
+        nodes{
+          name
+        }
+      }
     }
   }
 `
@@ -262,8 +291,65 @@ export const Head = ({
   )
 }
 
+const replaceCode = (node: any) => {
+  if(!node) return node;
+  if (node.name === 'pre') {
+    const dom = domToReact(getCode(node))
+    let result = "";
+    switch (typeof dom) {
+      case 'string':
+        result = dom as string
+        break;
+      case 'object':
+        if(Array.isArray(dom)) {
+          // React.JSX.Element[]
+          const elmArr = dom as React.JSX.Element[];
+          elmArr.map(elm => {
+            if (elm.props && elm.props.children) {
+              result += (elm.props.children as string);
+            }
+          })
+        } else {
+          // React.JSX.Element
+          const elm = dom as React.JSX.Element;
+          if (elm.props && elm.props.children) {
+            result = (elm.props.children as string);
+          }
+        }
+        break;
+    }
+
+    return node.children.length > 0 &&
+      <SyntaxHighlight language={getLanguage(node)}>
+        {result}
+      </SyntaxHighlight>;
+  }
+};
+
+const SyntaxHighlight = ({language, children }: { language: string, children: string }) => (
+  <SyntaxHighlighter style={ghcolors} language={language} showLineNumbers={true}>
+    {children}
+  </SyntaxHighlighter>
+);
+
+const getLanguage = (node: any) => {
+  if (node.attribs.class && node.attribs.class !== "wp-block-code") {
+    return (node.attribs.class as string).replace("language-", "");
+  } else if (node.children[0]?.attribs?.class) {
+    return (node.children[0].attribs.class as string).replace("language-", "");
+  }
+  return "java"; // default
+};
+
+const getCode = (node: any) => {
+  if (node.children.length > 0 && node.children[0].name === 'code') {
+    return node.children[0].children;
+  } else {
+    return node.children;
+  }
+};
+
 const Article = styled.article`
-  max-width: 960px;
   margin: 0 auto;
   background-color: #fff;
 
@@ -281,7 +367,6 @@ const BlogEntry = styled.div`
   border-bottom: 1px solid #ccc;
 `
 const BlogPostNav = styled.nav`
-  max-width: 750px;
   margin: 0 auto;
 
   ul {

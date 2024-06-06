@@ -122,7 +122,6 @@ export const Head = ({ location }: { location: Location }) => <Seo title={"ã“ã
 export default HowAboutThisBlog
 
 const Article = styled.article`
-  max-width: 960px;
   margin: 0 auto;
   background-color: #fff;
 

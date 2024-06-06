@@ -8,7 +8,6 @@
     "url": "https://github.com/gatsbyjs/gatsby/issues"
   },
   "dependencies": {
-    "@deckdeckgo/highlight-code": "^4.4.0",
     "@fontsource-variable/montserrat": "^5.0.17",
     "@fontsource/merriweather": "^5.0.8",
     "@fortawesome/fontawesome-svg-core": "^6.5.2",
@@ -31,9 +30,11 @@
     "gatsby-source-wordpress": "^7.13.4",
     "gatsby-transformer-remark": "^6.13.1",
     "gatsby-transformer-sharp": "^5.13.1",
+    "html-react-parser": "^5.1.10",
     "prismjs": "^1.29.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
+    "react-syntax-highlighter": "^15.5.0",
     "styled-components": "^6.1.8",
     "webpack-dev-middleware": "^7.2.1"
   },
@@ -41,6 +42,7 @@
     "@types/node": "^20.12.7",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
     "prettier": "^2.8.8",
     "typescript": "^4.5.4"
   },

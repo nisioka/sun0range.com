@@ -60,9 +60,7 @@ const BlogIndex = ({ data, location }: BlogIndexProps) => {
                       }
                     </div>
                     <p
-                      dangerouslySetInnerHTML={{
-                        __html: post.excerpt
-                      }}
+                      dangerouslySetInnerHTML={{ __html: post.excerpt }}
                       itemProp="description"
                     />
                   </section>

@@ -3,14 +3,12 @@ import Header from "./header";
 import Footer from "./footer";
 import TagCloud from "./tag-cloud"
 import CategoryAll from "./category-all"
-import { defineCustomElements  } from "@deckdeckgo/highlight-code/dist/loader";
 
 type LayoutProps = {
   location: Location
   children: React.ReactNode
 }
 const Layout = ({ location, children }: LayoutProps) => {
-  defineCustomElements();
   const rootPath = `${__PATH_PREFIX__}/`
   const isRootPath = location.pathname === rootPath
 

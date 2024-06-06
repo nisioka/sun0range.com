@@ -103,10 +103,6 @@ const config: GatsbyConfig = {
               wrapperStyle: `margin-bottom: 1.0725rem`,
             },
           },
-          `gatsby-remark-prismjs`,
-          {
-            resolve: `gatsby-remark-highlight-code`,
-          },
         ],
       },
     },
@@ -198,12 +194,9 @@ const config: GatsbyConfig = {
         develop: {
           hardCacheMediaFiles: true,
         },
-        gatsbyRemarkPlugins: [
-          `gatsby-remark-prismjs`,
-          {
-            resolve: `gatsby-remark-highlight-code`,
-          },
-        ],
+        html: {
+          placeholderType: `blurred`,
+        }
       },
     },
     {
@@ -215,16 +208,6 @@ const config: GatsbyConfig = {
         // ignore: ['/ignored.css', 'prismjs/', 'docsearch.js/'], // Ignore files/folders
         // purgeOnly : ['components/', '/main.css', 'bootstrap/'], // Purge only these files/folders
       }
-    },
-    {
-      resolve: `gatsby-transformer-remark`,
-      options: {
-        plugins: [
-          {
-            resolve: `gatsby-remark-highlight-code`,
-          },
-        ],
-      },
     },
   ],
 }

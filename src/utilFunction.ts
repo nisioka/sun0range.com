@@ -65,6 +65,7 @@ const categoryNames: { eng: string, jp: string }[] = [
 ]
 
 export function convertCategory(japanese: string) {
+  if(!japanese) return undefined
   return categoryNames.find(c => c.jp === japanese.replace("/", ""))?.eng || ""
 }
 

@@ -6,11 +6,9 @@ const { siteMetadata }  = config as { siteMetadata: SiteMetadata }
 
 const Footer = () => {
   return (
-      <footer>
-        <p>
-          <small>© {new Date().getFullYear()} {siteMetadata.title}</small>
-        </p>
-      </footer>
+    <footer>
+      <small>© {new Date().getFullYear()} {siteMetadata.title}</small>
+    </footer>
   )
 }
 export default Footer

@@ -55,7 +55,7 @@ const config: GatsbyConfig = {
       options: {
         trackingIds: [
           "G-G75Y1FWLC0",//GOOGLE_ANALYTICS_TRACKING_ID,
-          "pub-3123919168024595",//GOOGLE_ADSENSE_ID,
+          // "pub-3123919168024595",//GOOGLE_ADSENSE_ID,
         ],
         pluginConfig: {
           head: true,

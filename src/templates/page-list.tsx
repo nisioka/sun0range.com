@@ -17,7 +17,6 @@ const PageList = ({ pageContext, data, location }: {pageContext: PageContext, da
     <Layout location={location}>
       <ContentsListHeader>
         <h1>{title}</h1>
-        {/*<p>{posts} 記事あります</p>*/}
       </ContentsListHeader>
       <ContentsOrderedListWrapper>
         {posts.map(post => {

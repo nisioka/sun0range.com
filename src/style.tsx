@@ -19,10 +19,10 @@ export const ContentsOrderedListWrapper = styled.ol`
   column-count: 1;
   list-style: none;
   padding: 0;
-  margin: 0 -15px;
+  margin: 0;
   display: flex;
   flex-wrap: wrap;
-  width: var(--maxWidth-full);
+  width: 100%;
 
   li {
     padding: 5px;

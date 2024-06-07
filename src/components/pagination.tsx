@@ -111,7 +111,8 @@ const PaginationWrapper = styled.nav`
         opacity: 0.5;
       }
 
-      span, a {
+      span,
+      a {
         text-decoration: underline;
         display: flex;
         align-items: center;

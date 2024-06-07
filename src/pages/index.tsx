@@ -18,7 +18,6 @@ type BlogIndexProps = {
 }
 
 const BlogIndex = ({ data, location }: BlogIndexProps) => {
-
   const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
 
   if (posts.length === 0) {
@@ -46,18 +45,26 @@ const BlogIndex = ({ data, location }: BlogIndexProps) => {
                 className="post-list-item"
                 itemType="https://schema.org/Article"
               >
-                <Link to={`/${convertCategory(post.category)}/${post.slug}`} itemProp="url">
+                <Link
+                  to={`/${convertCategory(post.category)}/${post.slug}`}
+                  itemProp="url"
+                >
                   <h2>
                     <span itemProp="headline">{post.title}</span>
                   </h2>
                   <section>
-                    <div style={{ textAlign: "right" }}><small>
-                      <time>{post.dateModified}</time>
-                    </small></div>
+                    <div style={{ textAlign: "right" }}>
+                      <small>
+                        <time>{post.dateModified}</time>
+                      </small>
+                    </div>
                     <div className="thumbnail">
-                      {typeof post.gatsbyImage === "undefined" ||
-                        <GatsbyImage alt={post.altText} image={post.gatsbyImage} />
-                      }
+                      {typeof post.gatsbyImage === "undefined" || (
+                        <GatsbyImage
+                          alt={post.altText}
+                          image={post.gatsbyImage}
+                        />
+                      )}
                     </div>
                     <p
                       dangerouslySetInnerHTML={{ __html: post.excerpt }}
@@ -70,7 +77,7 @@ const BlogIndex = ({ data, location }: BlogIndexProps) => {
           )
         })}
       </ContentsOrderedListWrapper>
-      <Pagination maxPage={maxPage} current={1}/>
+      <Pagination maxPage={maxPage} current={1} />
     </Layout>
   )
 }
@@ -82,21 +89,19 @@ export default BlogIndex
  *
  * See: https://www.gatsbyjs.com/docs/reference/built-in-components/gatsby-head/
  */
-export const Head = ({ location }: BlogIndexProps) => <Seo title="" location={location}/>
+export const Head = ({ location }: BlogIndexProps) => (
+  <Seo title="" location={location} />
+)
 
 export const pageQuery = graphql`
   {
-    allFile(
-      filter: {
-        sourceInstanceName: { eq: "images" }
-      }
-    ) {
+    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
       edges {
         node {
           relativePath
           childImageSharp {
             gatsbyImageData(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED
@@ -128,11 +133,11 @@ export const pageQuery = graphql`
         slug
         date(formatString: "YYYY/MM/DD")
         modified(formatString: "YYYY/MM/DD")
-        featuredImage{
-          node{
+        featuredImage {
+          node {
             altText
             gatsbyImage(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED

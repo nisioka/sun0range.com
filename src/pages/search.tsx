@@ -6,7 +6,7 @@ import { convertCategory, mergePosts } from "../utilFunction"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 import { GatsbyImage } from "gatsby-plugin-image"
 
-const Search = ({ data, location }: {data: any, location: Location}) => {
+const Search = ({ data, location }: { data: any; location: Location }) => {
   const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
 
   const [state, setState] = useState({
@@ -32,7 +32,10 @@ const Search = ({ data, location }: {data: any, location: Location}) => {
 
     const filteredData = posts.filter(post => {
       for (const word of queryWords) {
-        if (!post.title.toLowerCase().includes(word) && !post.description?.toLowerCase().includes(word)) {
+        if (
+          !post.title.toLowerCase().includes(word) &&
+          !post.description?.toLowerCase().includes(word)
+        ) {
           return false
         }
       }
@@ -40,7 +43,7 @@ const Search = ({ data, location }: {data: any, location: Location}) => {
     })
     setState({
       filteredData,
-      query: queryWords.join(" ")
+      query: queryWords.join(" "),
     })
   }
 
@@ -48,53 +51,56 @@ const Search = ({ data, location }: {data: any, location: Location}) => {
 
   return (
     <Layout location={location}>
-        <input
-          type="text"
-          aria-label="Search"
-          placeholder="検索ワードを入力..."
-          onChange={handleInputChange}
-        />
-        <div className="result-inner__res">
-          {query !== "" ?
-            query + " の検索結果: " + filteredData.length + "件"
-            : filteredData.length + "件の記事があります"
-          }
-        </div>
-        <ContentsListHeader>
-          <h1>サイト内検索</h1>
-          <p>{filteredData.length} 記事あります</p>
-        </ContentsListHeader>
-        <ContentsOrderedListWrapper>
-          {filteredData.map(post => {
-            return (
-              <li key={post.slug}>
-                <article
-                  className="post-list-item"
-                  itemType="http://schema.org/Article"
-                >
-                  <Link to={`/${convertCategory(post.category)}/${post.slug}`}>
-                    <h2>
-                      <span>{post.title}</span>
-                    </h2>
-                    <section>
-                      <div><small>
+      <input
+        type="text"
+        aria-label="Search"
+        placeholder="検索ワードを入力..."
+        onChange={handleInputChange}
+      />
+      <div className="result-inner__res">
+        {query !== ""
+          ? query + " の検索結果: " + filteredData.length + "件"
+          : filteredData.length + "件の記事があります"}
+      </div>
+      <ContentsListHeader>
+        <h1>サイト内検索</h1>
+        <p>{filteredData.length} 記事あります</p>
+      </ContentsListHeader>
+      <ContentsOrderedListWrapper>
+        {filteredData.map(post => {
+          return (
+            <li key={post.slug}>
+              <article
+                className="post-list-item"
+                itemType="http://schema.org/Article"
+              >
+                <Link to={`/${convertCategory(post.category)}/${post.slug}`}>
+                  <h2>
+                    <span>{post.title}</span>
+                  </h2>
+                  <section>
+                    <div>
+                      <small>
                         <time>{post.date}</time>
-                      </small></div>
-                      <div className="thumbnail">
-                        {typeof post.gatsbyImage === "undefined" ||
-                          <GatsbyImage alt={post.altText} image={post.gatsbyImage} className="thumbnail" />
-                        }
-                      </div>
-                      <p
-                        dangerouslySetInnerHTML={{ __html: post.excerpt }}
-                      />
-                    </section>
-                  </Link>
-                </article>
-              </li>
-            )
-          })}
-        </ContentsOrderedListWrapper>
+                      </small>
+                    </div>
+                    <div className="thumbnail">
+                      {typeof post.gatsbyImage === "undefined" || (
+                        <GatsbyImage
+                          alt={post.altText}
+                          image={post.gatsbyImage}
+                          className="thumbnail"
+                        />
+                      )}
+                    </div>
+                    <p dangerouslySetInnerHTML={{ __html: post.excerpt }} />
+                  </section>
+                </Link>
+              </article>
+            </li>
+          )
+        })}
+      </ContentsOrderedListWrapper>
     </Layout>
   )
 }
@@ -124,11 +130,11 @@ export const pageQuery = graphql`
         content
         slug
         date(formatString: "YYYY/MM/DD")
-        featuredImage{
-          node{
+        featuredImage {
+          node {
             altText
             gatsbyImage(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED
@@ -142,17 +148,13 @@ export const pageQuery = graphql`
         }
       }
     }
-    allFile(
-      filter: {
-        sourceInstanceName: { eq: "images" }
-      }
-    ) {
+    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
       edges {
         node {
           relativePath
           childImageSharp {
             gatsbyImageData(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED
@@ -162,4 +164,4 @@ export const pageQuery = graphql`
       }
     }
   }
-  `
+`

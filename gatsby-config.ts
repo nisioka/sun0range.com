@@ -33,7 +33,7 @@ const siteMetadata: SiteMetadata = {
   author: {
     name: `nisioka`,
     summary: `オレンジ好きの中で最強のエンジニアになりたい。`,
-    avatarImagePath: 'src/static/24okBlock.webp'
+    avatarImagePath: "src/static/24okBlock.webp",
   },
   description: `誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。`,
   siteUrl: `https://sun0range.tech.server-on.net`,
@@ -54,7 +54,7 @@ const config: GatsbyConfig = {
       resolve: `gatsby-plugin-google-gtag`,
       options: {
         trackingIds: [
-          "G-G75Y1FWLC0",//GOOGLE_ANALYTICS_TRACKING_ID,
+          "G-G75Y1FWLC0", //GOOGLE_ANALYTICS_TRACKING_ID,
           // "pub-3123919168024595",//GOOGLE_ADSENSE_ID,
         ],
         pluginConfig: {
@@ -66,10 +66,7 @@ const config: GatsbyConfig = {
       resolve: `gatsby-plugin-sitemap`,
       options: {
         output: `/`,
-        excludes: [
-          `/page/*`,
-          `/404?(.*)`,
-        ],
+        excludes: [`/page/*`, `/404?(.*)`],
       },
     },
     `gatsby-plugin-image`,
@@ -125,7 +122,9 @@ const config: GatsbyConfig = {
         `,
         feeds: [
           {
-            serialize: ({ query: { site, allMarkdownRemark } }: feedArgument) => {
+            serialize: ({
+              query: { site, allMarkdownRemark },
+            }: feedArgument) => {
               return allMarkdownRemark.nodes.map(node => {
                 return Object.assign({}, node.frontmatter, {
                   description: node.excerpt,
@@ -183,9 +182,7 @@ const config: GatsbyConfig = {
       resolve: `gatsby-source-wordpress`,
       options: {
         // the only required plugin option for WordPress is the GraphQL url.
-        url:
-            process.env.WPGRAPHQL_URL ||
-            `http://localhost/graphql`,
+        url: process.env.WPGRAPHQL_URL || `http://localhost/graphql`,
         // type: {
         //   __all: {
         //     limit: process.env.NODE_ENV === `development` ? 5 : null
@@ -196,7 +193,7 @@ const config: GatsbyConfig = {
         },
         html: {
           placeholderType: `blurred`,
-        }
+        },
       },
     },
     {
@@ -207,7 +204,7 @@ const config: GatsbyConfig = {
         // whitelist: ['whitelist'], // Don't remove this selector
         // ignore: ['/ignored.css', 'prismjs/', 'docsearch.js/'], // Ignore files/folders
         // purgeOnly : ['components/', '/main.css', 'bootstrap/'], // Purge only these files/folders
-      }
+      },
     },
   ],
 }

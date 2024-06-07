@@ -8,7 +8,15 @@ import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 
-const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext, data: any, location: Location}) => {
+const CategoryList = ({
+  pageContext,
+  data,
+  location,
+}: {
+  pageContext: PageContext
+  data: any
+  location: Location
+}) => {
   const tagName = pageContext.tag as string
   const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
   const title = `【${tagName}】タグ 一覧`
@@ -16,10 +24,8 @@ const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext
   if (posts.length === 0) {
     return (
       <Layout location={location}>
-        <Seo title={title} location={location}/>
-        <p>
-          そのタグの記事はありません。
-        </p>
+        <Seo title={title} location={location} />
+        <p>そのタグの記事はありません。</p>
       </Layout>
     )
   }
@@ -43,17 +49,21 @@ const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext
                     <span>{post.title}</span>
                   </h2>
                   <section>
-                    <div><small>
-                      <time>{post.date}</time>
-                    </small></div>
-                    <div className="thumbnail">
-                      {typeof post.gatsbyImage === "undefined" ||
-                        <GatsbyImage alt={post.altText} image={post.gatsbyImage} className="thumbnail" />
-                      }
+                    <div>
+                      <small>
+                        <time>{post.date}</time>
+                      </small>
                     </div>
-                    <p
-                      dangerouslySetInnerHTML={{ __html: post.excerpt }}
-                    />
+                    <div className="thumbnail">
+                      {typeof post.gatsbyImage === "undefined" || (
+                        <GatsbyImage
+                          alt={post.altText}
+                          image={post.gatsbyImage}
+                          className="thumbnail"
+                        />
+                      )}
+                    </div>
+                    <p dangerouslySetInnerHTML={{ __html: post.excerpt }} />
                   </section>
                 </Link>
               </article>
@@ -67,8 +77,13 @@ const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext
 
 export default CategoryList
 
-export const Head = ({ pageContext, location }: {pageContext: PageContext, location: Location}) => {
-
+export const Head = ({
+  pageContext,
+  location,
+}: {
+  pageContext: PageContext
+  location: Location
+}) => {
   return (
     <Seo
       title={`【${pageContext.tag}】タグ 一覧`}
@@ -79,7 +94,7 @@ export const Head = ({ pageContext, location }: {pageContext: PageContext, locat
 }
 
 export const pageQuery = graphql`
-  query( $tag: String) {
+  query ($tag: String) {
     allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
       filter: { frontmatter: { tags: { in: [$tag] } } }
@@ -107,11 +122,11 @@ export const pageQuery = graphql`
         excerpt
         slug
         date(formatString: "YYYY/MM/DD")
-        featuredImage{
-          node{
+        featuredImage {
+          node {
             altText
             gatsbyImage(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED
@@ -125,17 +140,13 @@ export const pageQuery = graphql`
         }
       }
     }
-    allFile(
-      filter: {
-        sourceInstanceName: { eq: "images" }
-      }
-    ) {
+    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
       edges {
         node {
           relativePath
           childImageSharp {
             gatsbyImageData(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED

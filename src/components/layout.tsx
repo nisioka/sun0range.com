@@ -1,6 +1,6 @@
 import * as React from "react"
-import Header from "./header";
-import Footer from "./footer";
+import Header from "./header"
+import Footer from "./footer"
 import TagCloud from "./tag-cloud"
 import CategoryAll from "./category-all"
 

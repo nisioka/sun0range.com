@@ -11,7 +11,15 @@ type RelatedListProps = {
   tags: string[]
 }
 const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
-  const { allMarkdownRemark, allWpPost, allFile }: {allMarkdownRemark: AllMarkdownRemark, allWpPost: AllWpPost, allFile: AllFile} = useStaticQuery(
+  const {
+    allMarkdownRemark,
+    allWpPost,
+    allFile,
+  }: {
+    allMarkdownRemark: AllMarkdownRemark
+    allWpPost: AllWpPost
+    allFile: AllFile
+  } = useStaticQuery(
     graphql`
       query {
         allMarkdownRemark {
@@ -38,11 +46,11 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
             slug
             date(formatString: "YYYY/MM/DD")
             modified(formatString: "YYYY/MM/DD")
-            featuredImage{
-              node{
+            featuredImage {
+              node {
                 altText
                 gatsbyImage(
-                  width: 100,
+                  width: 100
                   height: 100
                   formats: [AUTO, WEBP, AVIF]
                   placeholder: BLURRED
@@ -61,17 +69,13 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
             }
           }
         }
-        allFile(
-          filter: {
-            sourceInstanceName: { eq: "images" }
-          }
-        ) {
+        allFile(filter: { sourceInstanceName: { eq: "images" } }) {
           edges {
             node {
               relativePath
               childImageSharp {
                 gatsbyImageData(
-                  width: 100,
+                  width: 100
                   height: 100
                   formats: [AUTO, WEBP, AVIF]
                   placeholder: BLURRED
@@ -85,21 +89,30 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
   )
 
   // 関連度計算。
-  const posts = mergePosts(allMarkdownRemark, allWpPost, allFile).map(post => {
-    let point = 0
-    if (post.slug !== slug) {
-      // カテゴリの一致出力
-      if (post.category === category) point++;
-      // タグの一致出力。記事のタグの中に一致するものがあればtrueを返す。
-      for (const tag of tags) {
-        if (post.tags.includes(tag)) point += 2;
+  const posts = mergePosts(allMarkdownRemark, allWpPost, allFile)
+    .map(post => {
+      let point = 0
+      if (post.slug !== slug) {
+        // カテゴリの一致出力
+        if (post.category === category) point++
+        // タグの一致出力。記事のタグの中に一致するものがあればtrueを返す。
+        for (const tag of tags) {
+          if (post.tags.includes(tag)) point += 2
+        }
       }
-    }
-    return { post: post, relevance: point }
-  })
-  .filter(r => r.relevance >= 2)
-  .sort((a, b) => a.relevance = b.relevance ? (a.post.date < b.post.date ? 1 : -1) : b.relevance - a.relevance)
-  .slice(0, 6).map(r => r.post)
+      return { post: post, relevance: point }
+    })
+    .filter(r => r.relevance >= 2)
+    .sort(
+      (a, b) =>
+        (a.relevance = b.relevance
+          ? a.post.date < b.post.date
+            ? 1
+            : -1
+          : b.relevance - a.relevance)
+    )
+    .slice(0, 6)
+    .map(r => r.post)
 
   if (!posts) return <></>
 
@@ -118,17 +131,21 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
                     <span>{post.title}</span>
                   </h2>
                   <section>
-                    <div><small>
-                      <time>{post.dateModified}</time>
-                    </small></div>
-                    <div className="thumbnail">
-                      {typeof post.gatsbyImage === "undefined" ||
-                        <GatsbyImage alt={post.altText} image={post.gatsbyImage} className="thumbnail" />
-                      }
+                    <div>
+                      <small>
+                        <time>{post.dateModified}</time>
+                      </small>
                     </div>
-                    <p
-                      dangerouslySetInnerHTML={{ __html: post.excerpt }}
-                    />
+                    <div className="thumbnail">
+                      {typeof post.gatsbyImage === "undefined" || (
+                        <GatsbyImage
+                          alt={post.altText}
+                          image={post.gatsbyImage}
+                          className="thumbnail"
+                        />
+                      )}
+                    </div>
+                    <p dangerouslySetInnerHTML={{ __html: post.excerpt }} />
                   </section>
                 </Link>
               </article>

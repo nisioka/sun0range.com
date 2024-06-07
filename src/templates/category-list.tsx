@@ -8,7 +8,15 @@ import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 
-const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext, data: any, location: Location}) => {
+const CategoryList = ({
+  pageContext,
+  data,
+  location,
+}: {
+  pageContext: PageContext
+  data: any
+  location: Location
+}) => {
   const categoryName = pageContext.category as string
   const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
   const title = `【${categoryName}】カテゴリー 一覧`
@@ -16,9 +24,7 @@ const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext
   if (posts.length === 0) {
     return (
       <Layout location={location}>
-        <p>
-          そのカテゴリーの記事はありません。
-        </p>
+        <p>そのカテゴリーの記事はありません。</p>
       </Layout>
     )
   }
@@ -42,17 +48,21 @@ const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext
                     <span>{post.title}</span>
                   </h2>
                   <section>
-                    <div><small>
-                      <time>{post.dateModified}</time>
-                    </small></div>
-                    <div className="thumbnail">
-                      {typeof post.gatsbyImage === "undefined" ||
-                        <GatsbyImage alt={post.altText} image={post.gatsbyImage} className="thumbnail" />
-                      }
+                    <div>
+                      <small>
+                        <time>{post.dateModified}</time>
+                      </small>
                     </div>
-                    <p
-                      dangerouslySetInnerHTML={{ __html: post.excerpt }}
-                    />
+                    <div className="thumbnail">
+                      {typeof post.gatsbyImage === "undefined" || (
+                        <GatsbyImage
+                          alt={post.altText}
+                          image={post.gatsbyImage}
+                          className="thumbnail"
+                        />
+                      )}
+                    </div>
+                    <p dangerouslySetInnerHTML={{ __html: post.excerpt }} />
                   </section>
                 </Link>
               </article>
@@ -66,8 +76,13 @@ const CategoryList = ({ pageContext, data, location }: {pageContext: PageContext
 
 export default CategoryList
 
-export const Head = ({ pageContext, location }: {pageContext: PageContext, location: Location}) => {
-
+export const Head = ({
+  pageContext,
+  location,
+}: {
+  pageContext: PageContext
+  location: Location
+}) => {
   return (
     <Seo
       title={`【${pageContext.category}】カテゴリー 一覧`}
@@ -78,7 +93,7 @@ export const Head = ({ pageContext, location }: {pageContext: PageContext, locat
 }
 
 export const pageQuery = graphql`
-  query( $category: String) {
+  query ($category: String) {
     allMarkdownRemark(
       filter: { frontmatter: { category: { eq: $category } } }
     ) {
@@ -97,7 +112,9 @@ export const pageQuery = graphql`
       }
     }
     allWpPost(
-      filter: { categories: { nodes: { elemMatch: { name: { eq: $category } } } } }
+      filter: {
+        categories: { nodes: { elemMatch: { name: { eq: $category } } } }
+      }
     ) {
       nodes {
         title
@@ -105,11 +122,11 @@ export const pageQuery = graphql`
         slug
         date(formatString: "YYYY/MM/DD")
         modified(formatString: "YYYY/MM/DD")
-        featuredImage{
-          node{
+        featuredImage {
+          node {
             altText
             gatsbyImage(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED
@@ -118,17 +135,13 @@ export const pageQuery = graphql`
         }
       }
     }
-    allFile(
-      filter: {
-        sourceInstanceName: { eq: "images" }
-      }
-    ) {
+    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
       edges {
         node {
           relativePath
           childImageSharp {
             gatsbyImageData(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED

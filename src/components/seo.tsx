@@ -17,15 +17,27 @@ type SeoProps = {
   children?: React.ReactNode
 }
 
-const Seo = ({ title, description, location, imagePath, post, children }: SeoProps) => {
-  const { siteMetadata }  = config as { siteMetadata: SiteMetadata }
+const Seo = ({
+  title,
+  description,
+  location,
+  imagePath,
+  post,
+  children,
+}: SeoProps) => {
+  const { siteMetadata } = config as { siteMetadata: SiteMetadata }
   const rootPath = `${__PATH_PREFIX__}/`
   const isRootPath = location.pathname === rootPath
 
   const metaDescription = description || siteMetadata.description
-  const fullTitle = (isRootPath ? siteMetadata.title : `${title} | ${siteMetadata.title}`)
-  const canonicalUrl = siteMetadata.siteUrl + location.pathname.replace(/\/page\/([0-9])+\//, "")
-  const imageUrl = `${siteMetadata.siteUrl}${imagePath ? imagePath : "/favicon.webp"}`
+  const fullTitle = isRootPath
+    ? siteMetadata.title
+    : `${title} | ${siteMetadata.title}`
+  const canonicalUrl =
+    siteMetadata.siteUrl + location.pathname.replace(/\/page\/([0-9])+\//, "")
+  const imageUrl = `${siteMetadata.siteUrl}${
+    imagePath ? imagePath : "/favicon.webp"
+  }`
 
   function createJsonLd() {
     // JSON-LDの設定
@@ -35,11 +47,8 @@ const Seo = ({ title, description, location, imagePath, post, children }: SeoPro
         name: siteMetadata.author.name,
         description: siteMetadata.author.summary,
         url: siteMetadata.siteUrl,
-        sameAs: [
-          siteMetadata.social.twitter,
-          siteMetadata.social.github
-        ]
-      }
+        sameAs: [siteMetadata.social.twitter, siteMetadata.social.github],
+      },
     ]
 
     const publisher = {
@@ -50,8 +59,8 @@ const Seo = ({ title, description, location, imagePath, post, children }: SeoPro
         "@type": "ImageObject",
         url: `${siteMetadata.siteUrl}/favicon.webp`,
         width: 512,
-        height: 512
-      }
+        height: 512,
+      },
     }
 
     let jsonLd = [
@@ -64,8 +73,8 @@ const Seo = ({ title, description, location, imagePath, post, children }: SeoPro
         author: author,
         publisher: publisher,
         image: imageUrl,
-        description: metaDescription
-      }
+        description: metaDescription,
+      },
     ]
     if (post) {
       const article = {
@@ -83,10 +92,10 @@ const Seo = ({ title, description, location, imagePath, post, children }: SeoPro
         dateModified: new Date(post.dateModified),
         mainEntityOfPage: {
           "@type": "WebPage",
-          "@id": canonicalUrl
+          "@id": canonicalUrl,
         },
         author: author,
-        publisher: publisher
+        publisher: publisher,
       }
       // @ts-ignore
       jsonLd = [...jsonLd, article]
@@ -113,7 +122,10 @@ const Seo = ({ title, description, location, imagePath, post, children }: SeoPro
       )}
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />
-      <meta property="og:type" content={`${isRootPath ? "website" : "webpage"}`} />
+      <meta
+        property="og:type"
+        content={`${isRootPath ? "website" : "webpage"}`}
+      />
       <meta name="twitter:card" content="summary" />
       <meta name="twitter:creator" content={siteMetadata.social.twitter} />
       <meta name="twitter:title" content={fullTitle} />

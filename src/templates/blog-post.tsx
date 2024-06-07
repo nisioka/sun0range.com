@@ -7,7 +7,7 @@ import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import styled from "styled-components"
 import { convertCategory, mergePost, removeHtmlTags } from "../utilFunction"
 import RelatedList from "../components/related-list"
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import parse, { domToReact } from "html-react-parser"
 import { ghcolors } from "react-syntax-highlighter/dist/cjs/styles/prism"
 
@@ -61,35 +61,51 @@ type BlogPostTemplateProps = {
 }
 
 const BlogPostTemplate = ({
-  data: { allFile, markdownRemark: md, mdPrevious, mdNext, wpPost, wpPrevious, wpNext },
-  location
+  data: {
+    allFile,
+    markdownRemark: md,
+    mdPrevious,
+    mdNext,
+    wpPost,
+    wpPrevious,
+    wpNext,
+  },
+  location,
 }: BlogPostTemplateProps) => {
   const post = {
     id: md?.id || wpPost?.id,
     title: md?.frontmatter.title || wpPost?.title,
     content: md?.html || wpPost?.content,
     excerpt: removeHtmlTags(md?.excerpt || wpPost?.excerpt),
-    slug: md?.fields.slug.replace(/^\//, "").replace(/\/$/, "")
-      || "/" + wpPost?.slug,
+    slug:
+      md?.fields.slug.replace(/^\//, "").replace(/\/$/, "") ||
+      "/" + wpPost?.slug,
     date: md?.frontmatter.date || wpPost?.date,
     dateModified: md?.frontmatter.dateModified || wpPost?.modified,
     description: md?.frontmatter.description,
     altText: wpPost?.featuredImage?.node.altText || "",
-    gatsbyImage: wpPost?.featuredImage?.node.gatsbyImage || getImage(allFile.edges[0]?.node.childImageSharp),
+    gatsbyImage:
+      wpPost?.featuredImage?.node.gatsbyImage ||
+      getImage(allFile.edges[0]?.node.childImageSharp),
     category: md?.frontmatter.category || wpPost?.categories?.nodes[0]?.name,
     tags: md?.frontmatter.tags || wpPost?.tags?.nodes.map(t => t.name),
   }
   const previous = {
     id: mdPrevious?.id || wpPrevious?.id,
     title: mdPrevious?.frontmatter.title || wpPrevious?.title,
-    slug: mdPrevious?.fields.slug.replace(/^\//, "").replace(/\/$/, "") || wpPrevious?.slug,
-    category: mdPrevious?.frontmatter.category || wpPrevious?.categories.nodes[0].name
+    slug:
+      mdPrevious?.fields.slug.replace(/^\//, "").replace(/\/$/, "") ||
+      wpPrevious?.slug,
+    category:
+      mdPrevious?.frontmatter.category || wpPrevious?.categories.nodes[0].name,
   }
   const next = {
     id: mdNext?.id || wpNext?.id,
     title: mdNext?.frontmatter.title || wpNext?.title,
-    slug: mdNext?.fields.slug.replace(/^\//, "").replace(/\/$/, "") || wpNext?.slug,
-    category: mdNext?.frontmatter.category || wpNext?.categories?.nodes[0]?.name
+    slug:
+      mdNext?.fields.slug.replace(/^\//, "").replace(/\/$/, "") || wpNext?.slug,
+    category:
+      mdNext?.frontmatter.category || wpNext?.categories?.nodes[0]?.name,
   }
 
   return (
@@ -110,30 +126,34 @@ const BlogPostTemplate = ({
           </p>
         </header>
         <div className="featuredImage">
-          <GatsbyImage
-            image={post.gatsbyImage}
-            alt={post.title}
-          />
+          <GatsbyImage image={post.gatsbyImage} alt={post.title} />
         </div>
         <Dl>
           <dt>カテゴリ</dt>
-          <dd><Link to={`/category/${convertCategory(post.category)}`}>{post.category}</Link></dd>
+          <dd>
+            <Link to={`/category/${convertCategory(post.category)}`}>
+              {post.category}
+            </Link>
+          </dd>
         </Dl>
         <Dl>
           <dt>タグ</dt>
           {post.tags.map((tag, index) => {
-            return <dd key={`tag${index}`}><Link to={`/tag/${tag}/`}>{tag}</Link></dd>
+            return (
+              <dd key={`tag${index}`}>
+                <Link to={`/tag/${tag}/`}>{tag}</Link>
+              </dd>
+            )
           })}
         </Dl>
 
         <BlogEntry>
           <section itemProp="articleBody">
-            {parse(post.content, {replace: replaceCode})}
+            {parse(post.content, { replace: replaceCode })}
           </section>
         </BlogEntry>
         <hr />
-        <footer>
-        </footer>
+        <footer></footer>
       </Article>
       <BlogPostNav className="blog-post-nav">
         <ul
@@ -142,19 +162,25 @@ const BlogPostTemplate = ({
             flexWrap: `wrap`,
             justifyContent: `space-between`,
             listStyle: `none`,
-            padding: 0
+            padding: 0,
           }}
         >
           <li>
             {previous.slug && (
-              <Link to={`/${convertCategory(previous.category)}/${previous.slug}`} rel="prev">
+              <Link
+                to={`/${convertCategory(previous.category)}/${previous.slug}`}
+                rel="prev"
+              >
                 ← {previous.title}
               </Link>
             )}
           </li>
           <li>
             {next.slug && (
-              <Link to={`/${convertCategory(next.category)}/${next.slug}`} rel="next">
+              <Link
+                to={`/${convertCategory(next.category)}/${next.slug}`}
+                rel="next"
+              >
                 {next.title} →
               </Link>
             )}
@@ -209,7 +235,6 @@ export const pageQuery = graphql`
         category
         tags
       }
-      
     }
     mdPrevious: markdownRemark(id: { eq: $previousPostId }) {
       fields {
@@ -237,19 +262,19 @@ export const pageQuery = graphql`
       slug
       date(formatString: "YYYY/MM/DD")
       modified(formatString: "YYYY/MM/DD")
-      featuredImage{
-        node{
+      featuredImage {
+        node {
           altText
           gatsbyImage(height: 320)
         }
       }
-      categories{
-        nodes{
+      categories {
+        nodes {
           name
         }
       }
-      tags{
-        nodes{
+      tags {
+        nodes {
           name
         }
       }
@@ -257,8 +282,8 @@ export const pageQuery = graphql`
     wpPrevious: wpPost(id: { eq: $previousPostId }) {
       title
       slug
-      categories{
-        nodes{
+      categories {
+        nodes {
           name
         }
       }
@@ -266,8 +291,8 @@ export const pageQuery = graphql`
     wpNext: wpPost(id: { eq: $nextPostId }) {
       title
       slug
-      categories{
-        nodes{
+      categories {
+        nodes {
           name
         }
       }
@@ -276,78 +301,91 @@ export const pageQuery = graphql`
 `
 
 export const Head = ({
-                       data: { allFile, markdownRemark, wpPost },
-                       location
-                     }: BlogPostTemplateProps) => {
+  data: { allFile, markdownRemark, wpPost },
+  location,
+}: BlogPostTemplateProps) => {
   const post = mergePost(markdownRemark, wpPost, allFile)
   return (
     <Seo
       title={post.title}
       description={post.excerpt}
       location={location}
-      imagePath={post.gatsbyImage ? post.gatsbyImage.images.fallback?.src : null}
+      imagePath={
+        post.gatsbyImage ? post.gatsbyImage.images.fallback?.src : null
+      }
       post={post}
     />
   )
 }
 
 const replaceCode = (node: any) => {
-  if(!node) return node;
-  if (node.name === 'pre') {
+  if (!node) return node
+  if (node.name === "pre") {
     const dom = domToReact(getCode(node))
-    let result = "";
+    let result = ""
     switch (typeof dom) {
-      case 'string':
+      case "string":
         result = dom as string
-        break;
-      case 'object':
-        if(Array.isArray(dom)) {
+        break
+      case "object":
+        if (Array.isArray(dom)) {
           // React.JSX.Element[]
-          const elmArr = dom as React.JSX.Element[];
+          const elmArr = dom as React.JSX.Element[]
           elmArr.map(elm => {
             if (elm.props && elm.props.children) {
-              result += (elm.props.children as string);
+              result += elm.props.children as string
             }
           })
         } else {
           // React.JSX.Element
-          const elm = dom as React.JSX.Element;
+          const elm = dom as React.JSX.Element
           if (elm.props && elm.props.children) {
-            result = (elm.props.children as string);
+            result = elm.props.children as string
           }
         }
-        break;
+        break
     }
 
-    return node.children.length > 0 &&
-      <SyntaxHighlight language={getLanguage(node)}>
-        {result}
-      </SyntaxHighlight>;
+    return (
+      node.children.length > 0 && (
+        <SyntaxHighlight language={getLanguage(node)}>{result}</SyntaxHighlight>
+      )
+    )
   }
-};
+}
 
-const SyntaxHighlight = ({language, children }: { language: string, children: string }) => (
-  <SyntaxHighlighter style={ghcolors} language={language} showLineNumbers={true}>
+const SyntaxHighlight = ({
+  language,
+  children,
+}: {
+  language: string
+  children: string
+}) => (
+  <SyntaxHighlighter
+    style={ghcolors}
+    language={language}
+    showLineNumbers={true}
+  >
     {children}
   </SyntaxHighlighter>
-);
+)
 
 const getLanguage = (node: any) => {
   if (node.attribs.class && node.attribs.class !== "wp-block-code") {
-    return (node.attribs.class as string).replace("language-", "");
+    return (node.attribs.class as string).replace("language-", "")
   } else if (node.children[0]?.attribs?.class) {
-    return (node.children[0].attribs.class as string).replace("language-", "");
+    return (node.children[0].attribs.class as string).replace("language-", "")
   }
-  return "java"; // default
-};
+  return "java" // default
+}
 
 const getCode = (node: any) => {
-  if (node.children.length > 0 && node.children[0].name === 'code') {
-    return node.children[0].children;
+  if (node.children.length > 0 && node.children[0].name === "code") {
+    return node.children[0].children
   } else {
-    return node.children;
+    return node.children
   }
-};
+}
 
 const Article = styled.article`
   margin: 0 auto;
@@ -402,7 +440,7 @@ const Dl = styled.dl`
       padding: 2px 5px;
 
       &:hover {
-        opacity: .5;
+        opacity: 0.5;
       }
     }
   }

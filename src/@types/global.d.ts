@@ -1,4 +1,4 @@
-declare const __PATH_PREFIX__: string;
+declare const __PATH_PREFIX__: string
 
 type SiteMetadata = {
   title: string
@@ -13,7 +13,7 @@ type SiteMetadata = {
     github: string
     twitter: string
   }
-};
+}
 
 type AllMarkdownRemark = {
   nodes: MdPost[]

@@ -4,34 +4,40 @@ import { Link, useStaticQuery, graphql } from "gatsby"
 import styled from "styled-components"
 
 const TagCloud = () => {
-  const { allMarkdownRemark, allWpPost }: {allMarkdownRemark: AllMarkdownRemark, allWpPost: AllWpPost} = useStaticQuery(
-    graphql`
-      query {
-        allMarkdownRemark {
-          nodes {
-            frontmatter {
-              tags
+  const {
+    allMarkdownRemark,
+    allWpPost,
+  }: { allMarkdownRemark: AllMarkdownRemark; allWpPost: AllWpPost } =
+    useStaticQuery(
+      graphql`
+        query {
+          allMarkdownRemark {
+            nodes {
+              frontmatter {
+                tags
+              }
             }
           }
-        }
-        allWpPost {
-          nodes {
-            tags {
-              nodes {
-                name
+          allWpPost {
+            nodes {
+              tags {
+                nodes {
+                  name
+                }
               }
             }
           }
         }
-      }
-    `
-  )
+      `
+    )
 
-  const postTags = allMarkdownRemark.nodes.map(post => post.frontmatter.tags)
-  .concat(allWpPost.nodes.map(post => post.tags.nodes.map(t => t.name)));
+  const postTags = allMarkdownRemark.nodes
+    .map(post => post.frontmatter.tags)
+    .concat(allWpPost.nodes.map(post => post.tags.nodes.map(t => t.name)))
 
-  const tagsBase = postTags.reduce((tagCount, post) => {
-    post.map(item => {
+  const tagsBase = postTags
+    .reduce((tagCount, post) => {
+      post.map(item => {
         if (tagCount.find(i => i.name === item)) {
           tagCount.filter(i => {
             if (i.name === item) i.count++
@@ -40,13 +46,13 @@ const TagCloud = () => {
           tagCount = [...tagCount, { name: item, count: 1 }]
         }
       })
-    return tagCount
-  }, [] as {name: string, count: number}[])
-  .filter(t => t.count > 1)
-  .sort((a, b) => b.count - a.count)
+      return tagCount
+    }, [] as { name: string; count: number }[])
+    .filter(t => t.count > 1)
+    .sort((a, b) => b.count - a.count)
 
   const largeBoundary = tagsBase[Math.ceil(tagsBase.length / 3)].count
-  const smallBoundary = tagsBase[Math.floor(tagsBase.length * 2 / 3)].count
+  const smallBoundary = tagsBase[Math.floor((tagsBase.length * 2) / 3)].count
   const tagsView = tagsBase.sort(() => Math.random() - 0.5)
 
   return (
@@ -63,9 +69,7 @@ const TagCloud = () => {
         }
         return (
           <li key={tag.name} className={size}>
-            <Link to={`/tag/${tag.name}`}>
-              {tag.name}
-            </Link>
+            <Link to={`/tag/${tag.name}`}>{tag.name}</Link>
           </li>
         )
       })}
@@ -91,7 +95,7 @@ const TagCloudList = styled.ul`
     font-size: var(--fontSize-2);
   }
   .tagLarge {
-    font-size: var(--fontSize-4)
+    font-size: var(--fontSize-4);
   }
 
   a {

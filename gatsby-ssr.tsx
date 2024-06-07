@@ -9,6 +9,8 @@ import { GatsbySSR } from "gatsby"
 /**
  * @type {import('gatsby').GatsbySSR['onRenderBody']}
  */
-export const onRenderBody: GatsbySSR['onRenderBody'] = ({ setHtmlAttributes }) => {
+export const onRenderBody: GatsbySSR["onRenderBody"] = ({
+  setHtmlAttributes,
+}) => {
   setHtmlAttributes({ lang: `ja` })
 }

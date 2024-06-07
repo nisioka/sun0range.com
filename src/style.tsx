@@ -3,10 +3,11 @@ import styled from "styled-components"
 export const ContentsListHeader = styled.header`
   text-align: center;
 
-  h1, h2 {
+  h1,
+  h2 {
     &:after {
       margin: 0 auto;
-      content: '';
+      content: "";
       display: block;
       width: 98%;
       height: 3px;
@@ -26,7 +27,7 @@ export const ContentsOrderedListWrapper = styled.ol`
 
   li {
     padding: 5px;
-    margin: var(--spacing-1) ;
+    margin: var(--spacing-1);
     box-sizing: border-box;
     border: 1px solid var(--black);
     border-radius: 5px;
@@ -71,7 +72,6 @@ export const ContentsOrderedListWrapper = styled.ol`
     }
   }
 `
-
 
 export const NormalAreaWrapper = styled.div`
   background-color: #fff;

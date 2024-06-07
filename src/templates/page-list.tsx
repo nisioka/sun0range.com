@@ -9,7 +9,15 @@ import { GatsbyImage } from "gatsby-plugin-image"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 import Pagination from "../components/pagination"
 
-const PageList = ({ pageContext, data, location }: {pageContext: PageContext, data: any, location: Location}) => {
+const PageList = ({
+  pageContext,
+  data,
+  location,
+}: {
+  pageContext: PageContext
+  data: any
+  location: Location
+}) => {
   const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
   const title = `記事一覧`
 
@@ -31,17 +39,21 @@ const PageList = ({ pageContext, data, location }: {pageContext: PageContext, da
                     <span>{post.title}</span>
                   </h2>
                   <section>
-                    <div><small>
-                      <time>{post.date}</time>
-                    </small></div>
-                    <div className="thumbnail">
-                      {typeof post.gatsbyImage === "undefined" ||
-                        <GatsbyImage alt={post.altText} image={post.gatsbyImage} className="thumbnail" />
-                      }
+                    <div>
+                      <small>
+                        <time>{post.date}</time>
+                      </small>
                     </div>
-                    <p
-                      dangerouslySetInnerHTML={{ __html: post.excerpt }}
-                    />
+                    <div className="thumbnail">
+                      {typeof post.gatsbyImage === "undefined" || (
+                        <GatsbyImage
+                          alt={post.altText}
+                          image={post.gatsbyImage}
+                          className="thumbnail"
+                        />
+                      )}
+                    </div>
+                    <p dangerouslySetInnerHTML={{ __html: post.excerpt }} />
                   </section>
                 </Link>
               </article>
@@ -56,18 +68,12 @@ const PageList = ({ pageContext, data, location }: {pageContext: PageContext, da
 
 export default PageList
 
-export const Head = ({ location }: {location: Location}) => {
-
-  return (
-    <Seo
-      title={`記事一覧`}
-      location={location}
-    />
-  )
+export const Head = ({ location }: { location: Location }) => {
+  return <Seo title={`記事一覧`} location={location} />
 }
 
 export const pageQuery = graphql`
-  query( $limit: Int!, $skip: Int!) {
+  query ($limit: Int!, $skip: Int!) {
     allMarkdownRemark(
       limit: $limit
       skip: $skip
@@ -87,21 +93,17 @@ export const pageQuery = graphql`
         }
       }
     }
-    allWpPost(
-      limit: $limit
-      skip: $skip
-      sort: { date: DESC }
-    ) {
+    allWpPost(limit: $limit, skip: $skip, sort: { date: DESC }) {
       nodes {
         title
         excerpt
         slug
         date(formatString: "YYYY/MM/DD")
-        featuredImage{
-          node{
+        featuredImage {
+          node {
             altText
             gatsbyImage(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED
@@ -115,17 +117,13 @@ export const pageQuery = graphql`
         }
       }
     }
-    allFile(
-      filter: {
-        sourceInstanceName: { eq: "images" }
-      }
-    ) {
+    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
       edges {
         node {
           relativePath
           childImageSharp {
             gatsbyImageData(
-              width: 100,
+              width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
               placeholder: BLURRED

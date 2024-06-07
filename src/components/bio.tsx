@@ -9,11 +9,11 @@ import * as React from "react"
 import { StaticImage } from "gatsby-plugin-image"
 import config from "../../gatsby-config"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import {  faGithub, faXTwitter} from "@fortawesome/free-brands-svg-icons"
+import { faGithub, faXTwitter } from "@fortawesome/free-brands-svg-icons"
 import { Link } from "gatsby"
 
 const Bio = () => {
-  const { siteMetadata }  = config as { siteMetadata: SiteMetadata }
+  const { siteMetadata } = config as { siteMetadata: SiteMetadata }
 
   // Set these values by editing "siteMetadata" in gatsby-config
   const author = siteMetadata.author
@@ -31,12 +31,29 @@ const Bio = () => {
         alt="Profile picture"
       />
       <p>
-        <strong>{author.name}</strong>: <small>{author.summary}</small><br />
-        <Link to={`https://github.com/${social.github}`} target="_blank" rel="noopener">
-          <FontAwesomeIcon icon={faGithub} fontSize={24} style={{color: "black"}} />
+        <strong>{author.name}</strong>: <small>{author.summary}</small>
+        <br />
+        <Link
+          to={`https://github.com/${social.github}`}
+          target="_blank"
+          rel="noopener"
+        >
+          <FontAwesomeIcon
+            icon={faGithub}
+            fontSize={24}
+            style={{ color: "black" }}
+          />
         </Link>
-        <Link to={`https://twitter.com/${social.twitter}`} target="_blank" rel="noopener">
-          <FontAwesomeIcon icon={faXTwitter} fontSize={24}  style={{color: "black"}}/>
+        <Link
+          to={`https://twitter.com/${social.twitter}`}
+          target="_blank"
+          rel="noopener"
+        >
+          <FontAwesomeIcon
+            icon={faXTwitter}
+            fontSize={24}
+            style={{ color: "black" }}
+          />
         </Link>
       </p>
     </div>

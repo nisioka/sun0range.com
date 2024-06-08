@@ -11,33 +11,34 @@ tags: ["GatsbyJS", "React", "WordPress"]
 
 ## はじめに
 
-本ブログはWordPressをAWSにデプロイして運用していましたが、GatsbyJSを使ってGitHub Pagesでの静的サイトへの移行を行いました。その手順をここに残します。  
+本ブログは WordPress を AWS にデプロイして運用していましたが、GatsbyJS を使って GitHub Pages での静的サイトへの移行を行いました。その手順をここに残します。  
 ちなみに、移行のモチベーションとしては、下記がありました。
+
 1. 金銭的コストの削減をしたい
 2. サイトのパフォーマンス向上を図りたい
 3. セキュリティリスクを無くし、運用コストも下げたい
-4. AWSを完全に理解したので(嘘)、何か別の技術スタックの勉強にもしたい(今回はReactの実践として良かった)
+4. AWS の使用経験を活かしつつ、新しい技術スタックへの挑戦も兼ねて(今回は React の実践として良かった)
 
-### Beforeの運用
+### Before の運用
 
-- WordPressをAWSのEC2で動かす。
-  - 記事はWeb上のWordPress管理者画面から投稿する。
-    - （ここにセキュリティリスクがあるわけで、管理者乗っ取りやDB等への不正アクセスの可能性があった。）
-  - CloudFrontでキャッシュを効かせて、サイトパフォーマンスの向上を図ってはいた。
+- WordPress を AWS の EC2 で動かす。
+  - 記事は Web 上の WordPress 管理者画面から投稿する。
+    - （これにより、管理者の乗っ取りやデータベース等への不正アクセスなどのセキュリティリスクが存在していました。）
+  - CloudFront でキャッシュを効かせて、サイトパフォーマンスの向上を図ってはいた。
 
-### Afterの運用
+### After の運用
 
-- 既存のWordPressのバックアップをローカルPCで動かす。
-- 新規の記事はMarkdownファイルで記述する。
-- 上記をソースにして、GatsbyJSでSSG(Static Site Generation)でビルドする。
-  - 静的ファイルをGitHub Pagesでホスティングする。
+- 既存の WordPress のバックアップをローカル PC で動かす。
+- 新規の記事は Markdown ファイルで記述する。
+- 上記をソースにして、GatsbyJS で SSG(Static Site Generation)でビルドする。
+  - 静的ファイルを GitHub Pages でホスティングする。
 
 ## 移行手順概要
 
 1. WordPress サイトデータのエクスポート
 2. WordPress のローカル環境へのインポート
 3. GatsbyJS のセットアップ
-4. サイトのSSGビルドとデプロイ
+4. サイトのビルドとデプロイ
 
 ### 1. WordPress サイトデータのエクスポート
 
@@ -53,18 +54,18 @@ tags: ["GatsbyJS", "React", "WordPress"]
 
 次に、ローカル環境で WordPress をセットアップし、エクスポートしたデータをインポートします。
 
-この[docker-compose.yml](https://github.com/nisioka/docker-wordpress/blob/develop/docker-compose.yml)を使って、WordPressをローカル環境でセットアップします。  
-これには、WordPress本体とそのDB、phpMyAdminが含まれているので、起動させて http://localhost にアクセスすると空のWordPressが表示されます。  
-適当に初期設定を行った後、WordPressの管理画面にログインし、エクスポートしたデータをインポートします。
+この[docker-compose.yml](https://github.com/nisioka/docker-wordpress/blob/develop/docker-compose.yml)を使って、WordPress をローカル環境でセットアップします。  
+これには、WordPress 本体とその DB、phpMyAdmin が含まれているので、起動させて http://localhost にアクセスすると空の WordPress が表示されます。  
+適当に初期設定を行った後、WordPress の管理画面にログインし、エクスポートしたデータをインポートします。
 
-そして、WordPressのプラグインについても整理します。  
-不要なものを削除します。認証系のプラグインはlocalhostだと上手く動かなかったりもするので、削除するのが良いかと思います。公開するわけでは無いローカル環境なのでセキュリティを高める必要がありません。
-また、GatsbyJSでWordPressのデータを取得するための以下のプラグインを追加インストールします。  
+そして、WordPress のプラグインについても整理します。  
+不要なプラグインは削除しましょう。特に、ローカル環境では正常に動作しないことがある認証系のプラグインは削除することをお勧めします。公開するわけでは無いローカル環境なのでセキュリティを高める必要がありません。
+また、GatsbyJS で WordPress のデータを取得するための以下のプラグインを追加インストールします。
 
 - WP Gatsby
 - WPGraphQL
 
-この状態で既存のWordPress記事がローカルでも表示できていれば、次に進みます。
+この状態で既存の WordPress 記事がローカルでも表示できていれば、次に進みます。
 
 ### 3. GatsbyJS のセットアップ
 
@@ -79,10 +80,11 @@ npm install -g gatsby-cli
 gatsby new my-gatsby-blog
 cd my-gatsby-blog
 ```
-※ `my-gatsby-blog`は任意のプロジェクト名です。
 
+※ ここでの my-gatsby-blog はプロジェクト名として例示していますので、任意の名前に置き換えてください。
 
 GatsbyJS で WordPress のデータを取得するためのプラグインをインストールします。
+
 ```bash
 npm install gatsby-source-wordpress
 ```
@@ -153,8 +155,9 @@ git push -u origin master
 GitHub Pages の設定で、デプロイするブランチを gh-pages に設定します。
 
 ![githubPagesSetting.png](githubPagesSetting.png)
-この時、Build and deployment は GitHub Actions を使うのが現在の推奨なので、/.github/workflows/ に下記のワークフローを置きます。
-これはmasterブランチにpushされたら./publicディレクトリ(gatsby buildで生成される静的ファイルのデフォルトの置き場)をGitHub Pagesにデプロイするワークフローです。
+
+現在、Build and deployment には GitHub Actions の使用が推奨されていますので、/.github/workflows/ に下記のワークフローを置きます。
+これは master ブランチに push されたら./public ディレクトリ(gatsby build で生成される静的ファイルのデフォルトの置き場)を GitHub Pages にデプロイするワークフローです。
 
 ```yaml
 name: Deploy static content to Pages
@@ -187,7 +190,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: './public'
+          path: "./public"
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
@@ -195,5 +198,5 @@ jobs:
 
 ## まとめ
 
-簡単な最小構成の設定ですが、以上の手順でAWS にデプロイされていた WordPress サイトを GatsbyJS と GitHub Pages を用いた静的サイトへと移行することができました。  
+この記事では基本的な構成に焦点を当てて説明しましたが、以上の手順で AWS にデプロイされていた WordPress サイトを GatsbyJS と GitHub Pages を用いた静的サイトへと移行することができました。  
 静的サイトに移行することで、サイトのパフォーマンス向上とセキュリティ強化を実現できます。ぜひ試してみてください。

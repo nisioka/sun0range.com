@@ -1,250 +1,156 @@
 ---
-title: MDX example
-date: "2000-01-01"
-description: "A post showing MDX in action"
-featuredImagePath: "featured/gatsby-icon.png"
+title: AWSにデプロイしていたWordPressサイトをGatsbyJSによるGitHub Pagesでの静的サイトへ移行
+date: "2024-06-01"
+dateModified: "2024-06-04"
+description: "WordPressは非常に強力なCMSですが、動的サイトであるため、サーバーの保守やセキュリティ対策が必要です。一方、静的サイトジェネレーターであるGatsbyJSを使用すると、高速で安全なサイトを構築できます。本記事では、AWSにデプロイしていたWordPressサイトをGatsbyJSとGitHub Pagesを使用した静的サイトへ移行する手順を紹介します。"
+featuredImagePath: "featured/wordpress2gatsby.webp"
 nodeType: blog
 category: 技術
-tags: ['Gatsby', 'React']
+tags: ["Gatsby", "React", "WordPress"]
 ---
 
-This is a post showing MDX in action. This starter now comes with MDX out-of-the-box!
+# AWS にデプロイしていた WordPress サイトを GatsbyJS による GitHub Pages での静的サイトへ移行
 
-```js
-// you can write JSX in your Markdown!
-<button>test</button>
+## はじめに
+
+WordPress は非常に強力な CMS ですが、動的サイトであるため、サーバーの保守やセキュリティ対策が必要です。一方、静的サイトジェネレーターである GatsbyJS を使用すると、高速で安全なサイトを構築できます。本記事では、AWS にデプロイしていた WordPress サイトを GatsbyJS と GitHub Pages を使用した静的サイトへ移行する手順を紹介します。
+
+## 移行プロセス
+
+1. WordPress サイトデータのエクスポート
+2. GatsbyJS のセットアップ
+3. WordPress データのインポート
+4. サイトのビルドとデプロイ
+
+## 1. WordPress サイトデータのエクスポート
+
+まず、WordPress サイトからデータをエクスポートします。
+
+1. **WordPress 管理ダッシュボード**にログインします。
+2. **ツール** > **エクスポート**を選択します。
+3. **すべてのコンテンツ**を選び、**エクスポートファイルをダウンロード**をクリックします。
+
+これで、投稿、ページ、メディアなどのデータを含む XML ファイルがダウンロードされます。
+
+## 2. GatsbyJS のセットアップ
+
+次に、GatsbyJS をセットアップします。
+
+1. **Node.js**と**npm**をインストールします。
+
+```bash
+# For Mac
+brew install node
 ```
 
-<button>test</button>
+Gatsby CLI をインストールします。
 
-## MDX
-
-MDX lets you write JSX embedded inside markdown, perfect for technical blogs. MDX works with Gatsby through [gatsby-plugin-mdx](https://www.gatsbyjs.org/packages/gatsby-plugin-mdx/). You can learn more about it in the Gatsby docs: [Getting Started with MDX](https://www.gatsbyjs.org/docs/mdx/getting-started/).
-
-## Sample Markdown
-
-This is my first post on my new fake blog! How exciting!
-
-I'm sure I'll write a lot more interesting things in the future.
-
-Oh, and here's a great quote from this Wikipedia on
-[salted duck eggs](https://en.wikipedia.org/wiki/Salted_duck_egg).
-
-> A salted duck egg is a Chinese preserved food product made by soaking duck
-> eggs in brine, or packing each egg in damp, salted charcoal. In Asian
-> supermarkets, these eggs are sometimes sold covered in a thick layer of salted
-> charcoal paste. The eggs may also be sold with the salted paste removed,
-> wrapped in plastic, and vacuum packed. From the salt curing process, the
-> salted duck eggs have a briny aroma, a gelatin-like egg white and a
-> firm-textured, round yolk that is bright orange-red in color.
-
-![Chinese Salty Egg](./salty_egg.jpg)
-
-You can also write code blocks here!
-
-```js
-const saltyDuckEgg = "chinese preserved food product"
+```bash
+npm install -g gatsby-cli
 ```
 
-| Number | Title                                    | Year |
-| :----- | :--------------------------------------- | ---: |
-| 1      | Harry Potter and the Philosopher’s Stone | 2001 |
-| 2      | Harry Potter and the Chamber of Secrets  | 2002 |
-| 3      | Harry Potter and the Prisoner of Azkaban | 2004 |
+新しい Gatsby プロジェクトを作成します。
 
-[View raw (TEST.md)](https://raw.github.com/adamschwartz/github-markdown-kitchen-sink/master/README.md)
-
-This is a paragraph.
-
-    This is a paragraph.
-
-# Header 1
-
-## Header 2
-
-    Header 1
-    ========
-
-    Header 2
-    --------
-
-# Header 1
-
-## Header 2
-
-### Header 3
-
-#### Header 4
-
-##### Header 5
-
-###### Header 6
-
-    # Header 1
-    ## Header 2
-    ### Header 3
-    #### Header 4
-    ##### Header 5
-    ###### Header 6
-
-# Header 1
-
-## Header 2
-
-### Header 3
-
-#### Header 4
-
-##### Header 5
-
-###### Header 6
-
-    # Header 1 #
-    ## Header 2 ##
-    ### Header 3 ###
-    #### Header 4 ####
-    ##### Header 5 #####
-    ###### Header 6 ######
-
-> Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
-
-    > Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
-
-> ## This is a header.
->
-> 1. This is the first list item.
-> 2. This is the second list item.
->
-> Here's some example code:
->
->     Markdown.generate();
-
-    > ## This is a header.
-    > 1. This is the first list item.
-    > 2. This is the second list item.
-    >
-    > Here's some example code:
-    >
-    >     Markdown.generate();
-
-- Red
-- Green
-- Blue
-
-* Red
-* Green
-* Blue
-
-- Red
-- Green
-- Blue
-
-```markdown
-- Red
-- Green
-- Blue
-
-* Red
-* Green
-* Blue
-
-- Red
-- Green
-- Blue
+```bash
+gatsby new my-gatsby-blog
+cd my-gatsby-blog
 ```
 
-- `code goes` here in this line
-- **bold** goes here
+3. WordPress データのインポート
+   GatsbyJS で WordPress データを使用するために、gatsby-source-wordpress プラグインを利用します。
 
-```markdown
-- `code goes` here in this line
-- **bold** goes here
+プラグインをインストールします。
+
+```bash
+npm install gatsby-source-wordpress
 ```
 
-1. Buy flour and salt
-1. Mix together with water
-1. Bake
+gatsby-config.js ファイルを編集して、WordPress サイトのデータを取得するように設定します。
 
-```markdown
-1. Buy flour and salt
-1. Mix together with water
-1. Bake
+```javascript
+module.exports = {
+  plugins: [
+    {
+      resolve: `gatsby-source-wordpress`,
+      options: {
+        url: `http://your-wordpress-site.com/graphql`,
+      },
+    },
+  ],
+}
 ```
 
-1. `code goes` here in this line
-1. **bold** goes here
+gatsby-node.js ファイルを作成し、WordPress の投稿を Gatsby のページとして生成するスクリプトを追加します。
 
-```markdown
-1. `code goes` here in this line
-1. **bold** goes here
+```javascript
+const path = require(`path`)
+
+exports.createPages = async ({ graphql, actions }) => {
+  const { createPage } = actions
+
+  const result = await graphql(`
+    {
+      allWpPost {
+        nodes {
+          slug
+        }
+      }
+    }
+  `)
+
+  result.data.allWpPost.nodes.forEach(node => {
+    createPage({
+      path: node.slug,
+      component: path.resolve(`./src/templates/blog-post.js`),
+      context: {
+        slug: node.slug,
+      },
+    })
+  })
+}
 ```
 
-Paragraph:
+4. サイトのビルドとデプロイ
+   最後に、サイトをビルドし、GitHub Pages にデプロイします。
 
-    Code
+ビルドを行います。
 
-{/*<!-- -->*/}
+```bash
+gatsby build
+```
 
-    Paragraph:
+リポジトリを作成し、GitHub Pages にデプロイします。
 
-        Code
+```bash
+git init
+git remote add origin https://github.com/your-username/your-repo.git
+git add .
+git commit -m "Initial commit"
+git push -u origin master
+```
 
----
+GitHub Pages の設定で、デプロイするブランチを gh-pages に設定します。
 
----
+```bash
+npm install gh-pages --save-dev
+```
 
----
+package.json にデプロイスクリプトを追加します。
 
----
+```json
+{
+  "scripts": {
+    "deploy": "gatsby build && gh-pages -d public"
+  }
+}
+```
 
----
+デプロイを実行します。
 
-    * * *
+```bash
+npm run deploy
+```
 
-    ***
+## まとめ
 
-    *****
-
-    - - -
-
-    ---------------------------------------
-
-This is [an example](http://example.com "Example") link.
-
-[This link](http://example.com) has no title attr.
-
-This is [an example][id] reference-style link.
-
-[id]: http://example.com "Optional Title"
-
-    This is [an example](http://example.com "Example") link.
-
-    [This link](http://example.com) has no title attr.
-
-    This is [an example] [id] reference-style link.
-
-    [id]: http://example.com "Optional Title"
-
-_single asterisks_
-
-_single underscores_
-
-**double asterisks**
-
-**double underscores**
-
-    *single asterisks*
-
-    _single underscores_
-
-    **double asterisks**
-
-    __double underscores__
-
-This paragraph has some `code` in it.
-
-    This paragraph has some `code` in it.
-
-![Alt Text](https://via.placeholder.com/200x50 "Image Title")
-
-    ![Alt Text](https://via.placeholder.com/200x50 "Image Title")
+以上の手順で、AWS にデプロイされていた WordPress サイトを GatsbyJS と GitHub Pages を用いた静的サイトへと移行することができました。静的サイトに移行することで、サイトのパフォーマンス向上とセキュリティ強化を実現できます。ぜひ試してみてください。

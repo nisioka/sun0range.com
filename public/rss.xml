@@ -1,214 +1,209 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Fri, 07 Jun 2024 22:38:43 GMT</lastBuildDate><item><title><![CDATA[MDX example]]></title><description><![CDATA[This is a post showing MDX in action. This starter now comes with MDX out-of-the-box! test MDX MDX lets you write JSX embedded inside…]]></description><link>https://sun0range.tech.server-on.net/migrate-from-wordpress/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/migrate-from-wordpress/</guid><content:encoded>&lt;p&gt;This is a post showing MDX in action. This starter now comes with MDX out-of-the-box!&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;language-js&quot;&gt;// you can write JSX in your Markdown!
-&amp;#x3C;button&gt;test&amp;#x3C;/button&gt;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;button&gt;test&lt;/button&gt;&lt;/p&gt;
-&lt;h2&gt;MDX&lt;/h2&gt;
-&lt;p&gt;MDX lets you write JSX embedded inside markdown, perfect for technical blogs. MDX works with Gatsby through &lt;a href=&quot;https://www.gatsbyjs.org/packages/gatsby-plugin-mdx/&quot;&gt;gatsby-plugin-mdx&lt;/a&gt;. You can learn more about it in the Gatsby docs: &lt;a href=&quot;https://www.gatsbyjs.org/docs/mdx/getting-started/&quot;&gt;Getting Started with MDX&lt;/a&gt;.&lt;/p&gt;
-&lt;h2&gt;Sample Markdown&lt;/h2&gt;
-&lt;p&gt;This is my first post on my new fake blog! How exciting!&lt;/p&gt;
-&lt;p&gt;I&apos;m sure I&apos;ll write a lot more interesting things in the future.&lt;/p&gt;
-&lt;p&gt;Oh, and here&apos;s a great quote from this Wikipedia on
-&lt;a href=&quot;https://en.wikipedia.org/wiki/Salted_duck_egg&quot;&gt;salted duck eggs&lt;/a&gt;.&lt;/p&gt;
-&lt;blockquote&gt;
-&lt;p&gt;A salted duck egg is a Chinese preserved food product made by soaking duck
-eggs in brine, or packing each egg in damp, salted charcoal. In Asian
-supermarkets, these eggs are sometimes sold covered in a thick layer of salted
-charcoal paste. The eggs may also be sold with the salted paste removed,
-wrapped in plastic, and vacuum packed. From the salt curing process, the
-salted duck eggs have a briny aroma, a gelatin-like egg white and a
-firm-textured, round yolk that is bright orange-red in color.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&quot;./salty_egg.jpg&quot; alt=&quot;Chinese Salty Egg&quot;&gt;&lt;/p&gt;
-&lt;p&gt;You can also write code blocks here!&lt;/p&gt;
-&lt;pre&gt;&lt;code class=&quot;language-js&quot;&gt;const saltyDuckEgg = &quot;chinese preserved food product&quot;
-&lt;/code&gt;&lt;/pre&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th align=&quot;left&quot;&gt;Number&lt;/th&gt;
-&lt;th align=&quot;left&quot;&gt;Title&lt;/th&gt;
-&lt;th align=&quot;right&quot;&gt;Year&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td align=&quot;left&quot;&gt;1&lt;/td&gt;
-&lt;td align=&quot;left&quot;&gt;Harry Potter and the Philosopher’s Stone&lt;/td&gt;
-&lt;td align=&quot;right&quot;&gt;2001&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td align=&quot;left&quot;&gt;2&lt;/td&gt;
-&lt;td align=&quot;left&quot;&gt;Harry Potter and the Chamber of Secrets&lt;/td&gt;
-&lt;td align=&quot;right&quot;&gt;2002&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td align=&quot;left&quot;&gt;3&lt;/td&gt;
-&lt;td align=&quot;left&quot;&gt;Harry Potter and the Prisoner of Azkaban&lt;/td&gt;
-&lt;td align=&quot;right&quot;&gt;2004&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;&lt;a href=&quot;https://raw.github.com/adamschwartz/github-markdown-kitchen-sink/master/README.md&quot;&gt;View raw (TEST.md)&lt;/a&gt;&lt;/p&gt;
-&lt;p&gt;This is a paragraph.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;This is a paragraph.
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h1&gt;Header 1&lt;/h1&gt;
-&lt;h2&gt;Header 2&lt;/h2&gt;
-&lt;pre&gt;&lt;code&gt;Header 1
-========
-
-Header 2
---------
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h1&gt;Header 1&lt;/h1&gt;
-&lt;h2&gt;Header 2&lt;/h2&gt;
-&lt;h3&gt;Header 3&lt;/h3&gt;
-&lt;h4&gt;Header 4&lt;/h4&gt;
-&lt;h5&gt;Header 5&lt;/h5&gt;
-&lt;h6&gt;Header 6&lt;/h6&gt;
-&lt;pre&gt;&lt;code&gt;# Header 1
-## Header 2
-### Header 3
-#### Header 4
-##### Header 5
-###### Header 6
-&lt;/code&gt;&lt;/pre&gt;
-&lt;h1&gt;Header 1&lt;/h1&gt;
-&lt;h2&gt;Header 2&lt;/h2&gt;
-&lt;h3&gt;Header 3&lt;/h3&gt;
-&lt;h4&gt;Header 4&lt;/h4&gt;
-&lt;h5&gt;Header 5&lt;/h5&gt;
-&lt;h6&gt;Header 6&lt;/h6&gt;
-&lt;pre&gt;&lt;code&gt;# Header 1 #
-## Header 2 ##
-### Header 3 ###
-#### Header 4 ####
-##### Header 5 #####
-###### Header 6 ######
-&lt;/code&gt;&lt;/pre&gt;
-&lt;blockquote&gt;
-&lt;p&gt;Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;pre&gt;&lt;code&gt;&gt; Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus. Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.
-&lt;/code&gt;&lt;/pre&gt;
-&lt;blockquote&gt;
-&lt;h2&gt;This is a header.&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 09 Jun 2024 00:04:06 GMT</lastBuildDate><item><title><![CDATA[AWSにデプロイしていたWordPressサイトをGatsbyJSによるGitHub Pagesでの静的サイトへ移行]]></title><description><![CDATA[はじめに 本ブログは WordPress を AWS にデプロイして運用していましたが、GatsbyJS を使って GitHub Pages…]]></description><link>https://sun0range.tech.server-on.net/migrate-from-wordpress/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/migrate-from-wordpress/</guid><pubDate>Sun, 09 Jun 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;本ブログは WordPress を AWS にデプロイして運用していましたが、GatsbyJS を使って GitHub Pages での静的サイトへの移行を行いました。その手順をここに残します。&lt;br&gt;
+ちなみに、移行のモチベーションとしては、下記がありました。&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;This is the first list item.&lt;/li&gt;
-&lt;li&gt;This is the second list item.&lt;/li&gt;
+&lt;li&gt;金銭的コストの削減をしたい&lt;/li&gt;
+&lt;li&gt;サイトのパフォーマンス向上を図りたい&lt;/li&gt;
+&lt;li&gt;セキュリティリスクを無くし、運用コストも下げたい&lt;/li&gt;
+&lt;li&gt;AWS の使用経験を活かしつつ、新しい技術スタックへの挑戦も兼ねて(今回は React の実践として良かった)&lt;/li&gt;
 &lt;/ol&gt;
-&lt;p&gt;Here&apos;s some example code:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Markdown.generate();
-&lt;/code&gt;&lt;/pre&gt;
-&lt;/blockquote&gt;
-&lt;pre&gt;&lt;code&gt;&gt; ## This is a header.
-&gt; 1. This is the first list item.
-&gt; 2. This is the second list item.
-&gt;
-&gt; Here&apos;s some example code:
-&gt;
-&gt;     Markdown.generate();
-&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;Before の運用&lt;/h3&gt;
 &lt;ul&gt;
-&lt;li&gt;Red&lt;/li&gt;
-&lt;li&gt;Green&lt;/li&gt;
-&lt;li&gt;Blue&lt;/li&gt;
-&lt;/ul&gt;
+&lt;li&gt;WordPress を AWS の EC2 で動かす。
 &lt;ul&gt;
-&lt;li&gt;Red&lt;/li&gt;
-&lt;li&gt;Green&lt;/li&gt;
-&lt;li&gt;Blue&lt;/li&gt;
-&lt;/ul&gt;
+&lt;li&gt;記事は Web 上の WordPress 管理者画面から投稿する。
 &lt;ul&gt;
-&lt;li&gt;Red&lt;/li&gt;
-&lt;li&gt;Green&lt;/li&gt;
-&lt;li&gt;Blue&lt;/li&gt;
+&lt;li&gt;（これにより、管理者の乗っ取りやデータベース等への不正アクセスなどのセキュリティリスクが存在していました。）&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code class=&quot;language-markdown&quot;&gt;- Red
-- Green
-- Blue
-
-* Red
-* Green
-* Blue
-
-- Red
-- Green
-- Blue
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;CloudFront でキャッシュを効かせて、サイトパフォーマンスの向上を図ってはいた。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;After の運用&lt;/h3&gt;
 &lt;ul&gt;
-&lt;li&gt;&lt;code&gt;code goes&lt;/code&gt; here in this line&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;bold&lt;/strong&gt; goes here&lt;/li&gt;
+&lt;li&gt;既存の WordPress のバックアップをローカル PC で動かす。&lt;/li&gt;
+&lt;li&gt;新規の記事は Markdown ファイルで記述する。&lt;/li&gt;
+&lt;li&gt;上記をソースにして、GatsbyJS で SSG(Static Site Generation)でビルドする。
+&lt;ul&gt;
+&lt;li&gt;静的ファイルを GitHub Pages でホスティングする。&lt;/li&gt;
 &lt;/ul&gt;
-&lt;pre&gt;&lt;code class=&quot;language-markdown&quot;&gt;- `code goes` here in this line
-- **bold** goes here
-&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;移行手順概要&lt;/h2&gt;
 &lt;ol&gt;
-&lt;li&gt;Buy flour and salt&lt;/li&gt;
-&lt;li&gt;Mix together with water&lt;/li&gt;
-&lt;li&gt;Bake&lt;/li&gt;
+&lt;li&gt;WordPress サイトデータのエクスポート&lt;/li&gt;
+&lt;li&gt;WordPress のローカル環境へのインポート&lt;/li&gt;
+&lt;li&gt;GatsbyJS のセットアップ&lt;/li&gt;
+&lt;li&gt;サイトのビルドとデプロイ&lt;/li&gt;
 &lt;/ol&gt;
-&lt;pre&gt;&lt;code class=&quot;language-markdown&quot;&gt;1. Buy flour and salt
-1. Mix together with water
-1. Bake
-&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;1. WordPress サイトデータのエクスポート&lt;/h3&gt;
+&lt;p&gt;まず、WordPress サイトからデータをエクスポートします。&lt;/p&gt;
 &lt;ol&gt;
-&lt;li&gt;&lt;code&gt;code goes&lt;/code&gt; here in this line&lt;/li&gt;
-&lt;li&gt;&lt;strong&gt;bold&lt;/strong&gt; goes here&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;WordPress 管理ダッシュボード&lt;/strong&gt;にログインします。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ツール&lt;/strong&gt; &gt; &lt;strong&gt;エクスポート&lt;/strong&gt;を選択します。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;すべてのコンテンツ&lt;/strong&gt;を選び、&lt;strong&gt;エクスポートファイルをダウンロード&lt;/strong&gt;をクリックします。&lt;/li&gt;
 &lt;/ol&gt;
-&lt;pre&gt;&lt;code class=&quot;language-markdown&quot;&gt;1. `code goes` here in this line
-1. **bold** goes here
+&lt;p&gt;これで、投稿、ページ、メディアなどのデータを含む XML ファイルがダウンロードされます。&lt;/p&gt;
+&lt;h3&gt;2. WordPress データのインポート&lt;/h3&gt;
+&lt;p&gt;次に、ローカル環境で WordPress をセットアップし、エクスポートしたデータをインポートします。&lt;/p&gt;
+&lt;p&gt;この&lt;a href=&quot;https://github.com/nisioka/docker-wordpress/blob/develop/docker-compose.yml&quot;&gt;docker-compose.yml&lt;/a&gt;を使って、WordPress をローカル環境でセットアップします。&lt;br&gt;
+これには、WordPress 本体とその DB、phpMyAdmin が含まれているので、起動させて &lt;a href=&quot;http://localhost&quot;&gt;http://localhost&lt;/a&gt; にアクセスすると空の WordPress が表示されます。&lt;br&gt;
+適当に初期設定を行った後、WordPress の管理画面にログインし、エクスポートしたデータをインポートします。&lt;/p&gt;
+&lt;p&gt;そして、WordPress のプラグインについても整理します。&lt;br&gt;
+不要なプラグインは削除しましょう。特に、ローカル環境では正常に動作しないことがある認証系のプラグインは削除することをお勧めします。公開するわけでは無いローカル環境なのでセキュリティを高める必要がありません。
+また、GatsbyJS で WordPress のデータを取得するための以下のプラグインを追加インストールします。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;WP Gatsby&lt;/li&gt;
+&lt;li&gt;WPGraphQL&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;この状態で既存の WordPress 記事がローカルでも表示できていれば、次に進みます。&lt;/p&gt;
+&lt;h3&gt;3. GatsbyJS のセットアップ&lt;/h3&gt;
+&lt;p&gt;次に、GatsbyJS をセットアップします。&lt;/p&gt;
+&lt;p&gt;前提： &lt;code&gt;Node.js&lt;/code&gt;と&lt;code&gt;npm&lt;/code&gt;がインストールされていること。&lt;/p&gt;
+&lt;p&gt;Gatsby CLI をインストールし、新しい Gatsby プロジェクトを作成します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;npm install -g gatsby-cli
+gatsby new my-gatsby-blog
+cd my-gatsby-blog
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Paragraph:&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Code
+&lt;p&gt;※ ここでの my-gatsby-blog はプロジェクト名として例示していますので、任意の名前に置き換えてください。&lt;/p&gt;
+&lt;p&gt;GatsbyJS で WordPress のデータを取得するためのプラグインをインストールします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;npm install gatsby-source-wordpress
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;{/&lt;em&gt;&lt;!-- --&gt;&lt;/em&gt;/}&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;Paragraph:
-
-    Code
+&lt;p&gt;gatsby-config.js ファイルを編集して、WordPress サイトのデータを取得するように設定します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;module.exports = {
+  plugins: [
+    {
+      resolve: `gatsby-source-wordpress`,
+      options: {
+        url: `http://localhost/graphql`,
+      },
+    },
+  ],
+}
 &lt;/code&gt;&lt;/pre&gt;
-&lt;hr&gt;
-&lt;hr&gt;
-&lt;hr&gt;
-&lt;hr&gt;
-&lt;hr&gt;
-&lt;pre&gt;&lt;code&gt;* * *
+&lt;p&gt;gatsby-node.js ファイルを作成し、WordPress の投稿を Gatsby のページとして生成するスクリプトを追加します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;const path = require(`path`)
 
-***
+exports.createPages = async ({ graphql, actions }) =&gt; {
+  const { createPage } = actions
 
-*****
+  const result = await graphql(`
+    {
+      allWpPost {
+        nodes {
+          slug
+        }
+      }
+    }
+  `)
 
-- - -
-
----------------------------------------
+  result.data.allWpPost.nodes.forEach(node =&gt; {
+    createPage({
+      path: node.slug,
+      component: path.resolve(`./src/templates/blog-post.js`),
+      context: {
+        slug: node.slug,
+      },
+    })
+  })
+}
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This is &lt;a href=&quot;http://example.com&quot; title=&quot;Example&quot;&gt;an example&lt;/a&gt; link.&lt;/p&gt;
-&lt;p&gt;&lt;a href=&quot;http://example.com&quot;&gt;This link&lt;/a&gt; has no title attr.&lt;/p&gt;
-&lt;p&gt;This is &lt;a href=&quot;http://example.com&quot; title=&quot;Optional Title&quot;&gt;an example&lt;/a&gt; reference-style link.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;This is [an example](http://example.com &quot;Example&quot;) link.
-
-[This link](http://example.com) has no title attr.
-
-This is [an example] [id] reference-style link.
-
-[id]: http://example.com &quot;Optional Title&quot;
+&lt;h2&gt;4. サイトのビルドとデプロイ&lt;/h2&gt;
+&lt;p&gt;最後に、サイトをビルドし、GitHub Pages にデプロイします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;gatsby build
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;em&gt;single asterisks&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;single underscores&lt;/em&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;double asterisks&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;double underscores&lt;/strong&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;*single asterisks*
-
-_single underscores_
-
-**double asterisks**
-
-__double underscores__
+&lt;p&gt;リポジトリを作成し、GitHub Pages にデプロイします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;git init
+git remote add origin https://github.com/your-username/your-repo.git
+git add .
+git commit -m &quot;Initial commit&quot;
+git push -u origin master
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;This paragraph has some &lt;code&gt;code&lt;/code&gt; in it.&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;This paragraph has some `code` in it.
+&lt;p&gt;GitHub Pages の設定で、デプロイするブランチを gh-pages に設定します。&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; margin-left: initial;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/66d543f070de0658b4a9a30ece6ec13a/71eb5/githubPagesSetting.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 49.16666666666667%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAAAsTAAALEwEAmpwYAAABc0lEQVR42m1S2W7DMAzL///fnjtsA7ZecXzf4Si36dJiAgjFsURTx/RzvuL94wuLsTjyW1sPFxJcTDc/EDFri+tiYFx4/Lc+jrPkKN5dD2+YrOcPkmnjYAjLgEWbATl7SZaYRcMxMZf2gopE1NahlMJU5EDsTUhmpeGdx7quRMfaOzp9aw2937zciW3eOYcp5cwPj1rbH2FquCgHpR3LDCz3BnkoxoiUEjxVi/JGZU+EEnC+XBDYp81KKaPcWbEvNsPnjpBXtL4+YkSlddKCQuUvhPLaXrrWevTDe4dWn9vxnz0pFDLv/dOFTO/7NHN6LCsW6NA5VbbGs9TUEctKxfQpP3K2ygahmtUoYbOQ6ujZVXNdTMFJVyhXMFuuSmicKslIWHf929owKe6XlFc4lCITZMDMYRw+j6P0WjNyisghUEG+o5CwwcZO9ZJ3I5XJT4ELnDlpIap3wpRk72aujeFD3LNckLif/T6UdbRnh7tCIfwFcaIMwqv2a6MAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/static/66d543f070de0658b4a9a30ece6ec13a/85704/githubPagesSetting.webp 240w,
+/static/66d543f070de0658b4a9a30ece6ec13a/2d484/githubPagesSetting.webp 480w,
+/static/66d543f070de0658b4a9a30ece6ec13a/ac99e/githubPagesSetting.webp 960w,
+/static/66d543f070de0658b4a9a30ece6ec13a/4df83/githubPagesSetting.webp 1440w,
+/static/66d543f070de0658b4a9a30ece6ec13a/fc987/githubPagesSetting.webp 1920w&quot;
+              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/static/66d543f070de0658b4a9a30ece6ec13a/74bfa/githubPagesSetting.png 240w,
+/static/66d543f070de0658b4a9a30ece6ec13a/b3a52/githubPagesSetting.png 480w,
+/static/66d543f070de0658b4a9a30ece6ec13a/97137/githubPagesSetting.png 960w,
+/static/66d543f070de0658b4a9a30ece6ec13a/dc3b8/githubPagesSetting.png 1440w,
+/static/66d543f070de0658b4a9a30ece6ec13a/71eb5/githubPagesSetting.png 1920w&quot;
+            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+            type=&quot;image/png&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/static/66d543f070de0658b4a9a30ece6ec13a/97137/githubPagesSetting.png&quot;
+            alt=&quot;githubPagesSetting.png&quot;
+            title=&quot;&quot;
+            loading=&quot;lazy&quot;
+            decoding=&quot;async&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;現在、Build and deployment には GitHub Actions の使用が推奨されていますので、/.github/workflows/ に下記のワークフローを置きます。
+これは master ブランチに push されたら./public ディレクトリ(gatsby build で生成される静的ファイルのデフォルトの置き場)を GitHub Pages にデプロイするワークフローです。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-yaml&quot;&gt;name: Deploy static content to Pages
+
+on:
+  push:
+    branches: [&quot;master&quot;]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: &quot;pages&quot;
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: &quot;./public&quot;
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&quot;https://via.placeholder.com/200x50&quot; alt=&quot;Alt Text&quot; title=&quot;Image Title&quot;&gt;&lt;/p&gt;
-&lt;pre&gt;&lt;code&gt;![Alt Text](https://via.placeholder.com/200x50 &quot;Image Title&quot;)
-&lt;/code&gt;&lt;/pre&gt;</content:encoded></item></channel></rss>
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;この記事では基本的な構成に焦点を当てて説明しましたが、以上の手順で AWS にデプロイされていた WordPress サイトを GatsbyJS と GitHub Pages を用いた静的サイトへと移行することができました。&lt;br&gt;
+静的サイトに移行することで、サイトのパフォーマンス向上とセキュリティ強化を実現できます。ぜひ試してみてください。&lt;/p&gt;</content:encoded></item></channel></rss>

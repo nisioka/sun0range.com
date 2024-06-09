@@ -92,6 +92,10 @@ const config: GatsbyConfig = {
             resolve: `gatsby-remark-images`,
             options: {
               maxWidth: 960,
+              wrapperStyle: `margin-left: initial;`,
+              backgroundColor: `transparent`,
+              quality: 70,
+              withWebp: true,
             },
           },
           {

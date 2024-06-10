@@ -210,6 +210,12 @@ const config: GatsbyConfig = {
         // purgeOnly : ['components/', '/main.css', 'bootstrap/'], // Purge only these files/folders
       },
     },
+    {
+      resolve: `gatsby-plugin-disqus`,
+      options: {
+        shortname: `https-sun0range-tech-server-on-net`
+      }
+    },
   ],
 }
 export default config

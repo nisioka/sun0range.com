@@ -11,6 +11,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import parse, { domToReact } from "html-react-parser"
 import { ghcolors } from "react-syntax-highlighter/dist/cjs/styles/prism"
 import { Disqus } from 'gatsby-plugin-disqus';
+import config from "../../gatsby-config"
 
 type BlogPostTemplateProps = {
   data: {
@@ -73,6 +74,8 @@ const BlogPostTemplate = ({
   },
   location,
 }: BlogPostTemplateProps) => {
+  const { siteMetadata } = config as { siteMetadata: SiteMetadata }
+
   const post = {
     id: md?.id || wpPost?.id,
     title: md?.frontmatter.title || wpPost?.title,
@@ -189,7 +192,7 @@ const BlogPostTemplate = ({
       </BlogPostNav>
 
       <Disqus config={{
-        url: `/${convertCategory(next.category)}/${next.slug}`,
+        url: `${siteMetadata.siteUrl}/${convertCategory(next.category)}/${next.slug}`,
         identifier: `/${convertCategory(next.category)}/${next.slug}`,
         title: post.title
       }} />

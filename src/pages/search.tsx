@@ -2,35 +2,13 @@ import React, { useEffect, useState } from "react"
 import { graphql, Link } from "gatsby"
 import Layout from "../components/layout"
 import { convertCategory, mergePosts } from "../utilFunction"
-// import { useNavigate } from 'react-router-dom';
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 import { GatsbyImage } from "gatsby-plugin-image"
 
 const Search = ({ data, location }: { data: any; location: Location }) => {
   const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
-
-  const [state, setState] = useState({
-    filteredData: [] as CommonPost[],
-    query: "",
-  })
-  // const [urlParam, setUrlParam] = useState('');
-  // const navigate = useNavigate();
-  //
-  // useEffect(() => {
-  //   // ユーザーの入力があるたびにURLのクエリパラメータを更新
-  //   const params = new URLSearchParams();
-  //   if (query) {
-  //     params.append('q', query);
-  //   } else {
-  //     params.delete('q');
-  //   }
-  //   navigate(`?${params.toString()}`, { replace: true });
-  // }, [urlParam, navigate]);
-
-  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const queryWords = event.target.value.toLowerCase().split(/\s+/)
-
-    const filteredData = posts.filter(post => {
+  function filterByQuery(queryWords: string[]) {
+    return posts.filter(post => {
       for (const word of queryWords) {
         if (
           !post.title.toLowerCase().includes(word) &&
@@ -41,13 +19,39 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
       }
       return true
     })
+  }
+
+  const initQuery = decodeURI(location.href?.split("?q=")[1] || "").toLowerCase()
+  const [state, setState] = useState({
+    filteredData: filterByQuery(initQuery.split(/\s+/)),
+    query: initQuery,
+  })
+  const { filteredData, query } = state
+
+  useEffect(() => {
+    // ユーザーの入力があるたびにURLのクエリパラメータを更新
+    const params = new URLSearchParams()
+    if (query) {
+      params.append("q", query)
+    } else {
+      params.delete("q")
+    }
+    window.history.replaceState(
+      "",
+      "",
+      location.href.split("?")[0] +
+        (params.size > 0 ? "?" + params.toString() : "")
+    )
+  }, [state.query])
+
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const queryWords = event.target.value.toLowerCase().split(/\s+/)
+
     setState({
-      filteredData,
+      filteredData: filterByQuery(queryWords),
       query: queryWords.join(" "),
     })
   }
-
-  const { filteredData, query } = state
 
   return (
     <Layout location={location}>
@@ -56,6 +60,7 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
         aria-label="Search"
         placeholder="検索ワードを入力..."
         onChange={handleInputChange}
+        value={query}
       />
       <div className="result-inner__res">
         {query !== ""

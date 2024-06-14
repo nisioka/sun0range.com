@@ -10,7 +10,7 @@ import RelatedList from "../components/related-list"
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
 import parse, { domToReact } from "html-react-parser"
 import { ghcolors } from "react-syntax-highlighter/dist/cjs/styles/prism"
-import { Disqus } from 'gatsby-plugin-disqus';
+import { Disqus } from "gatsby-plugin-disqus"
 import config from "../../gatsby-config"
 
 type BlogPostTemplateProps = {
@@ -191,11 +191,15 @@ const BlogPostTemplate = ({
         </ul>
       </BlogPostNav>
 
-      <Disqus config={{
-        url: `${siteMetadata.siteUrl}/${convertCategory(next.category)}/${next.slug}`,
-        identifier: `/${convertCategory(next.category)}/${next.slug}`,
-        title: post.title
-      }} />
+      <Disqus
+        config={{
+          url: `${siteMetadata.siteUrl}/${convertCategory(next.category)}/${
+            next.slug
+          }`,
+          identifier: `/${convertCategory(next.category)}/${next.slug}`,
+          title: post.title,
+        }}
+      />
       <RelatedList slug={post.slug} category={post.category} tags={post.tags} />
     </Layout>
   )

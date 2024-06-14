@@ -213,8 +213,8 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-plugin-disqus`,
       options: {
-        shortname: `https-sun0range-tech-server-on-net`
-      }
+        shortname: `https-sun0range-tech-server-on-net`,
+      },
     },
   ],
 }

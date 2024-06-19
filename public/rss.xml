@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Wed, 19 Jun 2024 13:26:31 GMT</lastBuildDate><item><title><![CDATA[AWSにデプロイしていたWordPressサイトをGatsbyJSによるGitHub Pagesでの静的サイトへ移行]]></title><description><![CDATA[はじめに 本ブログは WordPress を AWS にデプロイして運用していましたが、GatsbyJS を使って GitHub Pages…]]></description><link>https://sun0range.tech.server-on.net/migrate-from-wordpress/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/migrate-from-wordpress/</guid><pubDate>Sun, 09 Jun 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;本ブログは WordPress を AWS にデプロイして運用していましたが、GatsbyJS を使って GitHub Pages での静的サイトへの移行を行いました。その手順をここに残します。&lt;br&gt;
+ちなみに、移行のモチベーションとしては、下記がありました。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;金銭的コストの削減をしたい&lt;/li&gt;
+&lt;li&gt;サイトのパフォーマンス向上を図りたい&lt;/li&gt;
+&lt;li&gt;セキュリティリスクを無くし、運用コストも下げたい&lt;/li&gt;
+&lt;li&gt;AWS の使用経験を活かしつつ、新しい技術スタックへの挑戦も兼ねて(今回は React の実践として良かった)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Before の運用&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;WordPress を AWS の EC2 で動かす。
+&lt;ul&gt;
+&lt;li&gt;記事は Web 上の WordPress 管理者画面から投稿する。
+&lt;ul&gt;
+&lt;li&gt;（これにより、管理者の乗っ取りやデータベース等への不正アクセスなどのセキュリティリスクが存在していました。）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;CloudFront でキャッシュを効かせて、サイトパフォーマンスの向上を図ってはいた。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;After の運用&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;既存の WordPress のバックアップをローカル PC で動かす。&lt;/li&gt;
+&lt;li&gt;新規の記事は Markdown ファイルで記述する。&lt;/li&gt;
+&lt;li&gt;上記をソースにして、GatsbyJS で SSG(Static Site Generation)でビルドする。
+&lt;ul&gt;
+&lt;li&gt;静的ファイルを GitHub Pages でホスティングする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;移行手順概要&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;WordPress サイトデータのエクスポート&lt;/li&gt;
+&lt;li&gt;WordPress のローカル環境へのインポート&lt;/li&gt;
+&lt;li&gt;GatsbyJS のセットアップ&lt;/li&gt;
+&lt;li&gt;サイトのビルドとデプロイ&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;1. WordPress サイトデータのエクスポート&lt;/h3&gt;
+&lt;p&gt;まず、WordPress サイトからデータをエクスポートします。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;WordPress 管理ダッシュボード&lt;/strong&gt;にログインします。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ツール&lt;/strong&gt; &gt; &lt;strong&gt;エクスポート&lt;/strong&gt;を選択します。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;すべてのコンテンツ&lt;/strong&gt;を選び、&lt;strong&gt;エクスポートファイルをダウンロード&lt;/strong&gt;をクリックします。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;これで、投稿、ページ、メディアなどのデータを含む XML ファイルがダウンロードされます。&lt;/p&gt;
+&lt;h3&gt;2. WordPress データのインポート&lt;/h3&gt;
+&lt;p&gt;次に、ローカル環境で WordPress をセットアップし、エクスポートしたデータをインポートします。&lt;/p&gt;
+&lt;p&gt;この&lt;a href=&quot;https://github.com/nisioka/docker-wordpress/blob/develop/docker-compose.yml&quot;&gt;docker-compose.yml&lt;/a&gt;を使って、WordPress をローカル環境でセットアップします。&lt;br&gt;
+これには、WordPress 本体とその DB、phpMyAdmin が含まれているので、起動させて &lt;a href=&quot;http://localhost&quot;&gt;http://localhost&lt;/a&gt; にアクセスすると空の WordPress が表示されます。&lt;br&gt;
+適当に初期設定を行った後、WordPress の管理画面にログインし、エクスポートしたデータをインポートします。&lt;/p&gt;
+&lt;p&gt;そして、WordPress のプラグインについても整理します。&lt;br&gt;
+不要なプラグインは削除しましょう。特に、ローカル環境では正常に動作しないことがある認証系のプラグインは削除することをお勧めします。公開するわけでは無いローカル環境なのでセキュリティを高める必要がありません。
+また、GatsbyJS で WordPress のデータを取得するための以下のプラグインを追加インストールします。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;WP Gatsby&lt;/li&gt;
+&lt;li&gt;WPGraphQL&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;この状態で既存の WordPress 記事がローカルでも表示できていれば、次に進みます。&lt;/p&gt;
+&lt;h3&gt;3. GatsbyJS のセットアップ&lt;/h3&gt;
+&lt;p&gt;次に、GatsbyJS をセットアップします。&lt;/p&gt;
+&lt;p&gt;前提： &lt;code&gt;Node.js&lt;/code&gt;と&lt;code&gt;npm&lt;/code&gt;がインストールされていること。&lt;/p&gt;
+&lt;p&gt;Gatsby CLI をインストールし、新しい Gatsby プロジェクトを作成します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;npm install -g gatsby-cli
+gatsby new my-gatsby-blog
+cd my-gatsby-blog
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;※ ここでの my-gatsby-blog はプロジェクト名として例示していますので、任意の名前に置き換えてください。&lt;/p&gt;
+&lt;p&gt;GatsbyJS で WordPress のデータを取得するためのプラグインをインストールします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;npm install gatsby-source-wordpress
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;gatsby-config.js ファイルを編集して、WordPress サイトのデータを取得するように設定します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;module.exports = {
+  plugins: [
+    {
+      resolve: `gatsby-source-wordpress`,
+      options: {
+        url: `http://localhost/graphql`,
+      },
+    },
+  ],
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;gatsby-node.js ファイルを作成し、WordPress の投稿を Gatsby のページとして生成するスクリプトを追加します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;const path = require(`path`)
+
+exports.createPages = async ({ graphql, actions }) =&gt; {
+  const { createPage } = actions
+
+  const result = await graphql(`
+    {
+      allWpPost {
+        nodes {
+          slug
+        }
+      }
+    }
+  `)
+
+  result.data.allWpPost.nodes.forEach(node =&gt; {
+    createPage({
+      path: node.slug,
+      component: path.resolve(`./src/templates/blog-post.js`),
+      context: {
+        slug: node.slug,
+      },
+    })
+  })
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;4. サイトのビルドとデプロイ&lt;/h2&gt;
+&lt;p&gt;最後に、サイトをビルドし、GitHub Pages にデプロイします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;gatsby build
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;リポジトリを作成し、GitHub Pages にデプロイします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;git init
+git remote add origin https://github.com/your-username/your-repo.git
+git add .
+git commit -m &quot;Initial commit&quot;
+git push -u origin master
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;GitHub Pages の設定で、デプロイするブランチを gh-pages に設定します。&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; margin-left: initial;&quot;
+    &gt;
+      &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 49.16666666666667%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAKCAYAAAC0VX7mAAAACXBIWXMAAAsTAAALEwEAmpwYAAABc0lEQVR42m1S2W7DMAzL///fnjtsA7ZecXzf4Si36dJiAgjFsURTx/RzvuL94wuLsTjyW1sPFxJcTDc/EDFri+tiYFx4/Lc+jrPkKN5dD2+YrOcPkmnjYAjLgEWbATl7SZaYRcMxMZf2gopE1NahlMJU5EDsTUhmpeGdx7quRMfaOzp9aw2937zciW3eOYcp5cwPj1rbH2FquCgHpR3LDCz3BnkoxoiUEjxVi/JGZU+EEnC+XBDYp81KKaPcWbEvNsPnjpBXtL4+YkSlddKCQuUvhPLaXrrWevTDe4dWn9vxnz0pFDLv/dOFTO/7NHN6LCsW6NA5VbbGs9TUEctKxfQpP3K2ygahmtUoYbOQ6ujZVXNdTMFJVyhXMFuuSmicKslIWHf929owKe6XlFc4lCITZMDMYRw+j6P0WjNyisghUEG+o5CwwcZO9ZJ3I5XJT4ELnDlpIap3wpRk72aujeFD3LNckLif/T6UdbRnh7tCIfwFcaIMwqv2a6MAAAAASUVORK5CYII=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/static/66d543f070de0658b4a9a30ece6ec13a/85704/githubPagesSetting.webp 240w,
+/static/66d543f070de0658b4a9a30ece6ec13a/2d484/githubPagesSetting.webp 480w,
+/static/66d543f070de0658b4a9a30ece6ec13a/ac99e/githubPagesSetting.webp 960w,
+/static/66d543f070de0658b4a9a30ece6ec13a/4df83/githubPagesSetting.webp 1440w,
+/static/66d543f070de0658b4a9a30ece6ec13a/fc987/githubPagesSetting.webp 1920w&quot;
+              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/static/66d543f070de0658b4a9a30ece6ec13a/74bfa/githubPagesSetting.png 240w,
+/static/66d543f070de0658b4a9a30ece6ec13a/b3a52/githubPagesSetting.png 480w,
+/static/66d543f070de0658b4a9a30ece6ec13a/97137/githubPagesSetting.png 960w,
+/static/66d543f070de0658b4a9a30ece6ec13a/dc3b8/githubPagesSetting.png 1440w,
+/static/66d543f070de0658b4a9a30ece6ec13a/71eb5/githubPagesSetting.png 1920w&quot;
+            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+            type=&quot;image/png&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/static/66d543f070de0658b4a9a30ece6ec13a/97137/githubPagesSetting.png&quot;
+            alt=&quot;githubPagesSetting.png&quot;
+            title=&quot;&quot;
+            loading=&quot;lazy&quot;
+            decoding=&quot;async&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;現在、Build and deployment には GitHub Actions の使用が推奨されていますので、/.github/workflows/ に下記のワークフローを置きます。
+これは master ブランチに push されたら./public ディレクトリ(gatsby build で生成される静的ファイルのデフォルトの置き場)を GitHub Pages にデプロイするワークフローです。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-yaml&quot;&gt;name: Deploy static content to Pages
+
+on:
+  push:
+    branches: [&quot;master&quot;]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: &quot;pages&quot;
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: &quot;./public&quot;
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;この記事では基本的な構成に焦点を当てて説明しましたが、以上の手順で AWS にデプロイされていた WordPress サイトを GatsbyJS と GitHub Pages を用いた静的サイトへと移行することができました。&lt;br&gt;
+静的サイトに移行することで、サイトのパフォーマンス向上とセキュリティ強化を実現できます。ぜひ試してみてください。&lt;/p&gt;
+&lt;hr&gt;
+&lt;div class=&quot;booklink-box&quot; style=&quot;text-align:left;padding-bottom:20px;font-size:small;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-image&quot; style=&quot;float:left;margin:0 15px 10px 0;&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;&lt;img src=&quot;https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9546/9784844379546.jpg?_ex=200x200&quot; style=&quot;border: none;&quot;&gt;&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;booklink-info&quot; style=&quot;line-height:120%;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-name&quot; style=&quot;margin-bottom:10px;line-height:120%&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;【POD】React &amp;amp; Gatsby開発入門&lt;/a&gt;&lt;div class=&quot;booklink-powered-date&quot; style=&quot;font-size:8pt;margin-top:5px;font-family:verdana;line-height:120%&quot;&gt;posted with &lt;a href=&quot;https://yomereba.com&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot;&gt;ヨメレバ&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-detail&quot; style=&quot;margin-bottom:5px;&quot;&gt;竹本 雄貴 インプレスR&amp;amp;D 2021年04月02日頃    &lt;/div&gt;&lt;div class=&quot;booklink-link2&quot; style=&quot;margin-top:10px;&quot;&gt;&lt;div class=&quot;shoplinkamazon&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fexec%2Fobidos%2FASIN%2F4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Amazon&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;shoplinkkindle&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fgp%2Fsearch%3Fkeywords%3D%25E3%2580%2590POD%25E3%2580%2591React%2520%2526%2520Gatsby%25E9%2596%258B%25E7%2599%25BA%25E5%2585%25A5%25E9%2596%2580%26__mk_ja_JP%3D%2583J%2583%255E%2583J%2583i%26url%3Dnode%253D2275256051&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Kindle&lt;/a&gt;&lt;/div&gt;                               	   	   	  	  &lt;div class=&quot;shoplinktoshokan&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;http://calil.jp/book/4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;図書館&lt;/a&gt;&lt;/div&gt;	&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-footer&quot; style=&quot;clear: left&quot;&gt;&lt;/div&gt;&lt;/div&gt;</content:encoded></item></channel></rss>

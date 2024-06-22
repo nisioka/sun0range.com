@@ -85,14 +85,16 @@ export function mergePost(md?: MdPost, wpPost?: WpPost, allFile?: AllFile) {
   } as CommonPost
 }
 
-const categoryNames: { eng: string; jp: string }[] = [
-  { eng: "information-technology", jp: "技術" },
-  { eng: "life", jp: "生活" },
-  { eng: "event-report", jp: "イベントレポート" },
-  { eng: "book-report", jp: "書評" },
-  { eng: "business-efficiency", jp: "業務効率化" },
-  { eng: "glossary", jp: "用語集" },
+const categoryNames: { id: number; eng: string; jp: string }[] = [
+  { id: 1, eng: "information-technology", jp: "技術" },
+  { id: 2, eng: "event-report", jp: "イベントレポート" },
+  { id: 3, eng: "life", jp: "生活" },
+  { id: 4, eng: "glossary", jp: "用語集" },
+  { id: 5, eng: "book-report", jp: "書評" },
+  { id: 6, eng: "business-efficiency", jp: "業務効率化" },
 ]
+
+export const categoryAll = categoryNames.sort(c => c.id).map(c => c.jp)
 
 export function convertCategory(japanese: string) {
   if (!japanese) return undefined

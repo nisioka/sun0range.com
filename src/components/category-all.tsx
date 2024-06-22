@@ -2,23 +2,15 @@ import * as React from "react"
 
 import { Link } from "gatsby"
 import styled from "styled-components"
-import { convertCategory } from "../utilFunction"
+import { categoryAll, convertCategory } from "../utilFunction"
 
 const CategoryAll = () => {
-  const all = [
-    "技術",
-    "イベントレポート",
-    "生活",
-    "用語集",
-    "書評",
-    "業務効率化",
-  ]
 
   return (
     <CategoryAllTitle>
       <h5>カテゴリ</h5>
       <ul>
-        {all.map((category, index) => (
+        {categoryAll.map((category, index) => (
           <li key={index}>
             <Link to={`/category/${convertCategory(category)}`}>
               {category}

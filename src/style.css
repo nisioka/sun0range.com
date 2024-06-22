@@ -37,6 +37,9 @@
   --paddingBase: var(--paddingBaseTop);
   --paddingBaseVertical: var(--paddingBaseTop);
   --paddingBaseHorizontal: var(--paddingBaseLeft);
+  --hight-grid-header: 40px;
+  --hight-grid-category: 220px;
+  --hight-grid-tag: 760px;
 }
 
 /* HTML elements */
@@ -227,7 +230,6 @@ a:focus {
 }
 
 /* Custom classes */
-
 .global-wrapper {
   margin: var(--spacing-0) auto;
   max-width: 100%;
@@ -235,7 +237,7 @@ a:focus {
   display: grid;
   gap: 0;
   grid-template-columns: 100%;
-  grid-template-rows: 40px 1fr 220px 880px 40px;
+  grid-template-rows: var(--hight-grid-header) 1fr var(--hight-grid-category) var(--hight-grid-tag) var(--hight-grid-header);
   grid-template-areas:
     "grid-header"
     "grid-main"
@@ -245,7 +247,7 @@ a:focus {
 
   @media screen and (min-width: 512px) {
     grid-template-columns: 240px 1fr;
-    grid-template-rows: 40px 220px 220px 1fr 40px;
+    grid-template-rows: var(--hight-grid-header) var(--hight-grid-category) var(--hight-grid-tag) 1fr var(--hight-grid-header);
     grid-template-areas:
     "grid-header grid-header"
     "grid-category grid-main"

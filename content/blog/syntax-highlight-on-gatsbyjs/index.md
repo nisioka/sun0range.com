@@ -3,7 +3,7 @@ title: MarkdownでもWordPressでも使えるGatsbyJSでの構文ハイライト
 date: "2024-06-10"
 dateModified: "2024-06-10"
 description: "WordPressは非常に強力なCMSですが、動的サイトであるため、サーバーの保守やセキュリティ対策が必要です。一方、静的サイトジェネレーターであるGatsbyJSを使用すると、高速で安全なサイトを構築できます。本記事では、AWSにデプロイしていたWordPressサイトをGatsbyJSとGitHub Pagesを使用した静的サイトへ移行する手順を紹介します。"
-featuredImagePath: "featured/pc.webp"
+featuredImagePath: "featured/cording.webp"
 nodeType: blog
 category: 技術
 tags: ["GatsbyJS", "React", "syntax highlight"]
@@ -11,122 +11,157 @@ tags: ["GatsbyJS", "React", "syntax highlight"]
 
 ## 概要
 
-GatsbyJSでの汎用的な構文ハイライト(syntax highlight)の実装方法を紹介します。  
-本ブログはMarkdownファイルとWordPressの両方のコンテンツをGatsbyで表示していて、その場合に使えるやり方です。もちろん何れかの場合でもOKです。  
+GatsbyJS での汎用的な構文ハイライト(syntax highlight)の実装方法を紹介します。  
+本ブログは Markdown ファイルと WordPress の両方のコンテンツを Gatsby で表示していて、その場合に使えるやり方です。もちろんどちらかのみの場合でも OK です。  
 `react-syntax-highlighter`というプラグインを使って、それに上手くコンテンツデータを渡すということをやってます。
 
-## 依存関係のインストール
+参考にしたサイトはこちら。  
+<a href="https://dimitri.codes/adding-syntax-highlighting-wordpress-gatsby/" target="_blank">https://dimitri.codes/adding-syntax-highlighting-wordpress-gatsby/</a>
 
-ご存知のように、GatsbyでWordPressのコンテンツを読み込むことは、単に `dangerouslySetInnerHtml={{__html=content}}` を使用することです。つまり、コンテンツ自体に構文ハイライトを追加できれば、準備完了です。
+また、実コードが見たい方は、実際の変更コミットはこちらを見てください。  
+<a href="https://github.com/nisioka/sun0range.com/commit/7a469363fc9b309f720cf7903ba1da5ce39f9895" target="_blank">https://github.com/nisioka/sun0range.com/commit/7a469363fc9b309f720cf7903ba1da5ce39f9895</a>
 
-この問題の1つの解決策は、html-react-parserのようなHTMLからReactへのパーサーを使用することです。
+## 前提・準備
 
-HTMLをReactコンポーネントにパースする場合、構文ハイライトを行うコンポーネントが必要です。いくつかのライブラリがありますが、ここではreact-syntax-highlighterを使用します。このプラグインは最も完全なソリューションを提供しているようです。
+Gatsby でのコンテンツを表示に、`dangerouslySetInnerHtml={{__html=content}}` を使用していることを想定していて、それを書き換えていきます。
+また、TypeScript も使用しているので以降のコードも.ts もしくは.tsx です。
+
+まずは依存関係のインストールを行ってください。(TypeScript なので、開発のしやすさのために@types も dev に入れてます。)
 
 ```bash
 npm install --save html-react-parser react-syntax-highlighter
+npm install --save-dev @types/react-syntax-highlighter
 ```
 
-ラッパーコンポーネントの作成
-構文ハイライターを使用するために、<PostCode/> コンポーネントを作成します。このコンポーネントは構文ハイライターをラップし、言語と子要素（実際のコード）を渡します。
+## 実装
 
-さらに、構文ハイライトのテーマをインポートするために使用できます：
+まず、修正前の実装イメージを示します。**post.content**がコンテンツデータで、それを dangerouslySetInnerHTML に渡して表示しているとします。
 
-```javascript
-import React from 'react';
-import {Prism as SyntaxHighlighter} from 'react-syntax-highlighter';
-import {ghcolors} from 'react-syntax-highlighter/dist/esm/styles/prism';
+```typescript
+import * as React from "react"
 
-export const PostCode = ({language, children}) => (
-  <SyntaxHighlighter
-    style={ghcolors}
-    language={language}>
-    {children}
-  </SyntaxHighlighter>
-);
+const BlogPostTemplate = () => {
+  // ノイズになるため省略。ここでpostのデータを取得したりしている。
+
+  return (
+    <>
+      // ノイズになるため省略。実際は他にもレイアウトしている。
+      <section dangerouslySetInnerHTML={{ __html: post.content }} />
+    </>
+  )
+}
 ```
-このコンポーネントでは、Prism.jsを使用しています。Prismはhighlight.jsよりも多くの言語をサポートしているようです。highlight.jsを使用したい場合は、次のコンポーネントを使用できます：
 
-```javascript
-import React from 'react';
-import {SyntaxHighlighter} from 'react-syntax-highlighter';
-import {github} from 'react-syntax-highlighter/dist/esm/styles/hljs';
+修正後のコードが下記です。
 
-export const PostCode = ({language, children}) => (
-  <SyntaxHighlighter
-    style={github}
-    language={language}>
-    {children}
-  </SyntaxHighlighter>
-);
-```
-ここでの良い点は、非常に似た方法で動作することです。唯一の違いは、異なるスタイルプロパティを選択し、異なる場所からSyntaxHighlighterをインポートする必要があることです。
+```typescript
+import * as React from "react"
+import { Link, graphql } from "gatsby"
 
-Reactパーサーの使用
-次に行うべきステップは、コンテンツ内のすべての <pre/> 要素を新しい <PostCode/> コンポーネントに置き換えることです。元々、次のコードを使用してGatsbyページテンプレートにコンテンツを挿入していました：
+import parse, { domToReact } from "html-react-parser"
+import SyntaxHighlighter from "react-syntax-highlighter"
+import { androidstudio } from "react-syntax-highlighter/dist/cjs/styles/hljs"
 
-```javascript
-<div dangerouslySetInnerHtml={{__html: content}}/>
-```
-react-html-parserを使用するには、次のように置き換えます：
+const BlogPostTemplate = () => {
+  // ノイズになるため省略。ここでpostのデータを取得したりしている。
 
-```javascript
-<div>{parse(content, {replace: replaceCode})}</div>
-```
-ただし、これを機能させるには、次のインポートを追加する必要があります：
+  return (
+    <>
+      // ノイズになるため省略。実際は他にもレイアウトしている。
+      <section>{parse(post.content, { replace: replaceCode })}</section>
+    </>
+  )
+}
 
-```javascript
-import parse, {domToReact} from 'html-react-parser';
-```
-最後のステップは、replaceCode() 関数を定義することです。この関数内で、ノードの名前が <pre/> に一致する場合、 <PostCode/> コンポーネントを返します：
+const replaceCode = (node: any) => {
+  if (!node) return node
+  if (node.name === "pre") {
+    const dom = domToReact(getCode(node))
+    let result = ""
+    switch (typeof dom) {
+      case "string":
+        result = dom as string
+        break
+      case "object":
+        if (Array.isArray(dom)) {
+          // React.JSX.Element[]
+          const elmArr = dom as React.JSX.Element[]
+          elmArr.map(elm => {
+            if (elm.props && elm.props.children) {
+              result += elm.props.children as string
+            }
+          })
+        } else {
+          // React.JSX.Element
+          const elm = dom as React.JSX.Element
+          if (elm.props && elm.props.children) {
+            result = elm.props.children as string
+          }
+        }
+        break
+    }
 
-```javascript
-const replaceCode = node => {
-  if (node.name === 'pre') {
-    return node.children.length > 0 && <PostCode language={getLanguage(node)}>{domToReact(getCode(node))}</PostCode>;
+    return (
+      node.children.length > 0 && (
+        <SyntaxHighlighter
+          style={androidstudio}
+          language={getLanguage(node)}
+          showLineNumbers={true}
+        >
+          {result}
+        </SyntaxHighlighter>
+      )
+    )
   }
-};
-```
-言語を渡すために、元のマークアップから何らかの方法で取得する必要があります。私のWordPressサイトでは、言語をクラス名として定義し、構文ハイライターがそれをピックアップしていました。
+}
 
-つまり、属性から言語を取得できます：
-
-```javascript
-const getLanguage = node => {
-  if (node.attribs.class != null) {
-    return node.attribs.class;
+const getLanguage = (node: any) => {
+  function getClassInLanguage(className: string) {
+    let result = ""
+    className.split(/\s+/).forEach(s => {
+      if (s.startsWith("language-")) {
+        result = s.replace("language-", "")
+        break
+      }
+    })
+    return result
   }
-  return null;
-};
-```
-highlight.jsを使用してlang:プレフィックスを使用している場合は、ここでこのプレフィックスをフィルタリングします。
 
-さらに、実際のコードもマークアップから取得する必要があります。私のブログでは、すべてのコードを <code/> 要素内にラップしていました。つまり、 <PostCode/> コンポーネントに送信する前にコードをアンラップする必要があります：
+  if (node.attribs.class && node.attribs.class !== "wp-block-code") {
+    return getClassInLanguage(node.attribs.class as string)
+  } else if (node.children[0]?.attribs?.class) {
+    return getClassInLanguage(node.children[0].attribs.class as string)
+  }
+  return "java" // default
+}
 
-```javascript
-const getCode = node => {
-  if (node.children.length > 0 && node.children[0].name === 'code') {
-    return node.children[0].children;
+const getCode = (node: any) => {
+  if (node.children.length > 0 && node.children[0].name === "code") {
+    return node.children[0].children
   } else {
-    return node.children;
+    return node.children
   }
-};
+}
 ```
-Gutenbergエディターの使用
-WordPressのGutenbergエディターを使用して新しいブログ投稿を書くとき、適切なクラスをコードブロックに追加することで、使用する言語を選択できます。
 
-まず、投稿にコードブロックを追加します：
+上記コードについて説明します。
 
-WordPressにコードブロックを追加するスクリーンショット
+1. 元々`dangerouslySetInnerHTML`を使っていたものを、`html-react-parser`ライブラリの`parse`関数を使うように変更します。
+2. `parse`関数は HTML を React コンポーネントに変換し、後述する自作の`replaceCode`関数を使用して`<code>`ブロックを検出します。それ以外はそのままです。
+3. `replaceCode`関数はコードブロックをハイライト表示するための処理を行います。
+   1. `parse`関数が DOM 要素を node として一つづつ渡してくるので、node が「`<pre>`タグ内に`<code>`の子を持つ要素」**以外**の要素の場合は、置き換えせずそのままです。
+   2. 「`<pre>`タグ内に`<code>`の子を持つ要素」である場合、その中のコードを取得し、`react-syntax-highlighter`ライブラリの`SyntaxHighlighter`コンポーネントで整形します。
+   3. `SyntaxHighlighter`コンポーネントでは、言語やスタイルが選べて、
+      1. `language`には<a href="https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/HEAD/AVAILABLE_LANGUAGES_HLJS.MD" target="_blank">ここ</a>にある言語を指定します。その言語の指定の仕方はメタ情報として付与されている html の class 名を使って自作の`getLanguage`関数で判定しています。
+         1. Markdown では、` ```javascript`というようにコードブロックの先頭に指定します。
+         2. WordPress では，「高度な設定」の「追加 CSS クラス」に`language-XXX`というように XXX に言語を指定します。(※1)
+      2. `style`には<a href="https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/HEAD/AVAILABLE_STYLES_HLJS.MD" target="_blank">ここ</a>にある好きなスタイルを指定します。色々と試して好きな見た目を選んでください。
 
-ブログ投稿に追加するコードを入力した後、コードブロックを選択し、ブログの右側のパネルにある「詳細」セクションを開きます。
+※1: WordPress の「高度な設定」の例。
+![](wordpressExample.png)
 
-このセクション内で、「追加CSSクラス」フィールドを見つけることができ、ここに希望する言語を追加します。react-syntax-highlighterをPrism.jsと共に使用する場合のサポートされている言語のリストはここで確認できます。
+## 終わりに
 
-ブロックペイン内の詳細セクションのスクリーンショット
-
-これで、Gatsbyアプリケーションを実行し、構文ハイライトされたコードを確認できるはずです。
-
-構文ハイライトされたコードのスクリーンショット
-
-これで、WordPressとGatsbyで構文ハイライトを実装しました。完全な例に興味がある場合は、このブログのソースコードをGitHubで確認できます。
+以上で、Gatsby アプリケーションを実行し、構文ハイライトされたコードを確認できるはずです。本記事内のコードも構文ハイライトされて見えているはずです。
+これで、WordPress と Gatsby で構文ハイライトを実装しました。完全な例に興味がある場合は、このブログのソースコードを 以下の GitHub で確認できます。
+https://github.com/nisioka/sun0range.com/blob/master/src/templates/blog-post.tsx

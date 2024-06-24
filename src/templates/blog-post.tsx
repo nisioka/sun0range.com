@@ -7,9 +7,9 @@ import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import styled from "styled-components"
 import { convertCategory, mergePost, removeHtmlTags } from "../utilFunction"
 import RelatedList from "../components/related-list"
-import { Prism as SyntaxHighlighter } from "react-syntax-highlighter"
+import SyntaxHighlighter from "react-syntax-highlighter"
 import parse, { domToReact } from "html-react-parser"
-import { ghcolors } from "react-syntax-highlighter/dist/cjs/styles/prism"
+import { androidstudio } from "react-syntax-highlighter/dist/cjs/styles/hljs"
 import { Disqus } from "gatsby-plugin-disqus"
 import config from "../../gatsby-config"
 
@@ -360,33 +360,34 @@ const replaceCode = (node: any) => {
 
     return (
       node.children.length > 0 && (
-        <SyntaxHighlight language={getLanguage(node)}>{result}</SyntaxHighlight>
+        <SyntaxHighlighter
+          style={androidstudio}
+          language={getLanguage(node)}
+          showLineNumbers={true}
+        >
+          {result}
+        </SyntaxHighlighter>
       )
     )
   }
 }
 
-const SyntaxHighlight = ({
-  language,
-  children,
-}: {
-  language: string
-  children: string
-}) => (
-  <SyntaxHighlighter
-    style={ghcolors}
-    language={language}
-    showLineNumbers={true}
-  >
-    {children}
-  </SyntaxHighlighter>
-)
-
 const getLanguage = (node: any) => {
+  function getClassInLanguage(className: string) {
+    let result = ""
+    className.split(/\s+/).forEach(s => {
+      if (s.startsWith("language-")) {
+        result = s.replace("language-", "")
+        return
+      }
+    })
+    return result
+  }
+
   if (node.attribs.class && node.attribs.class !== "wp-block-code") {
-    return (node.attribs.class as string).replace("language-", "")
+    return getClassInLanguage(node.attribs.class as string)
   } else if (node.children[0]?.attribs?.class) {
-    return (node.children[0].attribs.class as string).replace("language-", "")
+    return getClassInLanguage(node.children[0].attribs.class as string)
   }
   return "java" // default
 }

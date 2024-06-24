@@ -5,7 +5,6 @@ import styled from "styled-components"
 import { categoryAll, convertCategory } from "../utilFunction"
 
 const CategoryAll = () => {
-
   return (
     <CategoryAllTitle>
       <h5>カテゴリ</h5>

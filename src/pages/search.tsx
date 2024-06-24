@@ -21,7 +21,9 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
     })
   }
 
-  const initQuery = decodeURI(location.href?.split("?q=")[1] || "").toLowerCase()
+  const initQuery = decodeURI(
+    location.href?.split("?q=")[1] || ""
+  ).toLowerCase()
   const [state, setState] = useState({
     filteredData: filterByQuery(initQuery.split(/\s+/)),
     query: initQuery,

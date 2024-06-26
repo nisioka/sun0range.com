@@ -1,4 +1,123 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Mon, 24 Jun 2024 03:02:15 GMT</lastBuildDate><item><title><![CDATA[MarkdownでもWordPressでも使えるGatsbyJSでの構文ハイライト]]></title><description><![CDATA[概要 GatsbyJS での汎用的な構文ハイライト(syntax highlight)の実装方法を紹介します。 本ブログは Markdown ファイルと WordPress の両方のコンテンツを Gatsby…]]></description><link>https://sun0range.tech.server-on.net/syntax-highlight-on-gatsbyjs/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/syntax-highlight-on-gatsbyjs/</guid><pubDate>Mon, 10 Jun 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;概要&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Wed, 26 Jun 2024 08:03:30 GMT</lastBuildDate><item><title><![CDATA[静的サイトでの動的なサイト内検索機能の実装を紹介]]></title><description><![CDATA[はじめに 本ブログはGatsbyJS…]]></description><link>https://sun0range.tech.server-on.net/introduce-search-page/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/introduce-search-page/</guid><pubDate>Wed, 26 Jun 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;本ブログはGatsbyJSを使用して静的サイトとして運用しています。&lt;/p&gt;
+&lt;p&gt;ただ、それでもサイト内検索などの動的な機能が必要であると考え、実装しました。
+非常に軽快で満足できる実装になりました。ぜひこちらの&lt;a href=&quot;/search&quot; target=&quot;_brank&quot;&gt;検索ページ&lt;/a&gt;をご覧いただき、お試しください。&lt;/p&gt;
+&lt;p&gt;実際のコードが見たい場合は、&lt;a href=&quot;https://github.com/nisioka/sun0range.com/blob/master/src/pages/search.tsx&quot; target=&quot;_blank&quot;&gt;こちら&lt;/a&gt;をご覧ください。&lt;/p&gt;
+&lt;h2&gt;全体仕様&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;このページは、検索機能を提供します。APIコールを行わず、ブラウザのJavaScriptで動作します。
+&lt;ul&gt;
+&lt;li&gt;モバイル環境でも軽快に動作しますが、検索対象の増加によって性能が低下する可能性があります。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;検索文字列の入力1文字ごとにインタラクティブに検索結果を表示します。&lt;/li&gt;
+&lt;li&gt;URLのクエリパラメータに検索文字列が含まれ、入力フォームと同期しているため、リロードしても同じ表示が行われ、検索結果のURLで共有もできます。&lt;/li&gt;
+&lt;li&gt;検索対象は全ての記事であり、タイトルか記事内容に文字列が含まれるかどうかで判定します。複数ワード検索はスペースで区切って行えます。大文字と小文字は区別しません。&lt;/li&gt;
+&lt;li&gt;検索結果には、ヒット件数と記事のタイトルと説明文が表示されます。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;詳細説明&lt;/h2&gt;
+&lt;p&gt;必要最小限のコードを抜粋しています。これに基づいて後述します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;import React, { useEffect, useState } from &quot;react&quot;
+import { graphql, Link } from &quot;gatsby&quot;
+import { convertCategory, mergePosts } from &quot;../utilFunction&quot;
+
+const Search = ({ data, location }: { data: any; location: Location }) =&gt; {
+  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
+  const initQuery = decodeURI(
+          location.href?.split(&quot;?q=&quot;)[1] || &quot;&quot;
+  ).toLowerCase()
+  const [state, setState] = useState({
+    filteredData: filterByQuery(initQuery.split(/\s+/)),
+    query: initQuery,
+  })
+  const { filteredData, query } = state
+
+  function filterByQuery(queryWords: string[]) {
+    return posts.filter(post =&gt; {
+      for (const word of queryWords) {
+        if (
+                !post.title.toLowerCase().includes(word) &amp;#x26;&amp;#x26;
+                !post.description?.toLowerCase().includes(word)
+        ) {
+          return false
+        }
+      }
+      return true
+    })
+  }
+  function handleInputChange(event: React.ChangeEvent&amp;#x3C;HTMLInputElement&gt;) {
+    const queryWords = event.target.value.toLowerCase().split(/\s+/)
+
+    setState(prevState =&gt; ({
+      ...prevState,
+      filteredData: filterByQuery(queryWords),
+      query: queryWords.join(&quot; &quot;),
+    }))
+  }
+
+  useEffect(() =&gt; {
+    // ユーザーの入力があるたびにURLのクエリパラメータを更新
+    const params = new URLSearchParams()
+    if (query) {
+      params.append(&quot;q&quot;, query)
+    } else {
+      params.delete(&quot;q&quot;)
+    }
+    window.history.replaceState(
+            &quot;&quot;,
+            &quot;&quot;,
+            location.href.split(&quot;?&quot;)[0] +
+            (params.size &gt; 0 ? &quot;?&quot; + params.toString() : &quot;&quot;)
+    )
+  }, [state.query])
+
+  return (
+    &amp;#x3C;&gt;
+      &amp;#x3C;input
+        type=&quot;text&quot;
+        aria-label=&quot;Search&quot;
+        placeholder=&quot;検索ワードを入力...&quot;
+        onChange={handleInputChange}
+        value={query}
+      /&gt;
+      &amp;#x3C;div className=&quot;result-inner__res&quot;&gt;
+        {query !== &quot;&quot;
+          ? query + &quot; の検索結果: &quot; + filteredData.length + &quot;件&quot;
+          : filteredData.length + &quot;件の記事があります&quot;}
+      &amp;#x3C;/div&gt;
+      &amp;#x3C;h1&gt;サイト内検索&amp;#x3C;/h1&gt;
+      &amp;#x3C;p&gt;{filteredData.length} 記事あります&amp;#x3C;/p&gt;
+      {filteredData.map(post =&gt; {
+        return (
+          &amp;#x3C;li key={post.slug}&gt;
+            &amp;#x3C;Link to={`/${convertCategory(post.category)}/${post.slug}`}&gt;
+              &amp;#x3C;h2&gt;
+                &amp;#x3C;span&gt;{post.title}&amp;#x3C;/span&gt;
+              &amp;#x3C;/h2&gt;
+              &amp;#x3C;section&gt;
+                &amp;#x3C;p dangerouslySetInnerHTML={{ __html: post.excerpt }} /&gt;
+              &amp;#x3C;/section&gt;
+            &amp;#x3C;/Link&gt;
+          &amp;#x3C;/li&gt;
+        )
+      })}
+    &amp;#x3C;/&gt;
+  )
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;検索対象となる全記事データを取得します。これはほぼGatsbyJSの機能を利用しています。&quot;mergePosts&quot;関数は単に&lt;code&gt;pageQuery&lt;/code&gt;で取得したdataを使いやすい形に整形しているだけです。&lt;/li&gt;
+&lt;li&gt;&quot;useState&quot;フックを使用して、フィルタリングされたデータとクエリを保持する&quot;state&quot;と&quot;setState&quot;を定義します。初期値として、URLのクエリパラメータに基づいて設定します。&lt;/li&gt;
+&lt;li&gt;&quot;filterByQuery&quot;関数を定義しています。この関数は、クエリワードに基づいて記事をフィルタリングします。各記事のタイトルと説明をクエリワードと比較し、一致する記事のみを返します。&lt;/li&gt;
+&lt;li&gt;&quot;handleInputChange&quot;関数も定義しています。ユーザーの入力に応じてクエリを更新し、フィルタリングされたデータを更新します。&lt;/li&gt;
+&lt;li&gt;&quot;useEffect&quot;フックは、コンポーネントのレンダリング後に実行されます。ユーザーが入力したクエリでURLのクエリパラメータを更新します。つまり、同期させます。&lt;/li&gt;
+&lt;li&gt;最後に、レイアウトと検索結果を表示するJSXが返されます。入力欄、検索結果の表示、およびフィルタリングされた記事のリストが表示されます。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;おわりに&lt;/h2&gt;
+&lt;p&gt;以上です。少ない記述でやりたいことができるので、ぜひ参考にしてみてください。&lt;br&gt;
+Reactの強力さを感じました。&lt;/p&gt;
+&lt;hr&gt;
+&lt;div class=&quot;booklink-box&quot; style=&quot;text-align:left;padding-bottom:20px;font-size:small;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-image&quot; style=&quot;float:left;margin:0 15px 10px 0;&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;&lt;img src=&quot;https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9546/9784844379546.jpg?_ex=200x200&quot; style=&quot;border: none;&quot;&gt;&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;booklink-info&quot; style=&quot;line-height:120%;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-name&quot; style=&quot;margin-bottom:10px;line-height:120%&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;【POD】React &amp;amp; Gatsby開発入門&lt;/a&gt;&lt;div class=&quot;booklink-powered-date&quot; style=&quot;font-size:8pt;margin-top:5px;font-family:verdana;line-height:120%&quot;&gt;posted with &lt;a href=&quot;https://yomereba.com&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot;&gt;ヨメレバ&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-detail&quot; style=&quot;margin-bottom:5px;&quot;&gt;竹本 雄貴 インプレスR&amp;amp;D 2021年04月02日頃    &lt;/div&gt;&lt;div class=&quot;booklink-link2&quot; style=&quot;margin-top:10px;&quot;&gt;&lt;div class=&quot;shoplinkamazon&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fexec%2Fobidos%2FASIN%2F4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Amazon&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;shoplinkkindle&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fgp%2Fsearch%3Fkeywords%3D%25E3%2580%2590POD%25E3%2580%2591React%2520%2526%2520Gatsby%25E9%2596%258B%25E7%2599%25BA%25E5%2585%25A5%25E9%2596%2580%26__mk_ja_JP%3D%2583J%2583%255E%2583J%2583i%26url%3Dnode%253D2275256051&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Kindle&lt;/a&gt;&lt;/div&gt;                               	   	   	  	  &lt;div class=&quot;shoplinktoshokan&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;http://calil.jp/book/4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;図書館&lt;/a&gt;&lt;/div&gt;	&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-footer&quot; style=&quot;clear: left&quot;&gt;&lt;/div&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[MarkdownでもWordPressでも使えるGatsbyJSでの構文ハイライト]]></title><description><![CDATA[概要 GatsbyJS での汎用的な構文ハイライト(syntax highlight)の実装方法を紹介します。 本ブログは Markdown ファイルと WordPress の両方のコンテンツを Gatsby…]]></description><link>https://sun0range.tech.server-on.net/syntax-highlight-on-gatsbyjs/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/syntax-highlight-on-gatsbyjs/</guid><pubDate>Mon, 10 Jun 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;概要&lt;/h2&gt;
 &lt;p&gt;GatsbyJS での汎用的な構文ハイライト(syntax highlight)の実装方法を紹介します。&lt;br&gt;
 本ブログは Markdown ファイルと WordPress の両方のコンテンツを Gatsby で表示していて、その場合に使えるやり方です。もちろんどちらかのみの場合でも OK です。&lt;br&gt;
 &lt;code&gt;react-syntax-highlighter&lt;/code&gt;というプラグインを使って、それに上手くコンテンツデータを渡すということをやってます。&lt;/p&gt;

@@ -7,6 +7,15 @@ import { GatsbyImage } from "gatsby-plugin-image"
 
 const Search = ({ data, location }: { data: any; location: Location }) => {
   const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
+
+  const initQuery = decodeURI(
+    location.href?.split("?q=")[1] || ""
+  ).toLowerCase()
+  const [state, setState] = useState({
+    filteredData: filterByQuery(initQuery.split(/\s+/)),
+    query: initQuery,
+  })
+
   function filterByQuery(queryWords: string[]) {
     return posts.filter(post => {
       for (const word of queryWords) {
@@ -21,15 +30,17 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
     })
   }
 
-  const initQuery = decodeURI(
-    location.href?.split("?q=")[1] || ""
-  ).toLowerCase()
-  const [state, setState] = useState({
-    filteredData: filterByQuery(initQuery.split(/\s+/)),
-    query: initQuery,
-  })
-  const { filteredData, query } = state
+  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
+    const queryWords = event.target.value.toLowerCase().split(/\s+/)
 
+    setState(prevState => ({
+      ...prevState,
+      filteredData: filterByQuery(queryWords),
+      query: queryWords.join(" "),
+    }))
+  }
+
+  const { filteredData, query } = state
   useEffect(() => {
     // ユーザーの入力があるたびにURLのクエリパラメータを更新
     const params = new URLSearchParams()
@@ -45,15 +56,6 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
         (params.size > 0 ? "?" + params.toString() : "")
     )
   }, [state.query])
-
-  function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const queryWords = event.target.value.toLowerCase().split(/\s+/)
-
-    setState({
-      filteredData: filterByQuery(queryWords),
-      query: queryWords.join(" "),
-    })
-  }
 
   return (
     <Layout location={location}>
@@ -118,14 +120,13 @@ export const pageQuery = graphql`
   query {
     allMarkdownRemark {
       nodes {
-        html
+        excerpt
         fields {
           slug
         }
         frontmatter {
           title
           date(formatString: "YYYY/MM/DD")
-          description
           featuredImagePath
           category
         }
@@ -134,7 +135,7 @@ export const pageQuery = graphql`
     allWpPost {
       nodes {
         title
-        content
+        excerpt
         slug
         date(formatString: "YYYY/MM/DD")
         featuredImage {

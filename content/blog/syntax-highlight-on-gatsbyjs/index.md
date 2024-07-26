@@ -158,7 +158,7 @@ const getCode = (node: any) => {
       2. `style`には<a href="https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/HEAD/AVAILABLE_STYLES_HLJS.MD" target="_blank">ここ</a>にある好きなスタイルを指定します。色々と試して好きな見た目を選んでください。
 
 ※1: WordPress の「高度な設定」の例。
-![](wordpressExample.png)
+![](wordpressExample.webp)
 
 ## 終わりに
 

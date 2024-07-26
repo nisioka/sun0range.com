@@ -154,7 +154,7 @@ git push -u origin master
 
 GitHub Pages の設定で、デプロイするブランチを gh-pages に設定します。
 
-![githubPagesSetting.png](githubPagesSetting.png)
+![githubPagesSetting.png](githubPagesSetting.webp)
 
 現在、Build and deployment には GitHub Actions の使用が推奨されていますので、/.github/workflows/ に下記のワークフローを置きます。
 これは master ブランチに push されたら./public ディレクトリ(gatsby build で生成される静的ファイルのデフォルトの置き場)を GitHub Pages にデプロイするワークフローです。

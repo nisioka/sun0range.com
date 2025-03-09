@@ -8,13 +8,14 @@
     "url": "https://github.com/gatsbyjs/gatsby/issues"
   },
   "dependencies": {
-    "@fontsource-variable/montserrat": "^5.1.1",
-    "@fontsource/merriweather": "^5.1.1",
+    "@fontsource-variable/montserrat": "^5.2.5",
+    "@fontsource/merriweather": "^5.2.5",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.2",
     "gatsby": "^5.14.1",
+    "gatsby-plugin-catch-links": "^5.14.0",
     "gatsby-plugin-disqus": "^1.2.6",
     "gatsby-plugin-feed": "^5.14.0",
     "gatsby-plugin-google-gtag": "^5.14.0",
@@ -33,11 +34,12 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-syntax-highlighter": "^15.6.1",
+    "sharp": "^0.33.5",
     "styled-components": "^6.1.15",
     "webpack-dev-middleware": "^7.4.2"
   },
   "devDependencies": {
-    "@types/node": "^20.17.19",
+    "@types/node": "^22.13.10",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@types/react-syntax-highlighter": "^15.5.13",
@@ -61,5 +63,13 @@
     "serve": "gatsby serve",
     "clean": "gatsby clean",
     "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "sharp"
+    ],
+    "onlyBuiltDependencies": [
+      "sharp"
+    ]
   }
 }

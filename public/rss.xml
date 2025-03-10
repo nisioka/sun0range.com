@@ -1,4 +1,166 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Sat, 08 Mar 2025 23:55:21 GMT</lastBuildDate><item><title><![CDATA[顔認識をするChrome拡張を実装したので、その紹介と技術的解説]]></title><description><![CDATA[はじめに 子どもを幼稚園に通わせていると、各種イベントの写真がアルバムサイトにアップされることがあります。 今どき多くのサイトでは顔写真検索機能があったりすることも多いのですが、無い所もあって、そういう場合のために自作してしまおうと思ったのがこのChrome…]]></description><link>https://sun0range.tech.server-on.net/chrome-extention-family-photo-finder/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/chrome-extention-family-photo-finder/</guid><pubDate>Wed, 24 Jul 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;はじめに&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Mon, 10 Mar 2025 04:18:41 GMT</lastBuildDate><item><title><![CDATA[Ubuntu ServerでWiFiを使えるようにする手順(MacBook Airでの事例)]]></title><description><![CDATA[Ubuntu ServerでWiFiを使えるようにする手順(MacBook Airでの事例) はじめに 自宅用にServerマシンを構築しようと考えました。k8sを入れたり、色々と使い倒したかったので、少々スペックが欲しかったこともあり、伝手で中古のMacBook Air…]]></description><link>https://sun0range.tech.server-on.net/set-up-wifi-on-ubuntu-in-mac/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/set-up-wifi-on-ubuntu-in-mac/</guid><pubDate>Sun, 09 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;Ubuntu ServerでWiFiを使えるようにする手順(MacBook Airでの事例)&lt;/h1&gt;
+&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;自宅用にServerマシンを構築しようと考えました。k8sを入れたり、色々と使い倒したかったので、少々スペックが欲しかったこともあり、伝手で中古のMacBook Airを安く手に入り、その上にUbuntuをインストールしました。&lt;/p&gt;
+&lt;p&gt;Ubuntuをインストールすること自体は簡単ですが、WiFiを使えるようにするのが大変面倒でした。ネット上でも同様の苦労が多数見受けられたので、私も事例を残しておきたいと思います。インターネット接続がない状態での作業は、特にWiFiドライバのインストールにおいて苦労することがあります。本記事では、スマートフォンを使ったUSBテザリングを利用して、Ubuntu上でWiFiを使えるようにする手順を紹介します。&lt;/p&gt;
+&lt;h2&gt;環境情報&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;MacBook Air（2017）
+&lt;ul&gt;
+&lt;li&gt;CPU: Intel Core i5-5350U @ 1.80GHz&lt;/li&gt;
+&lt;li&gt;RAM: 8GB&lt;/li&gt;
+&lt;li&gt;GPU: Intel HD Graphics 6000&lt;/li&gt;
+&lt;li&gt;SSD: 128GB&lt;/li&gt;
+&lt;li&gt;WiFi: Broadcom BCM4360&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Ubuntu Server 22.04 LTS
+&lt;ul&gt;
+&lt;li&gt;上記MacBook Airにインストール済み。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;手順&lt;/h2&gt;
+&lt;h3&gt;初期状態の確認&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;ip a&lt;/code&gt;コマンドを実行して、WiFiデバイスが認識されていることを確認します。(仮にコマンドを使えない場合は、&lt;code&gt;networkctl&lt;/code&gt;コマンドを使ってもOKです。)&lt;br&gt;
+下記のような出力になるのではないかと思います。&lt;br&gt;
+&lt;code&gt;ip a&lt;/code&gt;コマンドの場合。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ip a
+1: lo: &amp;#x3C;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.0/8 scope host lo
+       valid_lft forever preferred_lft forever
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;networkctl&lt;/code&gt;コマンドの場合。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;networkctl
+IDX LINK             TYPE               OPERATIONAL SETUP
+  1 lo               loopback           carrier     unmanaged
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;ここでのポイントは&lt;code&gt;wl～&lt;/code&gt;始まりのデバイスがないことで、wlはwirelessを表し、つまりWiFiデバイスが認識されていないことです。&lt;br&gt;
+通常各種installをしていって解消していくわけですが、そのためのネットワーク接続がなくて困るわけです。&lt;br&gt;
+なので、USBテザリングを使ってインターネット接続を確保します。&lt;/p&gt;
+&lt;h4&gt;補足&lt;/h4&gt;
+&lt;p&gt;WiFi以外のネットワーク接続として、他の候補としては以下があります。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;有線LAN (→LANコネクタはMacBookにはなく、変換コネクタの類も持っていなかった)&lt;/li&gt;
+&lt;li&gt;Bluetooth (→Bluetoothの設定は面倒そうだったので避けた)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;USBテザリングの準備&lt;/h2&gt;
+&lt;p&gt;まず以下の物理的接続を行います。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;スマートフォンとMacBookをUSBケーブルで接続し、スマートフォンの設定からUSBテザリングを有効にします。&lt;/li&gt;
+&lt;li&gt;MacBookにスマートフォンを接続します。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;その状態で再度&lt;code&gt;ip a&lt;/code&gt;コマンドを実行すると、&lt;code&gt;en～&lt;/code&gt;始まりのデバイスが増えているはずです。enはethernetを表す有線接続のデバイスです。&lt;br&gt;
+その増えた&lt;code&gt;en～&lt;/code&gt;始まりのデバイスをメモしておきます。ちなみにこれは接続するたびに変わるので、毎回確認が必要です。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ip a
+1: lo: &amp;#x3C;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.0/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: enp0s20u1: &amp;#x3C;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether ab:cd:12:34:56:ef brd ff:ff:ff:ff:ff:ff
+    inet 192.168.119.142/24 brd 192.168.119.255 scope global dynamic noprefixroute enp0s20u1
+       valid_lft 86399sec preferred_lft 86399sec
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;USBテザリングの設定&lt;/h2&gt;
+&lt;p&gt;次に、netplanを使って、USBテザリングを使ってインターネット接続を確保します。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;sudo vi /etc/netplan/60-tmp-tethering.yaml&lt;/code&gt;(ファイル名は任意)のコマンドを入力して、ファイルを作成します。テキストエディタはここではviを使っていますが、他のエディタでも構いません。&lt;/li&gt;
+&lt;li&gt;以下の通りファイルの中身を編集します。viの場合、&lt;code&gt;i&lt;/code&gt; でまず入力モードにしたあと &lt;code&gt;escキー&lt;/code&gt; → &lt;code&gt;:wq&lt;/code&gt; で保存して終了します。この時、&lt;em&gt;USBテザリングの準備&lt;/em&gt; で確認した&lt;code&gt;en～&lt;/code&gt;始まりのデバイス名を下記例で言うところの&lt;code&gt;enp0s20u1&lt;/code&gt;を置き換えてください。
+&lt;pre&gt;&lt;code class=&quot;language-yaml:/etc/netplan/60-tmp-tethering.yaml&quot;&gt; network:
+   version: 2
+   renderer: networkd
+   ethernets:
+      enp0s20u1:
+         dhcp4: true
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;以下のコマンドを実行して、設定を反映します。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt; sudo netplan try
+&lt;/code&gt;&lt;/pre&gt;
+ここで設定不備などあればErrorが出ます。特に問題なければ下記のようになるので、&lt;code&gt;Enterキー&lt;/code&gt; を入力して設定を適用します。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt; Do you want to keep these settings?
+ 
+ Press ENTER before the timeout to accept the new configuration
+
+ Chages will revert in 120 seconds
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;これで暫定的なインターネット接続が確保されました。&lt;code&gt;sudo apt update&lt;/code&gt; などでインターネット接続が確認できるか確認してみてください。&lt;/p&gt;
+&lt;h3&gt;補足: netplanとは&lt;/h3&gt;
+&lt;p&gt;netplanは、Ubuntu 17.10以降で採用されているネットワーク設定ツールです。
+&lt;code&gt;/etc/netplan/&lt;/code&gt; にあるYAMLファイルをアルファベット順に読み取ってネットワーク設定を行います。
+元々 &lt;code&gt;/etc/netplan/50-cloud-init.yaml&lt;/code&gt; があるはずですが、それは編集せずに新しいファイルを作成します。&lt;/p&gt;
+&lt;h2&gt;WiFiドライバのインストール&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;PCI接続されているであろう内蔵ネットワークカードを &lt;code&gt;lspci&lt;/code&gt; コマンドで確認します。grepで&lt;code&gt;Network&lt;/code&gt;を含む行を抽出すると見やすいです。(ネットワークカードによって表記が違う場合もあるのでその場合はgrep無しで確認してください)
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;lspci | grep Network
+03:00.0 Network controller: Broadcom Inc. and subsidiaries BCM4360 802.11ac Wireless Network Adapter (rev 03)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;ターミナルを開き、以下のコマンドを入力して必要なパッケージをインストールします。&lt;br&gt;
+ただし、これはBroadcomのBCM4360の場合であり、他のネットワークカードの場合は適切なドライバをインストールしてください。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo apt-get update
+sudo apt-get install firmware-b43-installer
+sudo reboot
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;再起動後、再度&lt;code&gt;ip a&lt;/code&gt;コマンドを実行して、&lt;code&gt;wl～&lt;/code&gt;始まりのWiFiデバイスが認識されていることを確認します。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ip a
+1: lo: &amp;#x3C;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.0/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: wlp3s0: &amp;#x3C;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether zy:xw:98:76:54:vu brd ff:ff:ff:ff:ff:ff
+    inet 192.168.11.10/24 brd 192.168.11.255 scope global dynamic noprefixroute wlp3s0
+       valid_lft 167552sec preferred_lft 167552sec
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;再びnetplanを使って、WiFi用の設定を&lt;code&gt;sudo vi /etc/netplan/90-wifi.yaml&lt;/code&gt;(ファイル名は任意)のコマンドで以下の通りファイルの中身を編集します。&lt;br&gt;
+この時、上記で確認した&lt;code&gt;wl～&lt;/code&gt;始まりのデバイス名を下記例で言うところの&lt;code&gt;wlp3s0&lt;/code&gt;を置き換えてください。また、&lt;code&gt;{wifi_SSID_name}&lt;/code&gt; と &lt;code&gt;{your_wifi_password}&lt;/code&gt; はそれぞれ、WiFiのSSID名とパスワードに置き換えてください。
+&lt;pre&gt;&lt;code class=&quot;language-yaml:/etc/netplan/90-wifi.yaml&quot;&gt; network:
+   version: 2
+   renderer: networkd
+   wifis:
+     wlp3s0:
+       dhcp4: true
+       optional: true
+       access-points:
+         {wifi_SSID_name}:
+           password: &quot;{your_wifi_password}&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;再び以下のコマンドを実行して、設定を反映します。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt; sudo netplan try
+&lt;/code&gt;&lt;/pre&gt;
+これでWiFiを使えるようになるはずなのですが、私の環境ではうまくいきませんでした。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;NetworkManagerに変更&lt;/h3&gt;
+&lt;p&gt;追加対応ですが、networkdからNetworkManagerに変更します。&lt;br&gt;
+これらは本来、serverではnetworkdを、desktopではNetworkManagerを使うという想定ですがWiFi利用において私はうまくいかなかったので切り替えてみます。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;以下のコマンドを実行して、NetworkManagerをインストールします。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo apt install network-manager
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;netplanの設定をnetworkdからNetworkManagerに変更します。先ほどの &lt;code&gt;90-wifi.yaml&lt;/code&gt; のrendererだけを変えます。
+&lt;pre&gt;&lt;code class=&quot;language-yaml:/etc/netplan/90-wifi.yaml&quot;&gt; network:
+   version: 2
+   renderer: NetworkManager
+# 以下略
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;USBテザリングを外した上で&lt;code&gt;sudo apt update&lt;/code&gt; などでインターネット接続が確認できるか確認してみてください。&lt;/li&gt;
+&lt;li&gt;ネット接続できることが分かったら、テザリング用のnetplan設定は不要なので削除しておいてください。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo rm /etc/netplan/60-tmp-tethering.yaml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;本記事では、中古のMacBook AirにUbuntu Serverをインストールし、WiFiを使用できるようにする手順を詳しく解説しました。特に、インターネット接続がない状態でのWiFiドライバのインストールに苦労した経験を共有し、スマートフォンを利用したUSBテザリングを活用する方法を示しました。&lt;/p&gt;
+&lt;p&gt;この手順が、同様の環境で作業を行う他のユーザーにとって役立つことを願っています。Ubuntuの柔軟性を活かして、快適なサーバーライフを楽しんでください。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[顔認識をするChrome拡張を実装したので、その紹介と技術的解説]]></title><description><![CDATA[はじめに 子どもを幼稚園に通わせていると、各種イベントの写真がアルバムサイトにアップされることがあります。 今どき多くのサイトでは顔写真検索機能があったりすることも多いのですが、無い所もあって、そういう場合のために自作してしまおうと思ったのがこのChrome…]]></description><link>https://sun0range.tech.server-on.net/chrome-extention-family-photo-finder/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/chrome-extention-family-photo-finder/</guid><pubDate>Wed, 24 Jul 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;はじめに&lt;/h2&gt;
 &lt;p&gt;子どもを幼稚園に通わせていると、各種イベントの写真がアルバムサイトにアップされることがあります。&lt;br&gt;
 今どき多くのサイトでは顔写真検索機能があったりすることも多いのですが、無い所もあって、そういう場合のために自作してしまおうと思ったのがこのChrome拡張を作成した背景です。&lt;br&gt;
 実際のChrome拡張： &lt;a href=&quot;https://chromewebstore.google.com/detail/family-photo-finder/fikdbpibhbgbedmnmlcfckckpohadebi?authuser=0&amp;#x26;hl=ja&quot;&gt;Family Photo Finder&lt;/a&gt;&lt;/p&gt;

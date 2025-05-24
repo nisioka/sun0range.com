@@ -120,9 +120,12 @@ netplanは、Ubuntu 17.10以降で採用されているネットワーク設定�
    ただし、これはBroadcomのBCM4360の場合であり、他のネットワークカードの場合は適切なドライバをインストールしてください。
    ```bash
    sudo apt-get update
-   sudo apt-get install firmware-b43-installer
+   sudo apt-get --reinstall install bcmwl-kernel-source
+   sudo modprobe -r b43 ssb wl brcmfmac brcmsmac bcma
+   sudo modprobe wl
    sudo reboot
    ```
+   ※参考URL: https://help.ubuntu.com/community/WifiDocs/Driver/bcm43xx#Installing_STA_drivers
 3. 再起動後、再度`ip a`コマンドを実行して、`wl～`始まりのWiFiデバイスが認識されていることを確認します。
     ```bash
     ip a
@@ -135,7 +138,7 @@ netplanは、Ubuntu 17.10以降で採用されているネットワーク設定�
         inet 192.168.11.10/24 brd 192.168.11.255 scope global dynamic noprefixroute wlp3s0
            valid_lft 167552sec preferred_lft 167552sec
     ```
-3. 再びnetplanを使って、WiFi用の設定を`sudo vi /etc/netplan/90-wifi.yaml`(ファイル名は任意)のコマンドで以下の通りファイルの中身を編集します。  
+4. 再びnetplanを使って、WiFi用の設定を`sudo vi /etc/netplan/90-wifi.yaml`(ファイル名は任意)のコマンドで以下の通りファイルの中身を編集します。  
    この時、上記で確認した`wl～`始まりのデバイス名を下記例で言うところの`wlp3s0`を置き換えてください。また、`{wifi_SSID_name}` と `{your_wifi_password}` はそれぞれ、WiFiのSSID名とパスワードに置き換えてください。
    ```yaml:/etc/netplan/90-wifi.yaml
     network:
@@ -149,7 +152,7 @@ netplanは、Ubuntu 17.10以降で採用されているネットワーク設定�
             {wifi_SSID_name}:
               password: "{your_wifi_password}"
    ```
-3. 再び以下のコマンドを実行して、設定を反映します。
+5. 再び以下のコマンドを実行して、設定を反映します。
    ```bash
     sudo netplan try
    ```

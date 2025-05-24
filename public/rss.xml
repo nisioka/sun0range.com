@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Sat, 24 May 2025 08:06:00 GMT</lastBuildDate><item><title><![CDATA[WindowsからLinuxへのSSH接続]]></title><description><![CDATA[WindowsマシンからLinux(UbuntuServer)への公開鍵を使ったSSH接続 単純なWindowsマシンからLinux(UbuntuServer)へのSSH接続の方法を紹介します。
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Sat, 24 May 2025 09:06:13 GMT</lastBuildDate><item><title><![CDATA[WindowsからLinuxへのSSH接続]]></title><description><![CDATA[WindowsマシンからLinux(UbuntuServer)への公開鍵を使ったSSH接続 単純なWindowsマシンからLinux(UbuntuServer)へのSSH接続の方法を紹介します。
 特別な事はしませんが、よく忘れるので備忘です。 環境 Windows 11 Home…]]></description><link>https://sun0range.tech.server-on.net/connect-ssh/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/connect-ssh/</guid><pubDate>Sun, 16 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;WindowsマシンからLinux(UbuntuServer)への公開鍵を使ったSSH接続&lt;/h1&gt;
 &lt;p&gt;単純なWindowsマシンからLinux(UbuntuServer)へのSSH接続の方法を紹介します。
 特別な事はしませんが、よく忘れるので備忘です。&lt;/p&gt;
@@ -178,10 +178,12 @@ IDX LINK             TYPE               OPERATIONAL SETUP
 &lt;li&gt;ターミナルを開き、以下のコマンドを入力して必要なパッケージをインストールします。&lt;br&gt;
 ただし、これはBroadcomのBCM4360の場合であり、他のネットワークカードの場合は適切なドライバをインストールしてください。
 &lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo apt-get update
-sudo apt-get install firmware-b43-installer
+sudo apt-get --reinstall install bcmwl-kernel-source
+sudo modprobe -r b43 ssb wl brcmfmac brcmsmac bcma
+sudo modprobe wl
 sudo reboot
 &lt;/code&gt;&lt;/pre&gt;
-&lt;/li&gt;
+※参考URL: &lt;a href=&quot;https://help.ubuntu.com/community/WifiDocs/Driver/bcm43xx#Installing_STA_drivers&quot;&gt;https://help.ubuntu.com/community/WifiDocs/Driver/bcm43xx#Installing_STA_drivers&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;再起動後、再度&lt;code&gt;ip a&lt;/code&gt;コマンドを実行して、&lt;code&gt;wl～&lt;/code&gt;始まりのWiFiデバイスが認識されていることを確認します。
 &lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ip a
 1: lo: &amp;#x3C;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000

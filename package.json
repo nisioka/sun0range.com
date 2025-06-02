@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@fontsource-variable/montserrat": "^5.2.5",
-    "@fontsource/merriweather": "^5.2.7",
+    "@fontsource/merriweather": "^5.2.8",
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
     "@fortawesome/free-brands-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
@@ -39,8 +39,8 @@
     "webpack-dev-middleware": "^7.4.2"
   },
   "devDependencies": {
-    "@types/node": "^22.15.21",
-    "@types/react": "^18.3.22",
+    "@types/node": "^22.15.29",
+    "@types/react": "^18.3.23",
     "@types/react-dom": "^18.3.7",
     "@types/react-syntax-highlighter": "^15.5.13",
     "prettier": "^2.8.8",

@@ -216,6 +216,7 @@ const config: GatsbyConfig = {
         shortname: `https-sun0range-tech-server-on-net`,
       },
     },
+    `gatsby-plugin-styled-components`,
   ],
 }
 export default config

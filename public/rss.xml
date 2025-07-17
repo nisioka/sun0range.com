@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Sat, 05 Jul 2025 08:07:32 GMT</lastBuildDate><item><title><![CDATA[AIコーディングツールをエンジニア目線で比較【料金・IDE連携】]]></title><description><![CDATA[TL;DR (結論から言うと) 今、個人開発者が無料で始めるなら「Gemini CLI」が圧倒的にお得です。 Googleアカウントでログインするだけで、高性能なGemini 2.5 Proモデルを1日1,00…]]></description><link>https://sun0range.tech.server-on.net/ai-agent-comparison/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/ai-agent-comparison/</guid><pubDate>Sat, 05 Jul 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;TL;DR (結論から言うと)&lt;/h2&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Thu, 17 Jul 2025 14:35:22 GMT</lastBuildDate><item><title><![CDATA[AIコーディングツールをエンジニア目線で比較【料金・IDE連携】]]></title><description><![CDATA[TL;DR (結論から言うと) 今、個人開発者が無料で始めるなら「Gemini CLI」が圧倒的にお得です。 Googleアカウントでログインするだけで、高性能なGemini 2.5 Proモデルを1日1,00…]]></description><link>https://sun0range.tech.server-on.net/ai-agent-comparison/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/ai-agent-comparison/</guid><pubDate>Thu, 17 Jul 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;TL;DR (結論から言うと)&lt;/h2&gt;
 &lt;p&gt;&lt;strong&gt;今、個人開発者が無料で始めるなら「&lt;a href=&quot;https://ai.google.dev/docs/gemini_cli&quot;&gt;Gemini CLI&lt;/a&gt;」が圧倒的にお得です。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;Googleアカウントでログインするだけで、高性能な&lt;code&gt;Gemini 2.5 Pro&lt;/code&gt;モデルを1日1,000リクエストまで無料で利用できます。ターミナル上で直接、コード生成やリファクタリング、エラー分析などが可能です。試すどころか常用できるレベルの圧倒的無料枠。&lt;/p&gt;
 &lt;hr&gt;
@@ -61,6 +61,14 @@
 &lt;td align=&quot;left&quot;&gt;VS Code (公式/サードパーティ)&lt;/td&gt;
 &lt;td align=&quot;left&quot;&gt;&lt;strong&gt;万能な相談役&lt;/strong&gt;。自然言語での指示に強い。&lt;/td&gt;
 &lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;&lt;a href=&quot;https://kiro.dev/&quot;&gt;Kiro&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Amazon Web Service&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;無料 (プレビュー版)&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;$19/月&lt;/strong&gt; (Pro)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;スタンドアロンIDE&lt;/strong&gt; (VS Code互換)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;仕様駆動開発&lt;/strong&gt;。自律的なタスク実行。&lt;/td&gt;
+&lt;/tr&gt;
 &lt;/tbody&gt;
 &lt;/table&gt;
 &lt;h2&gt;各ツールの詳細&lt;/h2&gt;
@@ -121,6 +129,60 @@
 &lt;/ul&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
+&lt;h3&gt;6. &lt;a href=&quot;https://kiro.dev/&quot;&gt;Kiro&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;IDE連携:&lt;/strong&gt; Kiroはそれ自体がAIネイティブなスタンドアロンのIDEです。VS Codeの拡張機能や設定との互換性も備えています。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;料金/無料枠:&lt;/strong&gt; 現在はプレビュー版として無料で提供されており、ウェイトリストに登録することで利用できます。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;所感:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;「仕様駆動開発」を掲げ、要件定義→システム設計→タスク分割→実装までを自律的に行うことを目指しています。&lt;/li&gt;
+&lt;li&gt;特に上流工程の流れがフレームワークのようになっていて、雰囲気コーディングにレールを敷いてくれている感があり、AI開発全体の精度向上になると感じる。&lt;/li&gt;
+&lt;li&gt;現状、プレビュー版故不安定さがある。実際「The model you&apos;ve selected is experiencing a high volume of traffic. Try changing the model and re-running your prompt.」のエラーが頻発し、Retryを押すだけなのですが実用に耐えかねるレベル。Claude Sonnet 3.7に落とすとマシになるらしい。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 674px; margin-left: initial;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/8c39610121d298957975d06dffa74eb8/ed48a/kiroError.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 19.583333333333332%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAECAYAAACOXx+WAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAk0lEQVR42pWOWw6CMBREuw7xAZa2pA9aoBg0wUQTlkFM3P8exlKVqAkffpzMvTPT9JLbeEd/vCLbcGxXFLskXyRNGNI1W85DRi7nAZ3vUcomYpWHkTWc9vNeqiZ6kyrhoudM++wF1UUVM8ktiA3DoT4F04FlEnyvvhBUv2YZmTqCKhS5mfufSlrXoQq/vE/+l993D06idKur9ZMKAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/static/8c39610121d298957975d06dffa74eb8/85704/kiroError.webp 240w,
+/static/8c39610121d298957975d06dffa74eb8/2d484/kiroError.webp 480w,
+/static/8c39610121d298957975d06dffa74eb8/eb2ae/kiroError.webp 674w&quot;
+              sizes=&quot;(max-width: 674px) 100vw, 674px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/static/8c39610121d298957975d06dffa74eb8/74bfa/kiroError.png 240w,
+/static/8c39610121d298957975d06dffa74eb8/b3a52/kiroError.png 480w,
+/static/8c39610121d298957975d06dffa74eb8/ed48a/kiroError.png 674w&quot;
+            sizes=&quot;(max-width: 674px) 100vw, 674px&quot;
+            type=&quot;image/png&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/static/8c39610121d298957975d06dffa74eb8/ed48a/kiroError.png&quot;
+            alt=&quot;kiroError.png&quot;
+            title=&quot;&quot;
+            loading=&quot;lazy&quot;
+            decoding=&quot;async&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
 &lt;h2&gt;まとめ&lt;/h2&gt;
 &lt;p&gt;AIコーディングツールを選ぶ際は、単体の性能だけでなく「普段使っているIDEでいかに良い開発フローになるか」という視点が非常に重要です。&lt;/p&gt;
 &lt;ol&gt;
@@ -131,7 +193,7 @@
 &lt;li&gt;JetBrains IDEsユーザー → &lt;code&gt;JetBrains AI&lt;/code&gt;&lt;/li&gt;
 &lt;/ul&gt;
 &lt;/li&gt;
-&lt;li&gt;より高度な利用が必要なら: &lt;code&gt;ChatGPT&lt;/code&gt;や&lt;code&gt;Claude&lt;/code&gt;を併用する。&lt;/li&gt;
+&lt;li&gt;より高度な利用や次世代の開発体験を求めるなら: &lt;code&gt;ChatGPT&lt;/code&gt;や&lt;code&gt;Claude&lt;/code&gt;の併用、あるいは&lt;code&gt;Kiro&lt;/code&gt;のような新しいAI IDEを試す。&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;これが今現在の、賢いAIコーディングツールの選び方かと思います。ぜひ、最適な「AIの相棒」を見つけて、開発効率を飛躍させてください。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[WindowsからLinuxへのSSH接続]]></title><description><![CDATA[WindowsマシンからLinux(UbuntuServer)への公開鍵を使ったSSH接続 単純なWindowsマシンからLinux(UbuntuServer)へのSSH接続の方法を紹介します。
 特別な事はしませんが、よく忘れるので備忘です。 環境 Windows 11 Home…]]></description><link>https://sun0range.tech.server-on.net/connect-ssh/</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/connect-ssh/</guid><pubDate>Sun, 16 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;WindowsマシンからLinux(UbuntuServer)への公開鍵を使ったSSH接続&lt;/h1&gt;

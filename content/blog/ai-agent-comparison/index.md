@@ -1,7 +1,7 @@
 ---
 title: AIコーディングツールをエンジニア目線で比較【料金・IDE連携】
 date: "2025-07-05"
-dateModified: "2025-07-05"
+dateModified: "2025-07-17"
 description: "ChatGPT, Gemini, Claude, GitHub Copilot, JetBrains Junieを、料金、無料枠、IDE連携の観点から比較。"
 featuredImagePath: "featured/ai-cording.webp"
 nodeType: blog
@@ -31,13 +31,14 @@ AIの進化は凄まじく、自律的にタスクをこなす「AIエージェ�
 
 ## AIコーディングツール比較表
 
-| AIツール | 開発元 | 無料枠 | 有料プラン（個人） | IDE連携 | 強み                              |
-| :--- | :--- | :--- | :--- | :--- |:--------------------------------|
-| **[Gemini](https://ai.google.dev/)** | Google | **1日1,000リクエスト** (Gemini 2.5 Pro) | (APIは従量課金) | ターミナル (CLI), VS Code, JetBrains | **圧倒的な無料枠**。CLIで完結する手軽さ。        |
-| **[Claude](https://claude.ai/)** | Anthropic | 利用制限あり | **$20/月** (Pro) | VS Code (公式) | **長文読解の鬼**。大規模コードベースの理解。        |
-| **[JetBrains AI](https://www.jetbrains.com/ai-assistant/)** | JetBrains | IDEライセンスに付属 (少量) | **$10/月** (AI Pro) | JetBrains IDEs | **IDEネイティブ**。プロジェクト全体のコンテキスト理解。 |
-| **[GitHub Copilot](https://github.com/features/copilot)** | GitHub | 学生/OSSメンテナーは無料 | **$10/月** | VS Code, JetBrains IDEs, Vim/Neovim | **万能ペアプログラマー**。各エディタとの豊富な統合。    |
-| **[ChatGPT](https://chatgpt.com/)** | OpenAI | メッセージ数制限あり | **$20/月** (Plus) | VS Code (公式/サードパーティ) | **万能な相談役**。自然言語での指示に強い。         |
+| AIツール | 開発元                | 無料枠 | 有料プラン（個人）          | IDE連携 | 強み                              |
+| :--- |:-------------------| :--- |:-------------------| :--- |:--------------------------------|
+| **[Gemini](https://ai.google.dev/)** | Google             | **1日1,000リクエスト** (Gemini 2.5 Pro) | (APIは従量課金)         | ターミナル (CLI), VS Code, JetBrains | **圧倒的な無料枠**。CLIで完結する手軽さ。        |
+| **[Claude](https://claude.ai/)** | Anthropic          | 利用制限あり | **$20/月** (Pro)    | VS Code (公式) | **長文読解の鬼**。大規模コードベースの理解。        |
+| **[JetBrains AI](https://www.jetbrains.com/ai-assistant/)** | JetBrains          | IDEライセンスに付属 (少量) | **$10/月** (AI Pro) | JetBrains IDEs | **IDEネイティブ**。プロジェクト全体のコンテキスト理解。 |
+| **[GitHub Copilot](https://github.com/features/copilot)** | GitHub             | 学生/OSSメンテナーは無料 | **$10/月**          | VS Code, JetBrains IDEs, Vim/Neovim | **万能ペアプログラマー**。各エディタとの豊富な統合。    |
+| **[ChatGPT](https://chatgpt.com/)** | OpenAI             | メッセージ数制限あり | **$20/月** (Plus)   | VS Code (公式/サードパーティ) | **万能な相談役**。自然言語での指示に強い。         |
+| **[Kiro](https://kiro.dev/)** | Amazon Web Service | **無料 (プレビュー版)** | **$19/月** (Pro)  | **スタンドアロンIDE** (VS Code互換) | **仕様駆動開発**。自律的なタスク実行。 |
 
 ## 各ツールの詳細
 
@@ -83,6 +84,16 @@ AIの進化は凄まじく、自律的にタスクをこなす「AIエージェ�
     - コーディングよりもどちらかと言えば自然言語処理系が強力な印象。
     - なので上流工程の、実装方針の相談や要件・設計などのドキュメンテーションに使うのがオススメ。
 
+### 6. [Kiro](https://kiro.dev/)
+
+- **IDE連携:** Kiroはそれ自体がAIネイティブなスタンドアロンのIDEです。VS Codeの拡張機能や設定との互換性も備えています。
+- **料金/無料枠:** 現在はプレビュー版として無料で提供されており、ウェイトリストに登録することで利用できます。
+- **所感:**
+    - 「仕様駆動開発」を掲げ、要件定義→システム設計→タスク分割→実装までを自律的に行うことを目指しています。
+    - 特に上流工程の流れがフレームワークのようになっていて、雰囲気コーディングにレールを敷いてくれている感があり、AI開発全体の精度向上になると感じる。
+    - 現状、プレビュー版故不安定さがある。実際「The model you've selected is experiencing a high volume of traffic. Try changing the model and re-running your prompt.」のエラーが頻発し、Retryを押すだけなのですが実用に耐えかねるレベル。Claude Sonnet 3.7に落とすとマシになるらしい。
+![kiroError.png](kiroError.png)
+
 ## まとめ
 
 AIコーディングツールを選ぶ際は、単体の性能だけでなく「普段使っているIDEでいかに良い開発フローになるか」という視点が非常に重要です。
@@ -91,6 +102,6 @@ AIコーディングツールを選ぶ際は、単体の性能だけでなく「
 2.  IDE連携を重視するなら:
     - VS Codeユーザー → `GitHub Copilot`
     - JetBrains IDEsユーザー → `JetBrains AI`
-3.  より高度な利用が必要なら: `ChatGPT`や`Claude`を併用する。
+3.  より高度な利用や次世代の開発体験を求めるなら: `ChatGPT`や`Claude`の併用、あるいは`Kiro`のような新しいAI IDEを試す。
 
 これが今現在の、賢いAIコーディングツールの選び方かと思います。ぜひ、最適な「AIの相棒」を見つけて、開発効率を飛躍させてください。

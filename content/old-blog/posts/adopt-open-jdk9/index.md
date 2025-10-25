@@ -1,0 +1,71 @@
+---
+title: "Oracle Java8からAdoptOpenJDK9への変更方法"
+date: 2018-11-26
+categories: 
+  - "information-technology"
+tags: 
+  - "adopt-open-jdk"
+  - "java"
+  - "java9"
+  - "open-jdk"
+coverImage: "953px-OpenJDK_logo.svg.png"
+---
+
+Qiitaに記事を書きました： [https://qiita.com/nisioka/items/91b4a915d16bf514ad40](https://qiita.com/nisioka/items/91b4a915d16bf514ad40)
+
+内容はほぼ同一ですが、本記事ではJavaの切り替えのバッチ起動も紹介しています。
+
+## はじめに
+
+Oracleのリリースサイクル変更、ライセンスサポート形態の変更で、昨今のJava界隈は対応に追われていることかと思います。 有償サポートは費用面で難しく、リリースサイクルが半年という短さも難しいという案件は多く、選択肢として有力候補の一つなのがAdoptOpenJDKかと思われます。 探り探り導入してみたので、ここにまとめます。
+
+**補足。最初はAdoptOpenJDK11まで変更する記事のつもりでした。アプリケーションのバージョンアップをやりながら本記事を書いておりましたが、途中で根幹ライブラリがJava9以降対応していないことが分かり詰みました。別の機会に試して記事を完成させますが、それまではAdoptOpenJDKJava9までしか記載できないままです。**
+
+## 事前情報
+
+from Java：Oracle Java 8 to java：AdoptOpenJDK9 OS:Windows 64bit、Linux（CentOS）64bit
+
+## ダウンロード
+
+AdoptOpenJDKからダウンロードします。 最新リリース（Latest release）のページだと、単一プラットフォーム向けにしかビルドされていない場合もあるので、以下アーカイブのページから個別に選択するほうがいいと思います。 [https://adoptopenjdk.net/archive.html](https://adoptopenjdk.net/archive.html) [![2018-11-09_18h52_55.png](images/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f36353032363539662d613731372d373366362d353436332d3032383130383239653230612e706e67)](https://camo.qiitausercontent.com/ca7c8f0cf6c35fcd540b86de84c0385b50f5e118/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f36353032363539662d613731372d373366362d353436332d3032383130383239653230612e706e67)
+
+1. Choose a Version（バージョン選択） 今回はJava8→9まで上げるので、8と9のそれぞれを取得します（同一バージョンですが、Oracle Java 8 → AdoptOpenJDK9も確認します）。
+2. Choose a JVM（Java仮想マシン選択） 使用するJVM実装を選択します。所謂Oracle Javaを使用していたらHotspotを、IBM Javaを使用していたらOpenJ9を使用するという判断基準になるのかなと思います。これらの信憑性のある情報はあまり見つけられず、感覚的な話ではありますが、JVMの変更は怖いという印象です。 一応個人ブログではありますが、ベンチマークを測っておられる方がいましたので、紹介に留めて置きます。こちらを見ますと、CPUスピードの面ではHotspotが有利で、省メモリの面ではOpenJ9が有利でした。 [https://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/](https://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/) [https://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/](https://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/)ただし、リンク先でも書かれている通り、ちゃんと判断するならばこの結果を鵜呑みにせず、実際に対象の環境で自分で計測すべきです。
+
+## インストール
+
+### インストール方法
+
+Oracle javaのようにインストーラが付いてきたりはしません。 公式でインストール方法が以下に簡単に説明されていますが、少し微妙（JAVA\_HOMEを使ってない）ので、少々変更して説明します。 [https://adoptopenjdk.net/installation.html?variant=openjdk8&jvmVariant=hotspot](https://adoptopenjdk.net/installation.html?variant=openjdk8&jvmVariant=hotspot)
+
+1. ダウンロード 前述のとおり。
+2. （任意）チェックサム確認 結構ファイルサイズが大きいため、破損が心配であればチェックサムの値確認を行います。
+3. アーカイブ展開 まず、.zipなり、.tar.gzなりを使用する環境に合わせて解凍します。 それらを任意の場所に配置しましょう。 ex) Windows：「C:/Program Files/Java/jdk8u192-b12」 Linux：「/user/java/jdk8u192-b12」
+4. PATHを通す PATHはあまり弄りたくないので、JAVA\_HOMEという環境変数を介するようにしましょう（通例だと思います）。 PATHにはJAVA\_HOMEだけ登録し、javaのバージョン変更する際にはJAVA\_HOMEだけ書き換えれば影響を極小にできます。そして、環境変数もあまり弄りたくないので、JAVA\_HOMEが指す先もシンボリックリンクのディレクトリとします（latestとかdefaltなどが多いよう）。 PATH=%JAVA\_HOME%\\bin;(以降略) JAVA\_HOME="C:\\Program Files\\Java\\latest" [![image.png](images/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f62643639333539312d636333302d653464392d636464342d3636306536303664336261392e706e67)](https://camo.qiitausercontent.com/109f6b3f5cad120e727f21d3f67909d757312e32/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f62643639333539312d636333302d653464392d636464342d3636306536303664336261392e706e67) 以降のインストール時もここの手順はシンボリックリンクの向き先だけを変更する手順となります。もし何か上手く動かない場合もこの向き先を元に戻せばOKです。
+5. バージョン確認 java -versionを打ちましょう。 該当バージョンで、AdoptOpenJdkという文言が出るはずです。 [![image.png](images/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f62616231366461622d636465632d393334642d323162322d3139393330653066653737312e706e67)](https://camo.qiitausercontent.com/2d53240fe3b2f900503e1386d370eee8d05086cf/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f62616231366461622d636465632d393334642d323162322d3139393330653066653737312e706e67)
+6. （おまけ）Javaのバージョン切り替えバッチ ここまで出来たら、環境のJavaを簡単に切り替えられるようにしておくと便利です。今後のバージョンアップ時も解凍まで済ませれば、このバッチを叩けばよいだけです。また、何かあったときに、すぐに古いバージョンに戻すということもやりやすいです。 設定方法はこちら： [http://localhost/information-technology/switching-java-version](http://localhost/information-technology/switching-java-version)
+
+### Java8
+
+まずはJava8から。前提として元々のJavaは8なので、問題なく動く（はず）。
+
+- (補足)UNIX系限定：securerandom.sourceについて UNIX環境限定ですが、securerandom.sourceの設定値変更を忘れがちなのでここに注記します。 乱数生成の初期設定が、 "/dev/random" となっているのですが、そこまで厳密性が不要で、乱数の枯渇による遅延のほうが問題で、設定を "/dev/urandom" に変更している環境も多いと思います。 そういった環境では既存の設定と同じようにAdopt Open JDKをインストール後にも設定変更を忘れずに行う必要ありです。忘れずに、**各バージョン**に設定変更が必要です。 設定変更方法などは、こちらなど：[http://otndnld.oracle.co.jp/document/products/E13153\_01/wlcp/wlss40/configwlss/jvmrand.html](http://otndnld.oracle.co.jp/document/products/E13153_01/wlcp/wlss40/configwlss/jvmrand.html)
+
+### Java9
+
+モジュール機能「Project Jigsaw」による構成変更によって、数々の問題が発生する鬼門。 いくらか躓いたことを参考までに。 Oracleが出している[Java9移行ガイド](https://docs.oracle.com/javase/jp/9/migrate/toc.htm#JSMIG-GUID-7744EF96-5899-4FB2-B34E-86D49B2E89B6)は必読。
+
+- Gradleが動かない 古いGradleだと"Could not determine java version from"というエラーが発生する。 [https://qiita.com/Kaoru\_Yamamoto/items/dcb3815795d6e752cff3](https://qiita.com/Kaoru_Yamamoto/items/dcb3815795d6e752cff3)
+
+- Illegal Access To Internal APIs警告が発生 Javaの内部APIのうち、外部からの使用を想定されていないものもJava8まで使用できていましたが、それらが制限されるようになりました。 制限というのは、使用できなくなっていたり、WARN警告が発生します。
+    - 【対策①】 （根本対応）代替APIにソースを書き換える。
+    - 【対策②】 （暫定対応）Java起動オプション"--add-exports (該当API)"を追加する。
+    - 【対策③】 （暫定対応）Java起動オプション"--add-opens (該当API)"を追加する。APIをリフレクションで操作している場合にはこちらのオプションです。
+
+暫定対応となっているものは、経過措置としての手段ですので、今後のバージョンでは使用できない可能性があるので、なるべく早く根本対応する必要があります。 [https://blog.codefx.org/java/java-9-migration-guide/#Illegal-Access-To-Internal-APIs](https://blog.codefx.org/java/java-9-migration-guide/#Illegal-Access-To-Internal-APIs)
+
+## 参考
+
+https://qiita.com/nisioka/items/91b4a915d16bf514ad40
+
+http://localhost/information-technology/adopt-open-jdk9

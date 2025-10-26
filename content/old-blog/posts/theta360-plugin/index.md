@@ -19,7 +19,7 @@ RICOH THETA Vはプラグインによる機能拡張を行うことができま�
 
 ### Self-timer locked（セルフタイマー固定）
 
-![](images/plug_selftimer-300x163.png) [https://pluginstore.theta360.com/plugins/com.theta360.selftimerlocked/](https://pluginstore.theta360.com/plugins/com.theta360.selftimerlocked/)
+![](images/plug_selftimer-300x163.png) [https://github.com/ricohapi/theta-plugins/blob/main/plugins/com.theta360.selftimerlocked/README.ja.md](https://github.com/ricohapi/theta-plugins/blob/main/plugins/com.theta360.selftimerlocked/README.ja.md)
 
 タイトルはセルフタイマー固定ですが、固定というかセルフタイマーモードの切り替えショートカットとして使えます。
 
@@ -29,9 +29,9 @@ RICOH THETA Vはプラグインによる機能拡張を行うことができま�
 
 ### File Cloud Upload（クラウドアップロード）
 
-![](images/plug_cloud-300x163.png) [https://pluginstore.theta360.com/plugins/com.theta360.cloudupload/](https://pluginstore.theta360.com/plugins/com.theta360.cloudupload/)
+![](images/plug_cloud-300x163.png) [https://github.com/ricohapi/theta-plugins/blob/main/plugins/com.theta360.clouduploadv2/README.ja.md](https://github.com/ricohapi/theta-plugins/blob/main/plugins/com.theta360.clouduploadv2/README.ja.md)
 
-WiFiを通じてGoogleフォトにファイルアップロードができるようになるプラグインです。360°の写真や、特に動画は容量が大きいのでGoogleフォトなどのクラウド環境に保存することが多いと思います。本来はPCに一旦移してそこからアップロードという一手間があり、PCの容量の空きを気にしたりしなければならなかったり、単純に面倒だったりします。それを簡単にしてくれるのがこのプラグインです。 また、サードパーティ製プラグインの中に似たようなものとして、[FITA](https://pluginstore.theta360.com/plugins/com.everywoah.fitaplugin/)というものがあり、こちらはGoogle Cloudにアップロードできるもののようです。
+WiFiを通じてGoogleフォトにファイルアップロードができるようになるプラグインです。360°の写真や、特に動画は容量が大きいのでGoogleフォトなどのクラウド環境に保存することが多いと思います。本来はPCに一旦移してそこからアップロードという一手間があり、PCの容量の空きを気にしたりしなければならなかったり、単純に面倒だったりします。それを簡単にしてくれるのがこのプラグインです。 また、サードパーティ製プラグインの中に似たようなものとして、[FITA](https://github.com/ricohapi/theta-plugins/blob/main/plugins/com.everywoah.fitaplugin/README.ja.md)というものがあり、こちらはGoogle Cloudにアップロードできるもののようです。
 
 ## 使用方法
 
@@ -53,7 +53,7 @@ WiFiを通じてGoogleフォトにファイルアップロードができるよ�
 
 ### プラグインのダウンロード
 
-1. 上記の紹介や、以下のプラグインストアから対象のプラグインを探します。（以下の画像がリンクになっています。）[![](images/bnr_store.png)](https://pluginstore.theta360.com/)
+1. 上記の紹介や、次のプラグインストアから対象のプラグインを探します。[plugins](https://github.com/ricohapi/theta-plugins/blob/main/README.ja.md)
 2. プラグインのページでインストールを押下します。 この時、パソコン用基本ソフトは起動しておいてください。![](images/2018-11-25_14h41_51-300x132.png)
 3. OKを押下するとインストールが開始します。
 4. ファイル→プラグイン管理を開くと、追加されたプラグインも表示されます。 ![](images/2018-11-25_14h46_58-241x300.png) ![](images/2018-11-25_14h48_29-300x226.png) ここでTHETA本体に適用したいプラグインを選択すればOKです。一度インストールしておけば、THETAを繋いで適用するだけの作業となります。
@@ -74,4 +74,4 @@ posted with [カエレバ](https://kaereba.com)
 
 プラグイン説明ページ：[https://theta360.com/ja/ricoh\_plugins/](https://theta360.com/ja/ricoh_plugins/)
 
-プラグインストア：[https://pluginstore.theta360.com/](https://pluginstore.theta360.com/)
+プラグインストア：[https://github.com/ricohapi/theta-plugins/blob/main/README.ja.md](https://github.com/ricohapi/theta-plugins/blob/main/README.ja.md)

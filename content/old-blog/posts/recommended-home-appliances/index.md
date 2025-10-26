@@ -51,8 +51,6 @@ posted with [カエレバ](https://kaereba.com)
 我が家では「ルンバ e5」という機種を使用しています。廉価版なので、部屋の構造を把握できず、もっと効率の良いルートで掃除してほしいとヤキモキもしますが許容範囲で使えています。吸引力は十分で使用感としては満足しています。  
 掃除機ロボットは初めてだったため、[Rentio](https://www.rentio.jp/?invite=69835802) という家電レンタルサービスを使用しています。家の広さに合っているか？このカーペットを越えられるのか？などが分からずに購入に踏み切れなかったので、レンタルで試せてよかったです。
 
-[![](images/rp_e5_s002.jpg)](//af.moshimo.com/af/c/click?a_id=1041250&p_id=54&pc_id=54&pl_id=616&s_v=b5Rz2P0601xu&url=https%3A%2F%2Fitem.rakuten.co.jp%2Firobotstore%2Froomba515060%2F)![](images/impression)
-
 [【P10倍】公式店 人気NO.1『ルンバ e5』アイロボット ロボット掃除機 ルンバ 洗える ダストボックス WiFi アプリ対応 吸引力 ブラック irobot 掃除機 クリーナー 【送料無料】【日本正規品】【メーカー保証】P10 1/21 10:59まで](//af.moshimo.com/af/c/click?a_id=1041250&p_id=54&pc_id=54&pl_id=616&s_v=b5Rz2P0601xu&url=https%3A%2F%2Fitem.rakuten.co.jp%2Firobotstore%2Froomba515060%2F)![](images/impression)
 
 posted with [カエレバ](https://kaereba.com)
@@ -83,8 +81,6 @@ posted with [カエレバ](https://kaereba.com)
 
 [Amazon](//af.moshimo.com/af/c/click?a_id=1041250&p_id=170&pc_id=185&pl_id=4062&s_v=b5Rz2P0601xu&url=https%3A%2F%2Fwww.amazon.co.jp%2Fgp%2Fsearch%3Fkeywords%3Dgoogle%2520home%2520mini%26__mk_ja_JP%3D%25E3%2582%25AB%25E3%2582%25BF%25E3%2582%25AB%25E3%2583%258A)![](images/impression)
 
-[![](images/0421-003907.jpg)](//af.moshimo.com/af/c/click?a_id=1041250&p_id=54&pc_id=54&pl_id=616&s_v=b5Rz2P0601xu&url=https%3A%2F%2Fitem.rakuten.co.jp%2Fnexusonline%2F0421-003907%2F)![](images/impression)
-
 [Echo Show 5 (エコーショー5) スクリーン付きスマートスピーカー with Alexa、チャコール](//af.moshimo.com/af/c/click?a_id=1041250&p_id=54&pc_id=54&pl_id=616&s_v=b5Rz2P0601xu&url=https%3A%2F%2Fitem.rakuten.co.jp%2Fnexusonline%2F0421-003907%2F)![](images/impression)
 
 posted with [カエレバ](https://kaereba.com)
@@ -92,8 +88,6 @@ posted with [カエレバ](https://kaereba.com)
 [楽天市場](//af.moshimo.com/af/c/click?a_id=1041250&p_id=54&pc_id=54&pl_id=616&s_v=b5Rz2P0601xu&url=https%3A%2F%2Fsearch.rakuten.co.jp%2Fsearch%2Fmall%2FAlexa%2F-%2Ff.1-p.1-s.1-sf.0-st.A-v.2%3Fx%3D0)![](images/impression)
 
 [Amazon](//af.moshimo.com/af/c/click?a_id=1041250&p_id=170&pc_id=185&pl_id=4062&s_v=b5Rz2P0601xu&url=https%3A%2F%2Fwww.amazon.co.jp%2Fgp%2Fsearch%3Fkeywords%3DAlexa%26__mk_ja_JP%3D%25E3%2582%25AB%25E3%2582%25BF%25E3%2582%25AB%25E3%2583%258A)![](images/impression)
-
-[![](images/imgrc0075101198.jpg)](//af.moshimo.com/af/c/click?a_id=1041250&p_id=54&pc_id=54&pl_id=616&s_v=b5Rz2P0601xu&url=https%3A%2F%2Fitem.rakuten.co.jp%2Fnature-remo%2Fremo-2w2%2F)![](images/impression)
 
 [Nature スマートリモコン Nature Remo mini 2 ネイチャーリモ 家電コントロール Amazon Alexa / Google Home / Siri 対応 GPS連携 温度センサー Remo-2W2](//af.moshimo.com/af/c/click?a_id=1041250&p_id=54&pc_id=54&pl_id=616&s_v=b5Rz2P0601xu&url=https%3A%2F%2Fitem.rakuten.co.jp%2Fnature-remo%2Fremo-2w2%2F)![](images/impression)
 

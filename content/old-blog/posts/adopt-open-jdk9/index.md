@@ -27,7 +27,7 @@ from Java：Oracle Java 8 to java：AdoptOpenJDK9 OS:Windows 64bit、Linux（Cen
 
 ## ダウンロード
 
-AdoptOpenJDKからダウンロードします。 最新リリース（Latest release）のページだと、単一プラットフォーム向けにしかビルドされていない場合もあるので、以下アーカイブのページから個別に選択するほうがいいと思います。 [https://adoptopenjdk.net/archive.html](https://adoptopenjdk.net/archive.html) [![2018-11-09_18h52_55.png](images/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f36353032363539662d613731372d373366362d353436332d3032383130383239653230612e706e67)](https://camo.qiitausercontent.com/ca7c8f0cf6c35fcd540b86de84c0385b50f5e118/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f36353032363539662d613731372d373366362d353436332d3032383130383239653230612e706e67)
+AdoptOpenJDKからダウンロードします。 最新リリース（Latest release）のページだと、単一プラットフォーム向けにしかビルドされていない場合もあるので、以下アーカイブのページから個別に選択するほうがいいと思います。 [https://adoptopenjdk.net/archive.html](https://adoptopenjdk.net/archive.html)
 
 1. Choose a Version（バージョン選択） 今回はJava8→9まで上げるので、8と9のそれぞれを取得します（同一バージョンですが、Oracle Java 8 → AdoptOpenJDK9も確認します）。
 2. Choose a JVM（Java仮想マシン選択） 使用するJVM実装を選択します。所謂Oracle Javaを使用していたらHotspotを、IBM Javaを使用していたらOpenJ9を使用するという判断基準になるのかなと思います。これらの信憑性のある情報はあまり見つけられず、感覚的な話ではありますが、JVMの変更は怖いという印象です。 一応個人ブログではありますが、ベンチマークを測っておられる方がいましたので、紹介に留めて置きます。こちらを見ますと、CPUスピードの面ではHotspotが有利で、省メモリの面ではOpenJ9が有利でした。 [https://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/](https://royvanrijn.com/blog/2018/05/openj9-jvm-shootout/) [https://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/](https://royvanrijn.com/blog/2018/05/openj9-hotsport-specjvm2008/)ただし、リンク先でも書かれている通り、ちゃんと判断するならばこの結果を鵜呑みにせず、実際に対象の環境で自分で計測すべきです。

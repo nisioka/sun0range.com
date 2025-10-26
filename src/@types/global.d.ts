@@ -19,8 +19,8 @@ type AllMarkdownRemark = {
   nodes: MdPost[]
 }
 
-type AllWpPost = {
-  nodes: WpPost[]
+type AllMarkdownOldRemark = {
+  nodes: MdOldPost[]
 }
 
 type AllFile = {
@@ -68,28 +68,21 @@ type MdPost = {
   }
 }
 
-type WpPost = {
+type MdOldPost = {
   id: string
-  title: string
-  content: string
   excerpt: string
-  slug: string
-  date: string
-  modified: string
-  featuredImage: {
-    node: {
-      altText: string
-      gatsbyImage: any
-    }
+  html: string
+  internal: {
+    contentFilePath: string
   }
-  categories: {
-    nodes: {
-      name: string
-    }[]
+  fields: {
+    slug: string
   }
-  tags: {
-    nodes: {
-      name: string
-    }[]
+  frontmatter: {
+    title: string
+    date: string
+    coverImage: string
+    categories: string[]
+    tags: string[]
   }
 }

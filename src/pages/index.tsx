@@ -10,15 +10,15 @@ import Pagination from "../components/pagination"
 
 type BlogIndexProps = {
   data: {
-    allMarkdownRemark: AllMarkdownRemark
-    allWpPost: AllWpPost
+    allBlogMarkdownRemark: AllMarkdownRemark
+    allOldBlogMarkdownRemark: AllMarkdownOldRemark
     allFile: AllFile
   }
   location: Location
 }
 
 const BlogIndex = ({ data, location }: BlogIndexProps) => {
-  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
+  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.allFile)
 
   if (posts.length === 0) {
     return (
@@ -110,7 +110,9 @@ export const pageQuery = graphql`
         }
       }
     }
-    allMarkdownRemark {
+    allBlogMarkdownRemark: allMarkdownRemark(
+      filter: { sourceInstanceName: { eq: "blog" } }
+    ) {
       nodes {
         excerpt
         fields {
@@ -126,28 +128,20 @@ export const pageQuery = graphql`
         }
       }
     }
-    allWpPost {
+    allOldBlogMarkdownRemark: allMarkdownRemark(
+      filter: { sourceInstanceName: { eq: "old-blog" } }
+    ) {
       nodes {
-        title
         excerpt
-        slug
-        date(formatString: "YYYY/MM/DD")
-        modified(formatString: "YYYY/MM/DD")
-        featuredImage {
-          node {
-            altText
-            gatsbyImage(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
+        fields {
+          slug
         }
-        categories {
-          nodes {
-            name
-          }
+        frontmatter {
+          title
+          date(formatString: "YYYY/MM/DD")
+          coverImage
+          categories
+          tags
         }
       }
     }

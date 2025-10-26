@@ -18,7 +18,7 @@ const PageList = ({
   data: any
   location: Location
 }) => {
-  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
+  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.allFile)
   const title = `記事一覧`
 
   return (
@@ -74,10 +74,11 @@ export const Head = ({ location }: { location: Location }) => {
 
 export const pageQuery = graphql`
   query ($limit: Int!, $skip: Int!) {
-    allMarkdownRemark(
+    allBlogMarkdownRemark: allMarkdownRemark(
       limit: $limit
       skip: $skip
       sort: { frontmatter: { date: DESC } }
+      filter: { sourceInstanceName: { eq: "blog" } }
     ) {
       nodes {
         excerpt
@@ -93,27 +94,23 @@ export const pageQuery = graphql`
         }
       }
     }
-    allWpPost(limit: $limit, skip: $skip, sort: { date: DESC }) {
+    allOldBlogMarkdownRemark: allMarkdownRemark(
+      limit: $limit
+      skip: $skip
+      sort: { frontmatter: { date: DESC } }
+      filter: { sourceInstanceName: { eq: "old-blog" } }
+    ) {
       nodes {
-        title
         excerpt
-        slug
-        date(formatString: "YYYY/MM/DD")
-        featuredImage {
-          node {
-            altText
-            gatsbyImage(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
+        fields {
+          slug
         }
-        categories {
-          nodes {
-            name
-          }
+        frontmatter {
+          title
+          date(formatString: "YYYY/MM/DD")
+          coverImage
+          categories
+          tags
         }
       }
     }

@@ -37,27 +37,6 @@ type BlogPostTemplateProps = {
         category: string
       }
     }
-    wpPost: WpPost
-    wpPrevious: {
-      id: string
-      title: string
-      slug: string
-      categories: {
-        nodes: {
-          name: string
-        }[]
-      }
-    }
-    wpNext: {
-      id: string
-      title: string
-      slug: string
-      categories: {
-        nodes: {
-          name: string
-        }[]
-      }
-    }
   }
   location: Location
 }
@@ -68,48 +47,36 @@ const BlogPostTemplate = ({
     markdownRemark: md,
     mdPrevious,
     mdNext,
-    wpPost,
-    wpPrevious,
-    wpNext,
   },
   location,
 }: BlogPostTemplateProps) => {
   const { siteMetadata } = config as { siteMetadata: SiteMetadata }
 
   const post = {
-    id: md?.id || wpPost?.id,
-    title: md?.frontmatter.title || wpPost?.title,
-    content: md?.html || wpPost?.content,
-    excerpt: removeHtmlTags(md?.excerpt || wpPost?.excerpt),
-    slug:
-      md?.fields.slug.replace(/^\//, "").replace(/\/$/, "") ||
-      "/" + wpPost?.slug,
-    date: md?.frontmatter.date || wpPost?.date,
-    dateModified: md?.frontmatter.dateModified || wpPost?.modified,
+    id: md?.id,
+    title: md?.frontmatter.title,
+    content: md?.html,
+    excerpt: removeHtmlTags(md?.excerpt),
+    slug: md?.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
+    date: md?.frontmatter.date,
+    dateModified: md?.frontmatter.dateModified,
     description: md?.frontmatter.description,
-    altText: wpPost?.featuredImage?.node.altText || "",
-    gatsbyImage:
-      wpPost?.featuredImage?.node.gatsbyImage ||
-      getImage(allFile.edges[0]?.node.childImageSharp),
-    category: md?.frontmatter.category || wpPost?.categories?.nodes[0]?.name,
-    tags: md?.frontmatter.tags || wpPost?.tags?.nodes.map(t => t.name),
+    altText: "",
+    gatsbyImage: getImage(allFile.edges[0]?.node.childImageSharp)!,
+    category: md?.frontmatter.category,
+    tags: md?.frontmatter.tags,
   }
   const previous = {
-    id: mdPrevious?.id || wpPrevious?.id,
-    title: mdPrevious?.frontmatter.title || wpPrevious?.title,
-    slug:
-      mdPrevious?.fields.slug.replace(/^\//, "").replace(/\/$/, "") ||
-      wpPrevious?.slug,
-    category:
-      mdPrevious?.frontmatter.category || wpPrevious?.categories.nodes[0].name,
+    id: mdPrevious?.id,
+    title: mdPrevious?.frontmatter.title,
+    slug: mdPrevious?.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
+    category: mdPrevious?.frontmatter.category,
   }
   const next = {
-    id: mdNext?.id || wpNext?.id,
-    title: mdNext?.frontmatter.title || wpNext?.title,
-    slug:
-      mdNext?.fields.slug.replace(/^\//, "").replace(/\/$/, "") || wpNext?.slug,
-    category:
-      mdNext?.frontmatter.category || wpNext?.categories?.nodes[0]?.name,
+    id: mdNext?.id,
+    title: mdNext?.frontmatter.title,
+    slug: mdNext?.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
+    category: mdNext?.frontmatter.category,
   }
 
   return (
@@ -266,57 +233,14 @@ export const pageQuery = graphql`
         category
       }
     }
-    wpPost(id: { eq: $id }) {
-      id
-      title
-      content
-      excerpt
-      slug
-      date(formatString: "YYYY/MM/DD")
-      modified(formatString: "YYYY/MM/DD")
-      featuredImage {
-        node {
-          altText
-          gatsbyImage(height: 320)
-        }
-      }
-      categories {
-        nodes {
-          name
-        }
-      }
-      tags {
-        nodes {
-          name
-        }
-      }
     }
-    wpPrevious: wpPost(id: { eq: $previousPostId }) {
-      title
-      slug
-      categories {
-        nodes {
-          name
-        }
-      }
-    }
-    wpNext: wpPost(id: { eq: $nextPostId }) {
-      title
-      slug
-      categories {
-        nodes {
-          name
-        }
-      }
-    }
-  }
 `
 
 export const Head = ({
-  data: { allFile, markdownRemark, wpPost },
+  data: { allFile, markdownRemark },
   location,
 }: BlogPostTemplateProps) => {
-  const post = mergePost(markdownRemark, wpPost, allFile)
+  const post = mergePost(markdownRemark, allFile)
   return (
     <Seo
       title={post.title}

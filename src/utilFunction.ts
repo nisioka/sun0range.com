@@ -1,8 +1,8 @@
 import { getImage, IGatsbyImageData } from "gatsby-plugin-image"
 
 export function mergePosts(
-  allMarkdownRemark: AllMarkdownRemark,
-  allWpPost: AllWpPost,
+  allBlogMarkdownRemark: AllMarkdownRemark,
+  allOldBlogMarkdownRemark: AllMarkdownOldRemark,
   allFile?: AllFile
 ) {
   let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
@@ -11,9 +11,9 @@ export function mergePosts(
       allFeaturedImages[node.node.relativePath] =
         node.node.childImageSharp.gatsbyImageData
     })
-  const mdPosts = allMarkdownRemark.nodes
-  const wpPosts = allWpPost.nodes
-  return mdPosts
+  const blogMdPosts = allBlogMarkdownRemark.nodes
+  const oldBlogMdPosts = allOldBlogMarkdownRemark.nodes
+  return blogMdPosts
     .map(post => {
       return {
         title: post.frontmatter.title,
@@ -22,7 +22,7 @@ export function mergePosts(
         date: post.frontmatter.date,
         dateModified: post.frontmatter.dateModified,
         description: post.frontmatter.description,
-        altText: post.frontmatter.featuredImagePath,
+        altText: post.frontmatter.featuredImagePath || "",
         gatsbyImage: getImage(
           allFeaturedImages[
             post.frontmatter.featuredImagePath ||
@@ -34,21 +34,32 @@ export function mergePosts(
       } as CommonPost
     })
     .concat(
-      wpPosts.map(post => {
-        return {
-          title: post.title,
-          excerpt: removeHtmlTags(post.excerpt),
-          slug: post.slug,
-          date: post.date,
-          dateModified: post.modified,
-          description: post.content,
-          altText: post.featuredImage?.node.altText || "",
-          gatsbyImage:
-            post.featuredImage?.node.gatsbyImage ||
-            getImage(allFeaturedImages["featured/defaultThumbnail.png"]),
-          category: post.categories?.nodes[0]?.name || "",
-          tags: post.tags?.nodes.map(t => t.name) || [],
+      oldBlogMdPosts.map(post => {
+        // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
+        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "")
+        if (post.internal.contentFilePath.includes("content/old-blog/posts/")) {
+          slug = slug.replace(/^old-blog\/posts\//, "")
+        } else if (post.internal.contentFilePath.includes("content/old-blog/custom/")) {
+          slug = slug.replace(/^old-blog\/custom\//, "")
+        } else if (post.internal.contentFilePath.includes("content/old-blog/pages/")) {
+          slug = slug.replace(/^old-blog\/pages\//, "")
         }
+        return {
+          title: post.frontmatter.title,
+          excerpt: removeHtmlTags(post.excerpt),
+          slug: slug,
+          date: post.frontmatter.date,
+          dateModified: post.frontmatter.date || null,
+          description: post.frontmatter.title,
+          altText: post.frontmatter.coverImage || "",
+          gatsbyImage: getImage(
+            allFeaturedImages[
+              "images/" + post.frontmatter.coverImage || "featured/defaultThumbnail.png"
+            ]
+          ),
+          category: post.frontmatter.categories ? post.frontmatter.categories[0] : "",
+          tags: post.frontmatter.tags || [],
+        } as CommonPost
       })
     )
     .sort(
@@ -56,7 +67,7 @@ export function mergePosts(
     ) as CommonPost[]
 }
 
-export function mergePost(md?: MdPost, wpPost?: WpPost, allFile?: AllFile) {
+export function mergePost(md?: MdPost, allFile?: AllFile) {
   let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
   allFile &&
     allFile.edges.forEach(node => {
@@ -64,24 +75,19 @@ export function mergePost(md?: MdPost, wpPost?: WpPost, allFile?: AllFile) {
         node.node.childImageSharp.gatsbyImageData
     })
   return {
-    title: md?.frontmatter.title || wpPost?.title,
-    excerpt: removeHtmlTags(md?.excerpt || wpPost?.excerpt),
-    slug: md?.fields.slug || wpPost?.slug,
-    date: md?.frontmatter.date || wpPost?.date,
-    dateModified: md?.frontmatter.dateModified || wpPost?.modified,
-    description: md?.frontmatter.description || wpPost?.content,
-    altText:
-      md?.frontmatter.featuredImagePath ||
-      wpPost?.featuredImage?.node.altText ||
-      "",
+    title: md?.frontmatter.title,
+    excerpt: removeHtmlTags(md?.excerpt),
+    slug: md?.fields.slug,
+    date: md?.frontmatter.date,
+    dateModified: md?.frontmatter.dateModified,
+    description: md?.frontmatter.description,
+    altText: md?.frontmatter.featuredImagePath || "",
     gatsbyImage:
       getImage(
         allFeaturedImages[
           md?.frontmatter.featuredImagePath || "featured/defaultThumbnail.webp"
         ]
-      ) ||
-      wpPost?.featuredImage?.node.gatsbyImage ||
-      getImage(allFeaturedImages["featured/defaultThumbnail.webp"]),
+      ),
   } as CommonPost
 }
 

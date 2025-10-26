@@ -12,17 +12,19 @@ type RelatedListProps = {
 }
 const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
   const {
-    allMarkdownRemark,
-    allWpPost,
+    allBlogMarkdownRemark,
+    allOldBlogMarkdownRemark,
     allFile,
   }: {
-    allMarkdownRemark: AllMarkdownRemark
-    allWpPost: AllWpPost
+    allBlogMarkdownRemark: AllMarkdownRemark
+    allOldBlogMarkdownRemark: AllMarkdownOldRemark
     allFile: AllFile
   } = useStaticQuery(
     graphql`
       query {
-        allMarkdownRemark {
+        allBlogMarkdownRemark: allMarkdownRemark(
+          filter: { sourceInstanceName: { eq: "blog" } }
+        ) {
           nodes {
             excerpt
             fields {
@@ -39,33 +41,20 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
             }
           }
         }
-        allWpPost {
+        allOldBlogMarkdownRemark: allMarkdownRemark(
+          filter: { sourceInstanceName: { eq: "old-blog" } }
+        ) {
           nodes {
-            title
             excerpt
-            slug
-            date(formatString: "YYYY/MM/DD")
-            modified(formatString: "YYYY/MM/DD")
-            featuredImage {
-              node {
-                altText
-                gatsbyImage(
-                  width: 100
-                  height: 100
-                  formats: [AUTO, WEBP, AVIF]
-                  placeholder: BLURRED
-                )
-              }
+            fields {
+              slug
             }
-            categories {
-              nodes {
-                name
-              }
-            }
-            tags {
-              nodes {
-                name
-              }
+            frontmatter {
+              title
+              date(formatString: "YYYY/MM/DD")
+              coverImage
+              categories
+              tags
             }
           }
         }
@@ -89,7 +78,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
   )
 
   // 関連度計算。
-  const posts = mergePosts(allMarkdownRemark, allWpPost, allFile)
+  const posts = mergePosts(allBlogMarkdownRemark, allOldBlogMarkdownRemark, allFile)
     .map(post => {
       let point = 0
       if (post.slug !== slug) {

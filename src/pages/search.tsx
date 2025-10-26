@@ -6,7 +6,7 @@ import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 import { GatsbyImage } from "gatsby-plugin-image"
 
 const Search = ({ data, location }: { data: any; location: Location }) => {
-  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
+  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.allFile)
 
   const initQuery = decodeURI(
     location.href?.split("?q=")[1] || ""
@@ -118,7 +118,9 @@ export default Search
 
 export const pageQuery = graphql`
   query {
-    allMarkdownRemark {
+    allBlogMarkdownRemark: allMarkdownRemark(
+      filter: { sourceInstanceName: { eq: "blog" } }
+    ) {
       nodes {
         excerpt
         fields {
@@ -132,27 +134,20 @@ export const pageQuery = graphql`
         }
       }
     }
-    allWpPost {
+    allOldBlogMarkdownRemark: allMarkdownRemark(
+      filter: { sourceInstanceName: { eq: "old-blog" } }
+    ) {
       nodes {
-        title
         excerpt
-        slug
-        date(formatString: "YYYY/MM/DD")
-        featuredImage {
-          node {
-            altText
-            gatsbyImage(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
+        fields {
+          slug
         }
-        categories {
-          nodes {
-            name
-          }
+        frontmatter {
+          title
+          date(formatString: "YYYY/MM/DD")
+          coverImage
+          categories
+          tags
         }
       }
     }

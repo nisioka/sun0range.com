@@ -18,7 +18,7 @@ const CategoryList = ({
   location: Location
 }) => {
   const tagName = pageContext.tag as string
-  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
+  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.allFile)
   const title = `【${tagName}】タグ 一覧`
 
   if (posts.length === 0) {
@@ -95,9 +95,9 @@ export const Head = ({
 
 export const pageQuery = graphql`
   query ($tag: String) {
-    allMarkdownRemark(
+    allBlogMarkdownRemark: allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
-      filter: { frontmatter: { tags: { in: [$tag] } } }
+      filter: { frontmatter: { tags: { in: [$tag] } }, sourceInstanceName: { eq: "blog" } }
     ) {
       nodes {
         excerpt
@@ -113,30 +113,21 @@ export const pageQuery = graphql`
         }
       }
     }
-    allWpPost(
-      sort: { date: DESC }
-      filter: { tags: { nodes: { elemMatch: { name: { eq: $tag } } } } }
+    allOldBlogMarkdownRemark: allMarkdownRemark(
+      sort: { frontmatter: { date: DESC } }
+      filter: { frontmatter: { tags: { in: [$tag] } }, sourceInstanceName: { eq: "old-blog" } }
     ) {
       nodes {
-        title
         excerpt
-        slug
-        date(formatString: "YYYY/MM/DD")
-        featuredImage {
-          node {
-            altText
-            gatsbyImage(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
+        fields {
+          slug
         }
-        categories {
-          nodes {
-            name
-          }
+        frontmatter {
+          title
+          date(formatString: "YYYY/MM/DD")
+          coverImage
+          categories
+          tags
         }
       }
     }

@@ -5,35 +5,37 @@ import styled from "styled-components"
 
 const TagCloud = () => {
   const {
-    allMarkdownRemark,
-    allWpPost,
-  }: { allMarkdownRemark: AllMarkdownRemark; allWpPost: AllWpPost } =
+    allBlogMarkdownRemark,
+    allOldBlogMarkdownRemark,
+  }: { allBlogMarkdownRemark: AllMarkdownRemark; allOldBlogMarkdownRemark: AllMarkdownOldRemark } =
     useStaticQuery(
       graphql`
-        query {
-          allMarkdownRemark {
-            nodes {
-              frontmatter {
-                tags
-              }
-            }
-          }
-          allWpPost {
-            nodes {
-              tags {
-                nodes {
-                  name
-                }
-              }
+      query {
+        allBlogMarkdownRemark: allMarkdownRemark(
+          filter: { sourceInstanceName: { eq: "blog" } }
+        ) {
+          nodes {
+            frontmatter {
+              tags
             }
           }
         }
-      `
+        allOldBlogMarkdownRemark: allMarkdownRemark(
+          filter: { sourceInstanceName: { eq: "old-blog" } }
+        ) {
+          nodes {
+            frontmatter {
+              tags
+            }
+          }
+        }
+      }
+    `
     )
 
-  const postTags = allMarkdownRemark.nodes
+  const postTags = allBlogMarkdownRemark.nodes
     .map(post => post.frontmatter.tags)
-    .concat(allWpPost.nodes.map(post => post.tags.nodes.map(t => t.name)))
+    .concat(allOldBlogMarkdownRemark.nodes.map(post => post.frontmatter.tags))
 
   const tagsBase = postTags
     .reduce((tagCount, post) => {

@@ -26,13 +26,15 @@ export const createPages: GatsbyNode["createPages"] = async ({
   const { createPage } = actions
 
   type AllPost = {
-    allMarkdownRemark: AllMarkdownRemark
-    allWpPost: AllWpPost
+    allBlogMarkdownRemark: AllMarkdownRemark
+    allOldBlogMarkdownRemark: AllMarkdownOldRemark
   }
 
   const result = await graphql<AllPost>(`
     {
-      allMarkdownRemark {
+      allBlogMarkdownRemark: allMarkdownRemark(
+        filter: { sourceInstanceName: { eq: "blog" } }
+      ) {
         nodes {
           id
           fields {
@@ -49,19 +51,22 @@ export const createPages: GatsbyNode["createPages"] = async ({
           }
         }
       }
-      allWpPost {
+      allOldBlogMarkdownRemark: allMarkdownRemark(
+        filter: { sourceInstanceName: { eq: "old-blog" } }
+      ) {
         nodes {
           id
-          slug
-          categories {
-            nodes {
-              name
-            }
+          fields {
+            slug
           }
-          tags {
-            nodes {
-              name
-            }
+          internal {
+            contentFilePath
+          }
+          frontmatter {
+            featuredImagePath
+            nodeType
+            category
+            tags
           }
         }
       }
@@ -83,9 +88,12 @@ export const createPages: GatsbyNode["createPages"] = async ({
     featuredImagePath: string | null
     category: string
     tags: string[]
+    description: string
+    dateModified: string | null
+    nodeType: string
   }
 
-  const posts = result.data?.allMarkdownRemark.nodes
+  const posts = result.data?.allBlogMarkdownRemark.nodes
     .map(post => {
       return {
         id: post.id,
@@ -94,18 +102,34 @@ export const createPages: GatsbyNode["createPages"] = async ({
         featuredImagePath: post.frontmatter.featuredImagePath,
         category: post.frontmatter.category,
         tags: post.frontmatter.tags,
+        description: post.frontmatter.description,
+        dateModified: post.frontmatter.dateModified,
+        nodeType: "blog",
       } as Post
     })
     .concat(
-      result.data?.allWpPost.nodes.map(post => {
+      result.data?.allOldBlogMarkdownRemark.nodes.map(post => {
+        // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
+        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "")
+        if (post.internal.contentFilePath.includes("content/old-blog/posts/")) {
+          slug = slug.replace(/^old-blog\/posts\//, "")
+        } else if (post.internal.contentFilePath.includes("content/old-blog/custom/")) {
+          slug = slug.replace(/^old-blog\/custom\//, "")
+        } else if (post.internal.contentFilePath.includes("content/old-blog/pages/")) {
+          slug = slug.replace(/^old-blog\/pages\//, "")
+        }
+
         return {
           id: post.id,
-          slug: post.slug,
-          component: blogPost,
-          featuredImagePath: null,
-          category: post.categories.nodes[0].name,
-          tags: post.tags.nodes.map(tag => tag.name),
-        }
+          slug: slug,
+          component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`,
+          featuredImagePath: post.frontmatter.coverImage ? "images/" + post.frontmatter.coverImage : null,
+          category: post.frontmatter.categories ? post.frontmatter.categories[0] : null,
+          tags: post.frontmatter.tags || [],
+          description: post.frontmatter.title,
+          dateModified: post.frontmatter.date || null,
+          nodeType: "old-blog",
+        } as Post
       })
     )
 
@@ -221,6 +245,7 @@ export const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] 
     type MarkdownRemark implements Node {
       frontmatter: Frontmatter
       fields: Fields
+      sourceInstanceName: String
     }
 
     type Frontmatter {

@@ -1,4 +1,5 @@
 import { getImage, IGatsbyImageData } from "gatsby-plugin-image"
+import { AllFile, AllMarkdownOldRemark, AllMarkdownRemark } from "./@types/global"
 
 export function mergePosts(
   allBlogMarkdownRemark: AllMarkdownRemark,
@@ -36,14 +37,7 @@ export function mergePosts(
     .concat(
       oldBlogMdPosts.map(post => {
         // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
-        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "")
-        if (post.internal.contentFilePath.includes("content/old-blog/posts/")) {
-          slug = slug.replace(/^old-blog\/posts\//, "")
-        } else if (post.internal.contentFilePath.includes("content/old-blog/custom/")) {
-          slug = slug.replace(/^old-blog\/custom\//, "")
-        } else if (post.internal.contentFilePath.includes("content/old-blog/pages/")) {
-          slug = slug.replace(/^old-blog\/pages\//, "")
-        }
+        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "").replace(/^custom\//, "").replace(/^pages\//, "")
         return {
           title: post.frontmatter.title,
           excerpt: removeHtmlTags(post.excerpt),
@@ -102,9 +96,24 @@ const categoryNames: { id: number; eng: string; jp: string }[] = [
 
 export const categoryAll = categoryNames.sort(c => c.id).map(c => c.jp)
 
-export function convertCategory(japanese: string) {
-  if (!japanese) return undefined
-  return categoryNames.find(c => c.jp === japanese.replace("/", ""))?.eng || ""
+export function convertCategory(name: string): string | undefined {
+  if (!name) return undefined
+  const normalizedName = name.replace("/", "")
+
+  // まず英語名 (eng) で探す
+  const foundByEng = categoryNames.find(c => c.eng === normalizedName)
+  if (foundByEng) {
+    return foundByEng.eng
+  }
+
+  // 次に日本語名 (jp) で探す
+  const foundByJp = categoryNames.find(c => c.jp === normalizedName)
+  if (foundByJp) {
+    return foundByJp.eng
+  }
+
+  console.log(`Not match convertCategory. Category name is: ${name}`);
+  return ""
 }
 
 export function removeHtmlTags(str: string | undefined) {

@@ -12,6 +12,7 @@ import parse, { domToReact } from "html-react-parser"
 import { androidstudio } from "react-syntax-highlighter/dist/cjs/styles/hljs"
 import { Disqus } from "gatsby-plugin-disqus"
 import config from "../../gatsby-config"
+import { AllFile, MdPost, SiteMetadata } from "../@types/global"
 
 type BlogPostTemplateProps = {
   data: {
@@ -53,18 +54,18 @@ const BlogPostTemplate = ({
   const { siteMetadata } = config as { siteMetadata: SiteMetadata }
 
   const post = {
-    id: md?.id,
-    title: md?.frontmatter.title,
-    content: md?.html,
-    excerpt: removeHtmlTags(md?.excerpt),
-    slug: md?.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
-    date: md?.frontmatter.date,
-    dateModified: md?.frontmatter.dateModified,
-    description: md?.frontmatter.description,
+    id: md.id,
+    title: md.frontmatter.title,
+    content: md.html,
+    excerpt: removeHtmlTags(md.excerpt),
+    slug: md.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
+    date: md.frontmatter.date,
+    dateModified: md.frontmatter.dateModified,
+    description: md.frontmatter.description,
     altText: "",
     gatsbyImage: getImage(allFile.edges[0]?.node.childImageSharp)!,
-    category: md?.frontmatter.category,
-    tags: md?.frontmatter.tags,
+    category: md.frontmatter.category,
+    tags: md.frontmatter.tags,
   }
   const previous = {
     id: mdPrevious?.id,
@@ -233,7 +234,7 @@ export const pageQuery = graphql`
         category
       }
     }
-    }
+  }
 `
 
 export const Head = ({
@@ -247,7 +248,7 @@ export const Head = ({
       description={post.excerpt}
       location={location}
       imagePath={
-        post.gatsbyImage ? post.gatsbyImage.images.fallback?.src : null
+        post.gatsbyImage ? post.gatsbyImage.images.fallback?.src : undefined
       }
       post={post}
     />

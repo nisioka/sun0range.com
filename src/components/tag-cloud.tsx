@@ -12,7 +12,7 @@ const TagCloud = () => {
       graphql`
       query {
         allBlogMarkdownRemark: allMarkdownRemark(
-          filter: { sourceInstanceName: { eq: "blog" } }
+          filter: { fields: { sourceInstanceName: { eq: "blog" } } }
         ) {
           nodes {
             frontmatter {
@@ -21,7 +21,7 @@ const TagCloud = () => {
           }
         }
         allOldBlogMarkdownRemark: allMarkdownRemark(
-          filter: { sourceInstanceName: { eq: "old-blog" } }
+          filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
         ) {
           nodes {
             frontmatter {

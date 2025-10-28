@@ -111,7 +111,7 @@ export const pageQuery = graphql`
       }
     }
     allBlogMarkdownRemark: allMarkdownRemark(
-      filter: { sourceInstanceName: { eq: "blog" } }
+      filter: { fields: { sourceInstanceName: { eq: "blog" } } }
     ) {
       nodes {
         excerpt
@@ -129,7 +129,7 @@ export const pageQuery = graphql`
       }
     }
     allOldBlogMarkdownRemark: allMarkdownRemark(
-      filter: { sourceInstanceName: { eq: "old-blog" } }
+      filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
     ) {
       nodes {
         excerpt

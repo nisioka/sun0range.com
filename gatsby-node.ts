@@ -8,6 +8,7 @@ import path from "path"
 import { GatsbyNode } from "gatsby"
 import { createFilePath } from "gatsby-source-filesystem"
 import { convertCategory } from "./src/utilFunction"
+import { AllMarkdownOldRemark, AllMarkdownRemark } from "./src/@types/global"
 
 // Define the template for blog post
 const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
@@ -33,7 +34,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
   const result = await graphql<AllPost>(`
     {
       allBlogMarkdownRemark: allMarkdownRemark(
-        filter: { sourceInstanceName: { eq: "blog" } }
+        filter: { fields: { sourceInstanceName: { eq: "blog" } } }
       ) {
         nodes {
           id
@@ -48,11 +49,13 @@ export const createPages: GatsbyNode["createPages"] = async ({
             nodeType
             category
             tags
+            description
+            dateModified
           }
         }
       }
       allOldBlogMarkdownRemark: allMarkdownRemark(
-        filter: { sourceInstanceName: { eq: "old-blog" } }
+        filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
       ) {
         nodes {
           id
@@ -63,10 +66,11 @@ export const createPages: GatsbyNode["createPages"] = async ({
             contentFilePath
           }
           frontmatter {
-            featuredImagePath
-            nodeType
-            category
+            title
+            date
+            categories
             tags
+            coverImage
           }
         }
       }
@@ -91,14 +95,19 @@ export const createPages: GatsbyNode["createPages"] = async ({
     description: string
     dateModified: string | null
     nodeType: string
+    internal: {
+      contentFilePath: string
+    }
   }
 
   const posts = result.data?.allBlogMarkdownRemark.nodes
     .map(post => {
+      let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "")
+      console.log(`NewBlog= slug:${slug}, blogPost:${blogPost}, ?__contentFilePath=${post.internal.contentFilePath}, featuredImagePath:${post.frontmatter.featuredImagePath}`)
       return {
         id: post.id,
-        slug: post.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
-        component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`,
+        slug: slug,
+        component: `${blogPost}`,
         featuredImagePath: post.frontmatter.featuredImagePath,
         category: post.frontmatter.category,
         tags: post.frontmatter.tags,
@@ -108,21 +117,15 @@ export const createPages: GatsbyNode["createPages"] = async ({
       } as Post
     })
     .concat(
-      result.data?.allOldBlogMarkdownRemark.nodes.map(post => {
+      result.data.allOldBlogMarkdownRemark.nodes.map(post => {
         // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
-        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "")
-        if (post.internal.contentFilePath.includes("content/old-blog/posts/")) {
-          slug = slug.replace(/^old-blog\/posts\//, "")
-        } else if (post.internal.contentFilePath.includes("content/old-blog/custom/")) {
-          slug = slug.replace(/^old-blog\/custom\//, "")
-        } else if (post.internal.contentFilePath.includes("content/old-blog/pages/")) {
-          slug = slug.replace(/^old-blog\/pages\//, "")
-        }
+        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "").replace(/^custom\//, "").replace(/^pages\//, "")
 
+        console.log(`OldBlog= slug:${slug}, blogPost:${blogPost}, ?__contentFilePath=${post.internal.contentFilePath}, featuredImagePath:${post.frontmatter.coverImage}`)
         return {
           id: post.id,
           slug: slug,
-          component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`,
+          component: `${blogPost}`,
           featuredImagePath: post.frontmatter.coverImage ? "images/" + post.frontmatter.coverImage : null,
           category: post.frontmatter.categories ? post.frontmatter.categories[0] : null,
           tags: post.frontmatter.tags || [],
@@ -139,11 +142,27 @@ export const createPages: GatsbyNode["createPages"] = async ({
 
   if (posts && posts.length > 0) {
     posts.forEach((post, index) => {
+      if (!post.category) {
+        reporter.warn(
+          `Post with slug "${post.slug}" has no category. Skipping page creation.`
+        )
+        return
+      }
+
+      const categoryPath = convertCategory(post.category)
+
+      if (!categoryPath) {
+        reporter.warn(
+          `Could not find a valid category path for "${post.category}" in post with slug "${post.slug}". Skipping page creation.`
+        )
+        return
+      }
+
       const previousPostId = index === 0 ? null : posts[index - 1].id
       const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id
 
       createPage({
-        path: `/${convertCategory(post.category)}/${post.slug}`,
+        path: `/${categoryPath}/${post.slug}`,
         component: post.component,
         context: {
           id: post.id,
@@ -219,12 +238,21 @@ export const onCreateNode: GatsbyNode["onCreateNode"] = ({
 
   if (node.internal.type === `MarkdownRemark`) {
     const value = createFilePath({ node, getNode })
-
     createNodeField({
       name: `slug`,
       node,
       value,
     })
+
+    const parent = getNode(node.parent)
+    if (parent && parent.sourceInstanceName) {
+      const sourceName = parent.sourceInstanceName as string;
+      createNodeField({
+        name: `sourceInstanceName`,
+        node,
+        value: sourceName,
+      })
+    }
   }
 }
 
@@ -255,12 +283,15 @@ export const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] 
       dateModified: Date @dateformat
       nodeType: String
       category: String
+      categories: [String]
       tags: [String]
       featuredImagePath: String
+      coverImage: String
     }
 
     type Fields {
       slug: String
+      sourceInstanceName: String
     }
   `)
   }

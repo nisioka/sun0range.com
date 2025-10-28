@@ -97,7 +97,7 @@ export const pageQuery = graphql`
   query ($tag: String) {
     allBlogMarkdownRemark: allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
-      filter: { frontmatter: { tags: { in: [$tag] } }, sourceInstanceName: { eq: "blog" } }
+      filter: { frontmatter: { tags: { in: [$tag] } }, fields: { sourceInstanceName: { eq: "blog" } } }
     ) {
       nodes {
         excerpt
@@ -115,7 +115,7 @@ export const pageQuery = graphql`
     }
     allOldBlogMarkdownRemark: allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
-      filter: { frontmatter: { tags: { in: [$tag] } }, sourceInstanceName: { eq: "old-blog" } }
+      filter: { frontmatter: { tags: { in: [$tag] } }, fields: { sourceInstanceName: { eq: "old-blog" } } }
     ) {
       nodes {
         excerpt

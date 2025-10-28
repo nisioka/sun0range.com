@@ -95,7 +95,7 @@ export const Head = ({
 export const pageQuery = graphql`
   query ($category: String) {
     allBlogMarkdownRemark: allMarkdownRemark(
-      filter: { frontmatter: { category: { eq: $category } }, sourceInstanceName: { eq: "blog" } }
+      filter: { frontmatter: { category: { eq: $category } }, fields: { sourceInstanceName: { eq: "blog" } } }
     ) {
       nodes {
         excerpt
@@ -112,7 +112,7 @@ export const pageQuery = graphql`
       }
     }
     allOldBlogMarkdownRemark: allMarkdownRemark(
-      filter: { frontmatter: { categories: { in: [$category] } }, sourceInstanceName: { eq: "old-blog" } }
+      filter: { frontmatter: { categories: { in: [$category] } }, fields: { sourceInstanceName: { eq: "old-blog" } } }
     ) {
       nodes {
         excerpt

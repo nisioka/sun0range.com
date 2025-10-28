@@ -78,7 +78,7 @@ export const pageQuery = graphql`
       limit: $limit
       skip: $skip
       sort: { frontmatter: { date: DESC } }
-      filter: { sourceInstanceName: { eq: "blog" } }
+      filter: { fields: { sourceInstanceName: { eq: "blog" } } }
     ) {
       nodes {
         excerpt
@@ -98,7 +98,7 @@ export const pageQuery = graphql`
       limit: $limit
       skip: $skip
       sort: { frontmatter: { date: DESC } }
-      filter: { sourceInstanceName: { eq: "old-blog" } }
+      filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
     ) {
       nodes {
         excerpt

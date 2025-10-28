@@ -20,62 +20,61 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
     allOldBlogMarkdownRemark: AllMarkdownOldRemark
     allFile: AllFile
   } = useStaticQuery(
-    graphql`
-      query {
-        allBlogMarkdownRemark: allMarkdownRemark(
-          filter: { sourceInstanceName: { eq: "blog" } }
-        ) {
-          nodes {
-            excerpt
-            fields {
-              slug
+          graphql`
+          query {
+            allBlogMarkdownRemark: allMarkdownRemark(
+              filter: { fields: { sourceInstanceName: { eq: "blog" } } }
+            ) {
+              nodes {
+                excerpt
+                fields {
+                  slug
+                }
+                frontmatter {
+                  title
+                  date(formatString: "YYYY/MM/DD")
+                  dateModified(formatString: "YYYY/MM/DD")
+                  description
+                  featuredImagePath
+                  category
+                  tags
+                }
+              }
             }
-            frontmatter {
-              title
-              date(formatString: "YYYY/MM/DD")
-              dateModified(formatString: "YYYY/MM/DD")
-              description
-              featuredImagePath
-              category
-              tags
+            allOldBlogMarkdownRemark: allMarkdownRemark(
+              filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
+            ) {
+              nodes {
+                excerpt
+                fields {
+                  slug
+                }
+                frontmatter {
+                  title
+                  date(formatString: "YYYY/MM/DD")
+                  coverImage
+                  categories
+                  tags
+                }
+              }
             }
-          }
-        }
-        allOldBlogMarkdownRemark: allMarkdownRemark(
-          filter: { sourceInstanceName: { eq: "old-blog" } }
-        ) {
-          nodes {
-            excerpt
-            fields {
-              slug
-            }
-            frontmatter {
-              title
-              date(formatString: "YYYY/MM/DD")
-              coverImage
-              categories
-              tags
-            }
-          }
-        }
-        allFile(filter: { sourceInstanceName: { eq: "images" } }) {
-          edges {
-            node {
-              relativePath
-              childImageSharp {
-                gatsbyImageData(
-                  width: 100
-                  height: 100
-                  formats: [AUTO, WEBP, AVIF]
-                  placeholder: BLURRED
-                )
+            allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+              edges {
+                node {
+                  relativePath
+                  childImageSharp {
+                    gatsbyImageData(
+                      width: 100
+                      height: 100
+                      formats: [AUTO, WEBP, AVIF]
+                      placeholder: BLURRED
+                    )
+                  }
+                }
               }
             }
           }
-        }
-      }
-    `
-  )
+        `  )
 
   // 関連度計算。
   const posts = mergePosts(allBlogMarkdownRemark, allOldBlogMarkdownRemark, allFile)

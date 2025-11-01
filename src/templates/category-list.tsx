@@ -18,7 +18,7 @@ const CategoryList = ({
   location: Location
 }) => {
   const categoryName = pageContext.category as string
-  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.allFile)
+  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.blogImages, data.oldBlogImages)
   const title = `【${categoryName}】カテゴリー 一覧`
 
   if (posts.length === 0) {
@@ -126,9 +126,34 @@ export const pageQuery = graphql`
           categories
           tags
         }
+        parent {
+          ... on File {
+            relativePath
+          }
+        }
       }
     }
-    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+    blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+      edges {
+        node {
+          relativePath
+          childImageSharp {
+            gatsbyImageData(
+              width: 100
+              height: 100
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
+      }
+    }
+    oldBlogImages: allFile(
+      filter: {
+        sourceInstanceName: { eq: "old-blog" }
+        extension: { in: ["jpg", "jpeg", "png", "webp"] }
+      }
+    ) {
       edges {
         node {
           relativePath

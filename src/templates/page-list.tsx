@@ -18,7 +18,12 @@ const PageList = ({
   data: any
   location: Location
 }) => {
-  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.allFile)
+  const posts = mergePosts(
+    data.allBlogMarkdownRemark,
+    data.allOldBlogMarkdownRemark,
+    data.blogImages,
+    data.oldBlogImages
+  )
   const title = `記事一覧`
 
   return (
@@ -112,9 +117,34 @@ export const pageQuery = graphql`
           categories
           tags
         }
+        parent {
+          ... on File {
+            relativePath
+          }
+        }
       }
     }
-    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+    blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+      edges {
+        node {
+          relativePath
+          childImageSharp {
+            gatsbyImageData(
+              width: 100
+              height: 100
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
+      }
+    }
+    oldBlogImages: allFile(
+      filter: {
+        sourceInstanceName: { eq: "old-blog" }
+        extension: { in: ["jpg", "jpeg", "png", "webp"] }
+      }
+    ) {
       edges {
         node {
           relativePath

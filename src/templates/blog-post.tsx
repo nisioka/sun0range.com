@@ -10,13 +10,14 @@ import RelatedList from "../components/related-list"
 import SyntaxHighlighter from "react-syntax-highlighter"
 import parse, { domToReact } from "html-react-parser"
 import { androidstudio } from "react-syntax-highlighter/dist/cjs/styles/hljs"
-import { Disqus } from "gatsby-plugin-disqus"
+import DisqusComments from "../components/disqus-comments"
 import config from "../../gatsby-config"
 import { AllFile, MdPost, SiteMetadata } from "../@types/global"
 
 type BlogPostTemplateProps = {
   data: {
-    allFile: AllFile
+    blogImage: AllFile
+    oldBlogImage: AllFile
     markdownRemark: MdPost
     mdPrevious: {
       id: string
@@ -26,6 +27,7 @@ type BlogPostTemplateProps = {
       frontmatter: {
         title: string
         category: string
+        categories: string[]
       }
     }
     mdNext: {
@@ -36,6 +38,7 @@ type BlogPostTemplateProps = {
       frontmatter: {
         title: string
         category: string
+        categories: string[]
       }
     }
   }
@@ -44,7 +47,8 @@ type BlogPostTemplateProps = {
 
 const BlogPostTemplate = ({
   data: {
-    allFile,
+    blogImage,
+    oldBlogImage,
     markdownRemark: md,
     mdPrevious,
     mdNext,
@@ -53,6 +57,7 @@ const BlogPostTemplate = ({
 }: BlogPostTemplateProps) => {
   const { siteMetadata } = config as { siteMetadata: SiteMetadata }
 
+  const allFile = blogImage.edges.length > 0 ? blogImage : oldBlogImage
   const post = {
     id: md.id,
     title: md.frontmatter.title,
@@ -64,21 +69,35 @@ const BlogPostTemplate = ({
     description: md.frontmatter.description,
     altText: "",
     gatsbyImage: getImage(allFile.edges[0]?.node.childImageSharp)!,
-    category: md.frontmatter.category,
-    tags: md.frontmatter.tags,
+    category:
+      md.frontmatter.category ||
+      (md.frontmatter.categories ? md.frontmatter.categories[0] : ""),
+    tags: md.frontmatter.tags || [],
   }
   const previous = {
     id: mdPrevious?.id,
     title: mdPrevious?.frontmatter.title,
     slug: mdPrevious?.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
-    category: mdPrevious?.frontmatter.category,
+    category:
+      mdPrevious?.frontmatter.category ||
+      (mdPrevious?.frontmatter.categories
+        ? mdPrevious?.frontmatter.categories[0]
+        : ""),
   }
   const next = {
     id: mdNext?.id,
     title: mdNext?.frontmatter.title,
     slug: mdNext?.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
-    category: mdNext?.frontmatter.category,
+    category:
+      mdNext?.frontmatter.category ||
+      (mdNext?.frontmatter.categories
+        ? mdNext?.frontmatter.categories[0]
+        : ""),
   }
+  const [isClient, setIsClient] = React.useState(false)
+  React.useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   return (
     <Layout location={location}>
@@ -97,9 +116,11 @@ const BlogPostTemplate = ({
             </div>
           </p>
         </header>
-        <div className="featuredImage">
-          <GatsbyImage image={post.gatsbyImage} alt={post.title} />
-        </div>
+        {post.gatsbyImage && (
+          <div className="featuredImage">
+            <GatsbyImage image={post.gatsbyImage} alt={post.title} />
+          </div>
+        )}
         <Dl>
           <dt>カテゴリ</dt>
           <dd>
@@ -159,15 +180,18 @@ const BlogPostTemplate = ({
         </ul>
       </BlogPostNav>
 
-      <Disqus
-        config={{
-          url: `${siteMetadata.siteUrl}/${convertCategory(next.category)}/${
-            next.slug
-          }`,
-          identifier: `/${convertCategory(next.category)}/${next.slug}`,
-          title: post.title,
-        }}
-      />
+      {isClient && (
+        <DisqusComments
+          shortname="https-sun0range-tech-server-on-net"
+          config={{
+            url: `${siteMetadata.siteUrl}/${convertCategory(post.category)}/${
+              post.slug
+            }`,
+            identifier: `/${convertCategory(post.category)}/${post.slug}`,
+            title: post.title,
+          }}
+        />
+      )}
       <RelatedList slug={post.slug} category={post.category} tags={post.tags} />
     </Layout>
   )
@@ -182,10 +206,29 @@ export const pageQuery = graphql`
     $nextPostId: String
     $imagePath: String
   ) {
-    allFile(
+    blogImage: allFile(
       filter: {
         relativePath: { eq: $imagePath }
         sourceInstanceName: { eq: "images" }
+      }
+    ) {
+      edges {
+        node {
+          childImageSharp {
+            gatsbyImageData(
+              height: 320
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
+      }
+    }
+    oldBlogImage: allFile(
+      filter: {
+        relativePath: { eq: $imagePath }
+        sourceInstanceName: { eq: "old-blog" }
+        extension: { in: ["jpg", "jpeg", "png", "webp"] }
       }
     ) {
       edges {
@@ -213,6 +256,7 @@ export const pageQuery = graphql`
         dateModified(formatString: "YYYY/MM/DD")
         description
         category
+        categories
         tags
       }
     }
@@ -223,6 +267,7 @@ export const pageQuery = graphql`
       frontmatter {
         title
         category
+        categories
       }
     }
     mdNext: markdownRemark(id: { eq: $nextPostId }) {
@@ -232,15 +277,17 @@ export const pageQuery = graphql`
       frontmatter {
         title
         category
+        categories
       }
     }
   }
 `
 
 export const Head = ({
-  data: { allFile, markdownRemark },
+  data: { blogImage, oldBlogImage, markdownRemark },
   location,
 }: BlogPostTemplateProps) => {
+  const allFile = blogImage.edges.length > 0 ? blogImage : oldBlogImage
   const post = mergePost(markdownRemark, allFile)
   return (
     <Seo

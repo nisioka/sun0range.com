@@ -4,14 +4,18 @@ import { AllFile, AllMarkdownOldRemark, AllMarkdownRemark } from "./@types/globa
 export function mergePosts(
   allBlogMarkdownRemark: AllMarkdownRemark,
   allOldBlogMarkdownRemark: AllMarkdownOldRemark,
-  allFile?: AllFile
+  blogImages?: AllFile,
+  oldBlogImages?: AllFile
 ) {
   let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
-  allFile &&
-    allFile.edges.forEach(node => {
-      allFeaturedImages[node.node.relativePath] =
-        node.node.childImageSharp.gatsbyImageData
-    })
+  blogImages?.edges.forEach(node => {
+    allFeaturedImages[node.node.relativePath] =
+      node.node.childImageSharp.gatsbyImageData
+  })
+  oldBlogImages?.edges.forEach(node => {
+    allFeaturedImages[node.node.relativePath] =
+      node.node.childImageSharp.gatsbyImageData
+  })
   const blogMdPosts = allBlogMarkdownRemark.nodes
   const oldBlogMdPosts = allOldBlogMarkdownRemark.nodes
   return blogMdPosts
@@ -36,8 +40,21 @@ export function mergePosts(
     })
     .concat(
       oldBlogMdPosts.map(post => {
+        const parentDir = post.parent.relativePath.substring(
+          0,
+          post.parent.relativePath.lastIndexOf("/")
+        )
+        const imagePath = post.frontmatter.coverImage
+          ? `${parentDir}/images/${post.frontmatter.coverImage}`
+          : "featured/defaultThumbnail.png"
+
         // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
-        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "").replace(/^custom\//, "").replace(/^pages\//, "")
+        let slug = post.fields.slug
+          .replace(/^\//, "")
+          .replace(/\/$/, "")
+          .replace(/^posts\//, "")
+          .replace(/^custom\//, "")
+          .replace(/^pages\//, "")
         return {
           title: post.frontmatter.title,
           excerpt: removeHtmlTags(post.excerpt),
@@ -46,12 +63,10 @@ export function mergePosts(
           dateModified: post.frontmatter.date || null,
           description: post.frontmatter.title,
           altText: post.frontmatter.coverImage || "",
-          gatsbyImage: getImage(
-            allFeaturedImages[
-              "images/" + post.frontmatter.coverImage || "featured/defaultThumbnail.png"
-            ]
-          ),
-          category: post.frontmatter.categories ? post.frontmatter.categories[0] : "",
+          gatsbyImage: getImage(allFeaturedImages[imagePath]),
+          category: post.frontmatter.categories
+            ? post.frontmatter.categories[0]
+            : "",
           tags: post.frontmatter.tags || [],
         } as CommonPost
       })

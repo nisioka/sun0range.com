@@ -14,70 +14,103 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
   const {
     allBlogMarkdownRemark,
     allOldBlogMarkdownRemark,
-    allFile,
+    blogImages,
+    oldBlogImages,
   }: {
     allBlogMarkdownRemark: AllMarkdownRemark
     allOldBlogMarkdownRemark: AllMarkdownOldRemark
-    allFile: AllFile
+    blogImages: AllFile
+    oldBlogImages: AllFile
   } = useStaticQuery(
-          graphql`
-          query {
-            allBlogMarkdownRemark: allMarkdownRemark(
-              filter: { fields: { sourceInstanceName: { eq: "blog" } } }
-            ) {
-              nodes {
-                excerpt
-                fields {
-                  slug
-                }
-                frontmatter {
-                  title
-                  date(formatString: "YYYY/MM/DD")
-                  dateModified(formatString: "YYYY/MM/DD")
-                  description
-                  featuredImagePath
-                  category
-                  tags
-                }
-              }
+    graphql`
+      query {
+        allBlogMarkdownRemark: allMarkdownRemark(
+          filter: { fields: { sourceInstanceName: { eq: "blog" } } }
+        ) {
+          nodes {
+            excerpt
+            fields {
+              slug
             }
-            allOldBlogMarkdownRemark: allMarkdownRemark(
-              filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
-            ) {
-              nodes {
-                excerpt
-                fields {
-                  slug
-                }
-                frontmatter {
-                  title
-                  date(formatString: "YYYY/MM/DD")
-                  coverImage
-                  categories
-                  tags
-                }
-              }
+            frontmatter {
+              title
+              date(formatString: "YYYY/MM/DD")
+              dateModified(formatString: "YYYY/MM/DD")
+              description
+              featuredImagePath
+              category
+              tags
             }
-            allFile(filter: { sourceInstanceName: { eq: "images" } }) {
-              edges {
-                node {
-                  relativePath
-                  childImageSharp {
-                    gatsbyImageData(
-                      width: 100
-                      height: 100
-                      formats: [AUTO, WEBP, AVIF]
-                      placeholder: BLURRED
-                    )
-                  }
-                }
+          }
+        }
+        allOldBlogMarkdownRemark: allMarkdownRemark(
+          filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
+        ) {
+          nodes {
+            excerpt
+            fields {
+              slug
+            }
+            frontmatter {
+              title
+              date(formatString: "YYYY/MM/DD")
+              coverImage
+              categories
+              tags
+            }
+            parent {
+              ... on File {
+                relativePath
               }
             }
           }
-        `  )
+        }
+        blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+          edges {
+            node {
+              relativePath
+              childImageSharp {
+                gatsbyImageData(
+                  width: 100
+                  height: 100
+                  formats: [AUTO, WEBP, AVIF]
+                  placeholder: BLURRED
+                )
+              }
+            }
+          }
+        }
+        oldBlogImages: allFile(
+          filter: {
+            sourceInstanceName: { eq: "old-blog" }
+            extension: { in: ["jpg", "jpeg", "png", "webp"] }
+          }
+        ) {
+          edges {
+            node {
+              relativePath
+              childImageSharp {
+                gatsbyImageData(
+                  width: 100
+                  height: 100
+                  formats: [AUTO, WEBP, AVIF]
+                  placeholder: BLURRED
+                )
+              }
+            }
+          }
+        }
+      }
+    `
+  )
 
   // 関連度計算。
-  const posts = mergePosts(allBlogMarkdownRemark, allOldBlogMarkdownRemark, allFile)
+  const posts = mergePosts(
+    allBlogMarkdownRemark,
+    allOldBlogMarkdownRemark,
+    blogImages,
+    oldBlogImages
+  )
     .map(post => {
       let point = 0
       if (post.slug !== slug) {

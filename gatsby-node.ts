@@ -72,6 +72,11 @@ export const createPages: GatsbyNode["createPages"] = async ({
             tags
             coverImage
           }
+          parent {
+            ... on File {
+              relativePath
+            }
+          }
         }
       }
     }
@@ -103,7 +108,6 @@ export const createPages: GatsbyNode["createPages"] = async ({
   const posts = result.data?.allBlogMarkdownRemark.nodes
     .map(post => {
       let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "")
-      console.log(`NewBlog= slug:${slug}, blogPost:${blogPost}, ?__contentFilePath=${post.internal.contentFilePath}, featuredImagePath:${post.frontmatter.featuredImagePath}`)
       return {
         id: post.id,
         slug: slug,
@@ -121,12 +125,16 @@ export const createPages: GatsbyNode["createPages"] = async ({
         // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
         let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "").replace(/^custom\//, "").replace(/^pages\//, "")
 
-        console.log(`OldBlog= slug:${slug}, blogPost:${blogPost}, ?__contentFilePath=${post.internal.contentFilePath}, featuredImagePath:${post.frontmatter.coverImage}`)
+        const parentDir = path.dirname(post.parent.relativePath)
+        const featuredImagePath = post.frontmatter.coverImage
+          ? path.join(parentDir, "images", post.frontmatter.coverImage)
+          : null
+
         return {
           id: post.id,
           slug: slug,
           component: `${blogPost}`,
-          featuredImagePath: post.frontmatter.coverImage ? "images/" + post.frontmatter.coverImage : null,
+          featuredImagePath: featuredImagePath,
           category: post.frontmatter.categories ? post.frontmatter.categories[0] : null,
           tags: post.frontmatter.tags || [],
           description: post.frontmatter.title,

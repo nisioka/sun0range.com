@@ -12,13 +12,19 @@ type BlogIndexProps = {
   data: {
     allBlogMarkdownRemark: AllMarkdownRemark
     allOldBlogMarkdownRemark: AllMarkdownOldRemark
-    allFile: AllFile
+    blogImages: AllFile
+    oldBlogImages: AllFile
   }
   location: Location
 }
 
 const BlogIndex = ({ data, location }: BlogIndexProps) => {
-  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.allFile)
+  const posts = mergePosts(
+    data.allBlogMarkdownRemark,
+    data.allOldBlogMarkdownRemark,
+    data.blogImages,
+    data.oldBlogImages
+  )
 
   if (posts.length === 0) {
     return (
@@ -95,7 +101,27 @@ export const Head = ({ location }: BlogIndexProps) => (
 
 export const pageQuery = graphql`
   {
-    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+    blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+      edges {
+        node {
+          relativePath
+          childImageSharp {
+            gatsbyImageData(
+              width: 100
+              height: 100
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
+      }
+    }
+    oldBlogImages: allFile(
+      filter: {
+        sourceInstanceName: { eq: "old-blog" }
+        extension: { in: ["jpg", "jpeg", "png", "webp"] }
+      }
+    ) {
       edges {
         node {
           relativePath
@@ -142,6 +168,11 @@ export const pageQuery = graphql`
           coverImage
           categories
           tags
+        }
+        parent {
+          ... on File {
+            relativePath
+          }
         }
       }
     }

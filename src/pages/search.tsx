@@ -6,7 +6,12 @@ import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 import { GatsbyImage } from "gatsby-plugin-image"
 
 const Search = ({ data, location }: { data: any; location: Location }) => {
-  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.allFile)
+  const posts = mergePosts(
+    data.allBlogMarkdownRemark,
+    data.allOldBlogMarkdownRemark,
+    data.blogImages,
+    data.oldBlogImages
+  )
 
   const initQuery = decodeURI(
     location.href?.split("?q=")[1] || ""
@@ -149,9 +154,34 @@ export const pageQuery = graphql`
           categories
           tags
         }
+        parent {
+          ... on File {
+            relativePath
+          }
+        }
       }
     }
-    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+    blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+      edges {
+        node {
+          relativePath
+          childImageSharp {
+            gatsbyImageData(
+              width: 100
+              height: 100
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
+      }
+    }
+    oldBlogImages: allFile(
+      filter: {
+        sourceInstanceName: { eq: "old-blog" }
+        extension: { in: ["jpg", "jpeg", "png", "webp"] }
+      }
+    ) {
       edges {
         node {
           relativePath

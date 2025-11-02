@@ -1,21 +1,25 @@
 ---
 title: "用語集"
 date: 2016-05-06
+categories:
+  - "glossary"
+tags:
+  - "用語集"
 coverImage: "book_yoko.png"
 ---
 
 ### A
 
-- [Amazon Web Service (AWS)](http://localhost/glossary/amazon-web-service-aws)
-    - [CloudFront](http://localhost/glossary/aws-cloudfront)
-    - [Simple Storage Service (S3)](http://localhost/wp-admin/post.php?post=2698&action=edit)
+- [Amazon Web Service (AWS)](/glossary/amazon-web-service-aws)
+    - [CloudFront](/glossary/aws-cloudfront)
+    - [Simple Storage Service (S3)](/wp-admin/post.php?post=2698&action=edit)
 
 ### B
 
 ### C
 
-- [CloudFront](http://localhost/glossary/aws-cloudfront)
-- [cracker【クラッカー】](http://localhost/glossary/cracker)
+- [CloudFront](/glossary/aws-cloudfront)
+- [cracker【クラッカー】](/glossary/cracker)
 
 ### D
 
@@ -27,7 +31,7 @@ coverImage: "book_yoko.png"
 
 ### H
 
-- [hacker 【ハッカー】](http://localhost/glossary/hacker)
+- [hacker 【ハッカー】](/glossary/hacker)
 
 ### I
 
@@ -35,13 +39,13 @@ coverImage: "book_yoko.png"
 
 ### K
 
-- [Kubernetes (k8s)](http://localhost/glossary/kubernetes-k8s)
+- [Kubernetes (k8s)](/glossary/kubernetes-k8s)
 
 ### L
 
 ### M
 
-- [malware【マルウェア】](http://localhost/glossary/malware)
+- [malware【マルウェア】](/glossary/malware)
 
 ### N
 
@@ -49,7 +53,7 @@ coverImage: "book_yoko.png"
 
 ### P
 
-- [programming【プログラミング】](http://localhost/glossary/programming)
+- [programming【プログラミング】](/glossary/programming)
 
 ### Q
 
@@ -57,7 +61,7 @@ coverImage: "book_yoko.png"
 
 ### S
 
-- [Simple Storage Service (S3)](http://localhost/wp-admin/post.php?post=2698&action=edit)
+- [Simple Storage Service (S3)](/wp-admin/post.php?post=2698&action=edit)
 
 ### T
 

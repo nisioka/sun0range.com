@@ -80,6 +80,13 @@ const config: GatsbyConfig = {
     {
       resolve: `gatsby-source-filesystem`,
       options: {
+        path: `${__dirname}/content/old-blog`,
+        name: `old-blog`,
+      },
+    },
+    {
+      resolve: `gatsby-source-filesystem`,
+      options: {
         name: `images`,
         path: `${__dirname}/src/images`,
       },
@@ -140,7 +147,7 @@ const config: GatsbyConfig = {
               })
             },
             query: `{
-              allMarkdownRemark(sort: {frontmatter: {dateModified: DESC}}) {
+              allMarkdownRemark(sort: {frontmatter: {dateModified: DESC}}, filter: {sourceInstanceName: {eq: "blog"}}) {
                 nodes {
                   excerpt
                   html
@@ -175,32 +182,6 @@ const config: GatsbyConfig = {
       },
     },
     {
-      /**
-       * First up is the WordPress source plugin that connects Gatsby
-       * to your WordPress site.
-       *
-       * visit the plugin docs to learn more
-       * https://github.com/gatsbyjs/gatsby/blob/master/packages/gatsby-source-wordpress/README.md
-       *
-       */
-      resolve: `gatsby-source-wordpress`,
-      options: {
-        // the only required plugin option for WordPress is the GraphQL url.
-        url: process.env.WPGRAPHQL_URL || `http://localhost/graphql`,
-        // type: {
-        //   __all: {
-        //     limit: process.env.NODE_ENV === `development` ? 5 : null
-        //   }
-        // },
-        develop: {
-          hardCacheMediaFiles: true,
-        },
-        html: {
-          placeholderType: `blurred`,
-        },
-      },
-    },
-    {
       resolve: `gatsby-plugin-purgecss`,
       options: {
         printRejected: true, // Print removed selectors and processed file names
@@ -210,12 +191,12 @@ const config: GatsbyConfig = {
         // purgeOnly : ['components/', '/main.css', 'bootstrap/'], // Purge only these files/folders
       },
     },
-    {
-      resolve: `gatsby-plugin-disqus`,
-      options: {
-        shortname: `https-sun0range-tech-server-on-net`,
-      },
-    },
+    // {
+    //   resolve: `gatsby-plugin-disqus`,
+    //   options: {
+    //     shortname: `https-sun0range-tech-server-on-net`,
+    //   },
+    // },
     `gatsby-plugin-styled-components`,
   ],
 }

@@ -6,7 +6,12 @@ import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 import { GatsbyImage } from "gatsby-plugin-image"
 
 const Search = ({ data, location }: { data: any; location: Location }) => {
-  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
+  const posts = mergePosts(
+    data.allBlogMarkdownRemark,
+    data.allOldBlogMarkdownRemark,
+    data.blogImages,
+    data.oldBlogImages
+  )
 
   const initQuery = decodeURI(
     location.href?.split("?q=")[1] || ""
@@ -118,7 +123,9 @@ export default Search
 
 export const pageQuery = graphql`
   query {
-    allMarkdownRemark {
+    allBlogMarkdownRemark: allMarkdownRemark(
+      filter: { fields: { sourceInstanceName: { eq: "blog" } } }
+    ) {
       nodes {
         excerpt
         fields {
@@ -132,16 +139,34 @@ export const pageQuery = graphql`
         }
       }
     }
-    allWpPost {
+    allOldBlogMarkdownRemark: allMarkdownRemark(
+      filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
+    ) {
       nodes {
-        title
         excerpt
-        slug
-        date(formatString: "YYYY/MM/DD")
-        featuredImage {
-          node {
-            altText
-            gatsbyImage(
+        fields {
+          slug
+        }
+        frontmatter {
+          title
+          date(formatString: "YYYY/MM/DD")
+          coverImage
+          categories
+          tags
+        }
+        parent {
+          ... on File {
+            relativePath
+          }
+        }
+      }
+    }
+    blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+      edges {
+        node {
+          relativePath
+          childImageSharp {
+            gatsbyImageData(
               width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
@@ -149,14 +174,14 @@ export const pageQuery = graphql`
             )
           }
         }
-        categories {
-          nodes {
-            name
-          }
-        }
       }
     }
-    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+    oldBlogImages: allFile(
+      filter: {
+        sourceInstanceName: { eq: "old-blog" }
+        extension: { in: ["jpg", "jpeg", "png", "webp"] }
+      }
+    ) {
       edges {
         node {
           relativePath

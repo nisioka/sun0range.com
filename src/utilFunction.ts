@@ -1,19 +1,24 @@
 import { getImage, IGatsbyImageData } from "gatsby-plugin-image"
+import { AllFile, AllMarkdownOldRemark, AllMarkdownRemark } from "./@types/global"
 
 export function mergePosts(
-  allMarkdownRemark: AllMarkdownRemark,
-  allWpPost: AllWpPost,
-  allFile?: AllFile
+  allBlogMarkdownRemark: AllMarkdownRemark,
+  allOldBlogMarkdownRemark: AllMarkdownOldRemark,
+  blogImages?: AllFile,
+  oldBlogImages?: AllFile
 ) {
   let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
-  allFile &&
-    allFile.edges.forEach(node => {
-      allFeaturedImages[node.node.relativePath] =
-        node.node.childImageSharp.gatsbyImageData
-    })
-  const mdPosts = allMarkdownRemark.nodes
-  const wpPosts = allWpPost.nodes
-  return mdPosts
+  blogImages?.edges.forEach(node => {
+    allFeaturedImages[node.node.relativePath] =
+      node.node.childImageSharp.gatsbyImageData
+  })
+  oldBlogImages?.edges.forEach(node => {
+    allFeaturedImages[node.node.relativePath] =
+      node.node.childImageSharp.gatsbyImageData
+  })
+  const blogMdPosts = allBlogMarkdownRemark.nodes
+  const oldBlogMdPosts = allOldBlogMarkdownRemark.nodes
+  return blogMdPosts
     .map(post => {
       return {
         title: post.frontmatter.title,
@@ -22,7 +27,7 @@ export function mergePosts(
         date: post.frontmatter.date,
         dateModified: post.frontmatter.dateModified,
         description: post.frontmatter.description,
-        altText: post.frontmatter.featuredImagePath,
+        altText: post.frontmatter.featuredImagePath || "",
         gatsbyImage: getImage(
           allFeaturedImages[
             post.frontmatter.featuredImagePath ||
@@ -34,21 +39,36 @@ export function mergePosts(
       } as CommonPost
     })
     .concat(
-      wpPosts.map(post => {
+      oldBlogMdPosts.map(post => {
+        const parentDir = post.parent.relativePath.substring(
+          0,
+          post.parent.relativePath.lastIndexOf("/")
+        )
+        const imagePath = post.frontmatter.coverImage
+          ? `${parentDir}/images/${post.frontmatter.coverImage}`
+          : "featured/defaultThumbnail.png"
+
+        // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
+        let slug = post.fields.slug
+          .replace(/^\//, "")
+          .replace(/\/$/, "")
+          .replace(/^posts\//, "")
+          .replace(/^custom\//, "")
+          .replace(/^pages\//, "")
         return {
-          title: post.title,
+          title: post.frontmatter.title,
           excerpt: removeHtmlTags(post.excerpt),
-          slug: post.slug,
-          date: post.date,
-          dateModified: post.modified,
-          description: post.content,
-          altText: post.featuredImage?.node.altText || "",
-          gatsbyImage:
-            post.featuredImage?.node.gatsbyImage ||
-            getImage(allFeaturedImages["featured/defaultThumbnail.png"]),
-          category: post.categories?.nodes[0]?.name || "",
-          tags: post.tags?.nodes.map(t => t.name) || [],
-        }
+          slug: slug,
+          date: post.frontmatter.date,
+          dateModified: post.frontmatter.date || null,
+          description: post.frontmatter.title,
+          altText: post.frontmatter.coverImage || "",
+          gatsbyImage: getImage(allFeaturedImages[imagePath]),
+          category: post.frontmatter.categories
+            ? post.frontmatter.categories[0]
+            : "",
+          tags: post.frontmatter.tags || [],
+        } as CommonPost
       })
     )
     .sort(
@@ -56,7 +76,7 @@ export function mergePosts(
     ) as CommonPost[]
 }
 
-export function mergePost(md?: MdPost, wpPost?: WpPost, allFile?: AllFile) {
+export function mergePost(md?: MdPost, allFile?: AllFile) {
   let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
   allFile &&
     allFile.edges.forEach(node => {
@@ -64,24 +84,19 @@ export function mergePost(md?: MdPost, wpPost?: WpPost, allFile?: AllFile) {
         node.node.childImageSharp.gatsbyImageData
     })
   return {
-    title: md?.frontmatter.title || wpPost?.title,
-    excerpt: removeHtmlTags(md?.excerpt || wpPost?.excerpt),
-    slug: md?.fields.slug || wpPost?.slug,
-    date: md?.frontmatter.date || wpPost?.date,
-    dateModified: md?.frontmatter.dateModified || wpPost?.modified,
-    description: md?.frontmatter.description || wpPost?.content,
-    altText:
-      md?.frontmatter.featuredImagePath ||
-      wpPost?.featuredImage?.node.altText ||
-      "",
+    title: md?.frontmatter.title,
+    excerpt: removeHtmlTags(md?.excerpt),
+    slug: md?.fields.slug,
+    date: md?.frontmatter.date,
+    dateModified: md?.frontmatter.dateModified,
+    description: md?.frontmatter.description,
+    altText: md?.frontmatter.featuredImagePath || "",
     gatsbyImage:
       getImage(
         allFeaturedImages[
           md?.frontmatter.featuredImagePath || "featured/defaultThumbnail.webp"
         ]
-      ) ||
-      wpPost?.featuredImage?.node.gatsbyImage ||
-      getImage(allFeaturedImages["featured/defaultThumbnail.webp"]),
+      ),
   } as CommonPost
 }
 
@@ -96,9 +111,24 @@ const categoryNames: { id: number; eng: string; jp: string }[] = [
 
 export const categoryAll = categoryNames.sort(c => c.id).map(c => c.jp)
 
-export function convertCategory(japanese: string) {
-  if (!japanese) return undefined
-  return categoryNames.find(c => c.jp === japanese.replace("/", ""))?.eng || ""
+export function convertCategory(name: string): string | undefined {
+  if (!name) return undefined
+  const normalizedName = name.replace("/", "")
+
+  // まず英語名 (eng) で探す
+  const foundByEng = categoryNames.find(c => c.eng === normalizedName)
+  if (foundByEng) {
+    return foundByEng.eng
+  }
+
+  // 次に日本語名 (jp) で探す
+  const foundByJp = categoryNames.find(c => c.jp === normalizedName)
+  if (foundByJp) {
+    return foundByJp.eng
+  }
+
+  console.log(`Not match convertCategory. Category name is: ${name}`);
+  return ""
 }
 
 export function removeHtmlTags(str: string | undefined) {

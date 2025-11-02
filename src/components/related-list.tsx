@@ -12,17 +12,21 @@ type RelatedListProps = {
 }
 const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
   const {
-    allMarkdownRemark,
-    allWpPost,
-    allFile,
+    allBlogMarkdownRemark,
+    allOldBlogMarkdownRemark,
+    blogImages,
+    oldBlogImages,
   }: {
-    allMarkdownRemark: AllMarkdownRemark
-    allWpPost: AllWpPost
-    allFile: AllFile
+    allBlogMarkdownRemark: AllMarkdownRemark
+    allOldBlogMarkdownRemark: AllMarkdownOldRemark
+    blogImages: AllFile
+    oldBlogImages: AllFile
   } = useStaticQuery(
     graphql`
       query {
-        allMarkdownRemark {
+        allBlogMarkdownRemark: allMarkdownRemark(
+          filter: { fields: { sourceInstanceName: { eq: "blog" } } }
+        ) {
           nodes {
             excerpt
             fields {
@@ -39,17 +43,34 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
             }
           }
         }
-        allWpPost {
+        allOldBlogMarkdownRemark: allMarkdownRemark(
+          filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
+        ) {
           nodes {
-            title
             excerpt
-            slug
-            date(formatString: "YYYY/MM/DD")
-            modified(formatString: "YYYY/MM/DD")
-            featuredImage {
-              node {
-                altText
-                gatsbyImage(
+            fields {
+              slug
+            }
+            frontmatter {
+              title
+              date(formatString: "YYYY/MM/DD")
+              coverImage
+              categories
+              tags
+            }
+            parent {
+              ... on File {
+                relativePath
+              }
+            }
+          }
+        }
+        blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+          edges {
+            node {
+              relativePath
+              childImageSharp {
+                gatsbyImageData(
                   width: 100
                   height: 100
                   formats: [AUTO, WEBP, AVIF]
@@ -57,19 +78,14 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
                 )
               }
             }
-            categories {
-              nodes {
-                name
-              }
-            }
-            tags {
-              nodes {
-                name
-              }
-            }
           }
         }
-        allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+        oldBlogImages: allFile(
+          filter: {
+            sourceInstanceName: { eq: "old-blog" }
+            extension: { in: ["jpg", "jpeg", "png", "webp"] }
+          }
+        ) {
           edges {
             node {
               relativePath
@@ -89,7 +105,12 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
   )
 
   // 関連度計算。
-  const posts = mergePosts(allMarkdownRemark, allWpPost, allFile)
+  const posts = mergePosts(
+    allBlogMarkdownRemark,
+    allOldBlogMarkdownRemark,
+    blogImages,
+    oldBlogImages
+  )
     .map(post => {
       let point = 0
       if (post.slug !== slug) {

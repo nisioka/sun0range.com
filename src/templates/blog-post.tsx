@@ -10,12 +10,14 @@ import RelatedList from "../components/related-list"
 import SyntaxHighlighter from "react-syntax-highlighter"
 import parse, { domToReact } from "html-react-parser"
 import { androidstudio } from "react-syntax-highlighter/dist/cjs/styles/hljs"
-import { Disqus } from "gatsby-plugin-disqus"
+import DisqusComments from "../components/disqus-comments"
 import config from "../../gatsby-config"
+import { AllFile, MdPost, SiteMetadata } from "../@types/global"
 
 type BlogPostTemplateProps = {
   data: {
-    allFile: AllFile
+    blogImage: AllFile
+    oldBlogImage: AllFile
     markdownRemark: MdPost
     mdPrevious: {
       id: string
@@ -25,6 +27,7 @@ type BlogPostTemplateProps = {
       frontmatter: {
         title: string
         category: string
+        categories: string[]
       }
     }
     mdNext: {
@@ -35,27 +38,7 @@ type BlogPostTemplateProps = {
       frontmatter: {
         title: string
         category: string
-      }
-    }
-    wpPost: WpPost
-    wpPrevious: {
-      id: string
-      title: string
-      slug: string
-      categories: {
-        nodes: {
-          name: string
-        }[]
-      }
-    }
-    wpNext: {
-      id: string
-      title: string
-      slug: string
-      categories: {
-        nodes: {
-          name: string
-        }[]
+        categories: string[]
       }
     }
   }
@@ -64,53 +47,57 @@ type BlogPostTemplateProps = {
 
 const BlogPostTemplate = ({
   data: {
-    allFile,
+    blogImage,
+    oldBlogImage,
     markdownRemark: md,
     mdPrevious,
     mdNext,
-    wpPost,
-    wpPrevious,
-    wpNext,
   },
   location,
 }: BlogPostTemplateProps) => {
   const { siteMetadata } = config as { siteMetadata: SiteMetadata }
 
+  const allFile = blogImage.edges.length > 0 ? blogImage : oldBlogImage
   const post = {
-    id: md?.id || wpPost?.id,
-    title: md?.frontmatter.title || wpPost?.title,
-    content: md?.html || wpPost?.content,
-    excerpt: removeHtmlTags(md?.excerpt || wpPost?.excerpt),
-    slug:
-      md?.fields.slug.replace(/^\//, "").replace(/\/$/, "") ||
-      "/" + wpPost?.slug,
-    date: md?.frontmatter.date || wpPost?.date,
-    dateModified: md?.frontmatter.dateModified || wpPost?.modified,
-    description: md?.frontmatter.description,
-    altText: wpPost?.featuredImage?.node.altText || "",
-    gatsbyImage:
-      wpPost?.featuredImage?.node.gatsbyImage ||
-      getImage(allFile.edges[0]?.node.childImageSharp),
-    category: md?.frontmatter.category || wpPost?.categories?.nodes[0]?.name,
-    tags: md?.frontmatter.tags || wpPost?.tags?.nodes.map(t => t.name),
+    id: md.id,
+    title: md.frontmatter.title,
+    content: md.html,
+    excerpt: removeHtmlTags(md.excerpt),
+    slug: md.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
+    date: md.frontmatter.date,
+    dateModified: md.frontmatter.dateModified,
+    description: md.frontmatter.description,
+    altText: "",
+    gatsbyImage: getImage(allFile.edges[0]?.node.childImageSharp)!,
+    category:
+      md.frontmatter.category ||
+      (md.frontmatter.categories ? md.frontmatter.categories[0] : ""),
+    tags: md.frontmatter.tags || [],
   }
   const previous = {
-    id: mdPrevious?.id || wpPrevious?.id,
-    title: mdPrevious?.frontmatter.title || wpPrevious?.title,
-    slug:
-      mdPrevious?.fields.slug.replace(/^\//, "").replace(/\/$/, "") ||
-      wpPrevious?.slug,
+    id: mdPrevious?.id,
+    title: mdPrevious?.frontmatter.title,
+    slug: mdPrevious?.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
     category:
-      mdPrevious?.frontmatter.category || wpPrevious?.categories.nodes[0].name,
+      mdPrevious?.frontmatter.category ||
+      (mdPrevious?.frontmatter.categories
+        ? mdPrevious?.frontmatter.categories[0]
+        : ""),
   }
   const next = {
-    id: mdNext?.id || wpNext?.id,
-    title: mdNext?.frontmatter.title || wpNext?.title,
-    slug:
-      mdNext?.fields.slug.replace(/^\//, "").replace(/\/$/, "") || wpNext?.slug,
+    id: mdNext?.id,
+    title: mdNext?.frontmatter.title,
+    slug: mdNext?.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
     category:
-      mdNext?.frontmatter.category || wpNext?.categories?.nodes[0]?.name,
+      mdNext?.frontmatter.category ||
+      (mdNext?.frontmatter.categories
+        ? mdNext?.frontmatter.categories[0]
+        : ""),
   }
+  const [isClient, setIsClient] = React.useState(false)
+  React.useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   return (
     <Layout location={location}>
@@ -129,9 +116,11 @@ const BlogPostTemplate = ({
             </div>
           </p>
         </header>
-        <div className="featuredImage">
-          <GatsbyImage image={post.gatsbyImage} alt={post.title} />
-        </div>
+        {post.gatsbyImage && (
+          <div className="featuredImage">
+            <GatsbyImage image={post.gatsbyImage} alt={post.title} />
+          </div>
+        )}
         <Dl>
           <dt>カテゴリ</dt>
           <dd>
@@ -191,15 +180,18 @@ const BlogPostTemplate = ({
         </ul>
       </BlogPostNav>
 
-      <Disqus
-        config={{
-          url: `${siteMetadata.siteUrl}/${convertCategory(next.category)}/${
-            next.slug
-          }`,
-          identifier: `/${convertCategory(next.category)}/${next.slug}`,
-          title: post.title,
-        }}
-      />
+      {isClient && (
+        <DisqusComments
+          shortname="https-sun0range-tech-server-on-net"
+          config={{
+            url: `${siteMetadata.siteUrl}/${convertCategory(post.category)}/${
+              post.slug
+            }`,
+            identifier: `/${convertCategory(post.category)}/${post.slug}`,
+            title: post.title,
+          }}
+        />
+      )}
       <RelatedList slug={post.slug} category={post.category} tags={post.tags} />
     </Layout>
   )
@@ -214,10 +206,29 @@ export const pageQuery = graphql`
     $nextPostId: String
     $imagePath: String
   ) {
-    allFile(
+    blogImage: allFile(
       filter: {
         relativePath: { eq: $imagePath }
         sourceInstanceName: { eq: "images" }
+      }
+    ) {
+      edges {
+        node {
+          childImageSharp {
+            gatsbyImageData(
+              height: 320
+              formats: [AUTO, WEBP, AVIF]
+              placeholder: BLURRED
+            )
+          }
+        }
+      }
+    }
+    oldBlogImage: allFile(
+      filter: {
+        relativePath: { eq: $imagePath }
+        sourceInstanceName: { eq: "old-blog" }
+        extension: { in: ["jpg", "jpeg", "png", "webp"] }
       }
     ) {
       edges {
@@ -245,6 +256,7 @@ export const pageQuery = graphql`
         dateModified(formatString: "YYYY/MM/DD")
         description
         category
+        categories
         tags
       }
     }
@@ -255,6 +267,7 @@ export const pageQuery = graphql`
       frontmatter {
         title
         category
+        categories
       }
     }
     mdNext: markdownRemark(id: { eq: $nextPostId }) {
@@ -264,66 +277,25 @@ export const pageQuery = graphql`
       frontmatter {
         title
         category
-      }
-    }
-    wpPost(id: { eq: $id }) {
-      id
-      title
-      content
-      excerpt
-      slug
-      date(formatString: "YYYY/MM/DD")
-      modified(formatString: "YYYY/MM/DD")
-      featuredImage {
-        node {
-          altText
-          gatsbyImage(height: 320)
-        }
-      }
-      categories {
-        nodes {
-          name
-        }
-      }
-      tags {
-        nodes {
-          name
-        }
-      }
-    }
-    wpPrevious: wpPost(id: { eq: $previousPostId }) {
-      title
-      slug
-      categories {
-        nodes {
-          name
-        }
-      }
-    }
-    wpNext: wpPost(id: { eq: $nextPostId }) {
-      title
-      slug
-      categories {
-        nodes {
-          name
-        }
+        categories
       }
     }
   }
 `
 
 export const Head = ({
-  data: { allFile, markdownRemark, wpPost },
+  data: { blogImage, oldBlogImage, markdownRemark },
   location,
 }: BlogPostTemplateProps) => {
-  const post = mergePost(markdownRemark, wpPost, allFile)
+  const allFile = blogImage.edges.length > 0 ? blogImage : oldBlogImage
+  const post = mergePost(markdownRemark, allFile)
   return (
     <Seo
       title={post.title}
       description={post.excerpt}
       location={location}
       imagePath={
-        post.gatsbyImage ? post.gatsbyImage.images.fallback?.src : null
+        post.gatsbyImage ? post.gatsbyImage.images.fallback?.src : undefined
       }
       post={post}
     />

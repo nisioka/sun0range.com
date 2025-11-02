@@ -1,0 +1,47 @@
+---
+title: "【オンライン】 JJUG CCC 2022 Spring 発表資料・動画まとめ"
+date: 2022-06-20
+categories: 
+  - "event-report"
+tags: 
+  - "java"
+  - "jjug"
+  - "jjug-ccc"
+coverImage: "jjug.jpg"
+---
+
+2022-6-19（日）に行われた JJUG CCC 2022 Spring でのセッション発表資料・動画で公開されているもののリンクをまとめています。
+
+情報取得元：twitterのハッシュタグ([#jjug\_ccc](https://twitter.com/search?q=%23jjug_ccc))検索
+
+## JJUG CCCとは
+
+JJUG CCCは毎年2回、春と秋に開催する日本最大のJavaコミュニティイベントです。Java関連の技術や事例に関する良質なセッションが行われ、また異なる分野で活躍するJava技術者が集まる場ともなっています。新型コロナウィルス感染症の拡大防止に配慮して、CCC 2022 Springはオンラインで開催いたします。  
+_引用：_ [https://fortee.jp/jjug-ccc-2022-spring](https://fortee.jp/jjug-ccc-2022-spring)
+
+- [採択セッション一覧](https://fortee.jp/jjug-ccc-2022-spring/proposal)
+- [タイムテーブル](https://fortee.jp/jjug-ccc-2022-spring/timetable)
+- [公式サイト](https://ccc2022spring.java-users.jp/)
+
+## タイムテーブル
+
+下記でセッションタイトルがリンクとなっているものが資料公開されているものです。  
+一部については、「動画」自体が公開されているものもあり、そちらも表内に記載し、末尾にも別途列挙しています。
+
+    
+| 時刻 | Track A   ([#jjug\_ccc\_a](https://twitter.com/search?q=%23jjug_ccc_a)) | Track B   ([#jjug\_ccc\_b](https://twitter.com/search?q=%23jjug_ccc_b)) | Track C   ([#jjug\_ccc\_c](https://twitter.com/search?q=%23jjug_ccc_c)) | Track D   ([#jjug\_ccc\_d](https://twitter.com/search?q=%23jjug_ccc_d)) |
+| --- | --- | --- | --- | --- |
+| 10:00 | [JUnitで闘うレガシーコード改善](https://speakerdeck.com/yutasaito/junittedou-urekasikotogai-shan)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=gpkM3mQqo8c&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=1)   齋藤 悠太[@SaitoYuta](https://twitter.com/YutaSaito1991) | [AWS Batch × Spring Batch でクラウド最適なバッチを構築した話](https://qiita.com/sinokuma/items/b3b1ad81c763a3ce8fe3)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=ArEY_yIt0GI&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=8)   猪熊 朔也[@sinocloudon](https://twitter.com/sinocloudon) | 開発者にやさしく、柔軟性、安全性を高めたGithub ActionsベースのCI/CDを構築する   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=F1_z223v994&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=17)   大橋政也 | [サービス開発の理想と現実・短納期でローンチした新サービスをJavaで開発した話](https://speakerdeck.com/eichisanden/launched-new-service-using-java)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=mUXbanuAnX8&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=24)   a1[@eichisanden](https://twitter.com/eichisanden) |
+| 10:25 | [Testcontainersでコンテナを使ったテストを実行しよう](https://speakerdeck.com/wenas/testcontainersdekontenawoshi-tutatesutowoshi-xing-siyou)   なかやまひろ（せち）[@setys0](https://twitter.com/setys0) | Spring Boot と WebRTC を用いた Web 会議システムの開発   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=fAS361xCdQc&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=9)   源　拓洋[@meeting\_dev](https://twitter.com/meeting_dev) | [](https://speakerdeck.com/kazamori/custom-github-actions-by-java)Java で作るカスタム GitHub Actions   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=9C_Xrncqqag&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=18)   Tetsuya Morimoto |
+| 11:00 | クラウドネイティブ環境におけるJavaチューニングの進め方 - 超PayPay祭の事例   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=I1bFuo4iabQ&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=2)   川口 貴之 | クレジットカード決済システムをJavaで構築して１０年間運用した話   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=g4uJNDr3guU&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=10)   米原 孝太[@yonehara\_gmopg](https://twitter.com/yonehara_gmopg) | k8s 疲れの方へ送る、k8s ベースのらくらくマイクロサービス動作基盤のご紹介〜 Dapr ベースのマイクロサービス開発から GitHub Action を利用した CI/CD 〜   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=fqOvylcrgvQ&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=19)   てらだ　よしお[@yoshioterada](https://twitter.com/yoshioterada) | [「サポート」は製品開発？　- JDBCライブラリ屋さんが実践する攻めのテクニカルサポートとJavaエンジニアのキャリアについて -](https://speakerdeck.com/cdataj/number-jjug-ccc-sapoto-hazhi-pin-kai-fa-jdbcraiburariwu-sangashi-jian-surugong-mefalsetekunikarusapototojavaenziniafalsekiyarianituite)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=G_yuLu51GMs&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=25)   杉本 和也[@sugimomoto](https://twitter.com/sugimomoto) |
+| 12:30 | [JDK Flight Recorder入門](https://speakerdeck.com/chiroito/jdk-flight-recorderru-men)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=PtwLF_3U3z0&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=3)   伊藤ちひろ[@chiroito](https://twitter.com/chiroito) | ライブコーディングで学ぶKotlinチュートリアル   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=IoZDhVWk5Uo&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=11)   小山 健太[@doyaaaaaken](https://twitter.com/doyaaaaaken) | [Java初心者が知っておくべきプログラミングのこと](https://speakerdeck.com/kishida/things-java-beginners-should-know)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=78iPUdZ4HeY&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=20)   きしだ なおき[@kis](https://twitter.com/kis) | Lauchableで僕が学んだ働き方 〜リモートワークで会社もプロダクトも１から作る経験〜   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=wEfN4-kk7R4&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=26)   Yoshiori Shoji[@yoshiori](https://twitter.com/yoshiori) |
+| 12:55 | RabbitMQを用いたイベント駆動アーキテクチャの紹介   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=p2h_XACRC2c&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=12)   Seiki Tokunaga [@otokunaga2](https://twitter.com/otokunaga2) |
+| 13:30 | [Java アプリとAWS の良い関係 - AWS でJava アプリを実行する一番簡単な方法教えます](https://speakerdeck.com/kanamasa/aws-for-javarista)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=trwH816zTDE&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=4)   宇賀神 みずき, 下川 賢介, 金森 政雄 | 分散データベースTiDB Cloudで構築するWebアプリケーション   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=hPXvs1I1QG4&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=13)   本多康夫 | Azure Pipelinesを使って学んだ CI/CD環境のあれこれ   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=mhyQbGZuZ1E&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=21)   大城　夏樹 | 保険基幹システムのアーキテクチャ : シンプレクスの技術的チャレンジ   ![you tube](images/movie_icon.png) 動画   白井　翔太 |
+| 15:00 | [パターンマッチングを学んで新しいJavaの世界へ！Java 18までの目玉機能をおさらいしよう](https://speakerdeck.com/ihcomega56/java-18-pattern-matching)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=E3DjKFXI7Fo&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=5)   よこな[@ihcomega](https://twitter.com/ihcomega) | [JUnit5.7, 5.8の新機能紹介](https://speakerdeck.com/kyonmm/junit-5_7-5_8-new-features)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=iS0hC3g0gFk&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=14)   きょん[@kyon\_mm](https://twitter.com/kyon_mm) | RDRA + JavaによるレジャーSaaSプロダクトの要件定義と実装のシームレスな接続   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=tKrqAWYczyk&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=22)   江部隼矢[@junyaebe](https://twitter.com/junyaebe) | 脱二重メンテナンス！ドキュメント自動生成への道   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=oYSRVo5-Ceg&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=28)   進藤　遼[@shindo\_ryo](https://twitter.com/shindo_ryo) |
+| 15:25 | Javaのビルドやバージョンの違いをグラフデータベースで理解する。移行で困らないための知識グラフを作ろう。   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=F89_yvApop8&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=29)   Koji Annoura[@kojiannoura](https://twitter.com/kojiannoura) |
+| 16:00 | [Javaの認証認可基盤のKeycloak(Red Hat Single Sign-on)](https://speakerdeck.com/tinoue/jjug2022-spring-keycloak-red-hat-single-sign-on)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=P2PDDs1PSv8&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=6)   井上　貴博[@takashyan](https://twitter.com/takashyan) | [LINEのB2Bプラットフォームにおけるトラブルシューティング２選](https://speakerdeck.com/line_developers/linefalseb2bpuratutohuomuniokerutoraburusiyuteingu2xuan)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=AqVytaxLgmk&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=15)   長谷部 良輔[@be\_hasee](https://twitter.com/be_hasee) | [連続画像処理による位置情報計算を支えるマイクロサービスアーキテクチャ](https://www.slideshare.net/ssuserce3925/jjugccc2022spring)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=kskDlac9cdE&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=23)   本山 要[@kanamexx\_](https://twitter.com/kanamexx_) | スナップショットログを用いた自動E2Eテストの導入   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=1hdebeUeaws&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=30)   濱岡　佑介 |
+| 17:00 | [バイトコードって言葉をよく目にするけど一体何なんだろう？](https://www.slideshare.net/nttdata-tech/java-bytecode-jjug-ccc-2022-spring-nttdata)   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=aqHqkT6kWt0&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=7)   阪田 浩一[@jyukutyo](https://twitter.com/jyukutyo) | テストコードの注入から始めるレガシーコードのリファクタリング   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=cvX7WmzdIWw&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r&index=16)   風間裕也（ブロッコリー）[@nihonbuson](https://twitter.com/nihonbuson) | イベントソーシング入門 in Java――イベントストーミングから Akka persistence を使った CQRS+ES 実装まで   ![you tube](images/movie_icon.png) [動画](https://www.youtube.com/watch?v=Bt_kXHlNL98)   成瀬 允宣[@nrslib](https://twitter.com/nrslib) | JJUGセッション    |
+
+## 動画一覧
+
+[日本 Java ユーザーグループ JJUG CCC 2022 Spring 動画プレイリスト](https://www.youtube.com/watch?v=gpkM3mQqo8c&list=PLy44EKO1L0eKf16FWyMp3JbPeekQ7a94r)

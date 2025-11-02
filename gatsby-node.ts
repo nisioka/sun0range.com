@@ -8,6 +8,7 @@ import path from "path"
 import { GatsbyNode } from "gatsby"
 import { createFilePath } from "gatsby-source-filesystem"
 import { convertCategory } from "./src/utilFunction"
+import { AllMarkdownOldRemark, AllMarkdownRemark } from "./src/@types/global"
 
 // Define the template for blog post
 const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
@@ -26,13 +27,15 @@ export const createPages: GatsbyNode["createPages"] = async ({
   const { createPage } = actions
 
   type AllPost = {
-    allMarkdownRemark: AllMarkdownRemark
-    allWpPost: AllWpPost
+    allBlogMarkdownRemark: AllMarkdownRemark
+    allOldBlogMarkdownRemark: AllMarkdownOldRemark
   }
 
   const result = await graphql<AllPost>(`
     {
-      allMarkdownRemark {
+      allBlogMarkdownRemark: allMarkdownRemark(
+        filter: { fields: { sourceInstanceName: { eq: "blog" } } }
+      ) {
         nodes {
           id
           fields {
@@ -46,21 +49,32 @@ export const createPages: GatsbyNode["createPages"] = async ({
             nodeType
             category
             tags
+            description
+            dateModified
           }
         }
       }
-      allWpPost {
+      allOldBlogMarkdownRemark: allMarkdownRemark(
+        filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
+      ) {
         nodes {
           id
-          slug
-          categories {
-            nodes {
-              name
-            }
+          fields {
+            slug
           }
-          tags {
-            nodes {
-              name
+          internal {
+            contentFilePath
+          }
+          frontmatter {
+            title
+            date
+            categories
+            tags
+            coverImage
+          }
+          parent {
+            ... on File {
+              relativePath
             }
           }
         }
@@ -83,29 +97,50 @@ export const createPages: GatsbyNode["createPages"] = async ({
     featuredImagePath: string | null
     category: string
     tags: string[]
+    description: string
+    dateModified: string | null
+    nodeType: string
+    internal: {
+      contentFilePath: string
+    }
   }
 
-  const posts = result.data?.allMarkdownRemark.nodes
+  const posts = result.data?.allBlogMarkdownRemark.nodes
     .map(post => {
+      let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "")
       return {
         id: post.id,
-        slug: post.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
-        component: `${blogPost}?__contentFilePath=${post.internal.contentFilePath}`,
+        slug: slug,
+        component: `${blogPost}`,
         featuredImagePath: post.frontmatter.featuredImagePath,
         category: post.frontmatter.category,
         tags: post.frontmatter.tags,
+        description: post.frontmatter.description,
+        dateModified: post.frontmatter.dateModified,
+        nodeType: "blog",
       } as Post
     })
     .concat(
-      result.data?.allWpPost.nodes.map(post => {
+      result.data.allOldBlogMarkdownRemark.nodes.map(post => {
+        // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
+        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "").replace(/^custom\//, "").replace(/^pages\//, "")
+
+        const parentDir = path.dirname(post.parent.relativePath)
+        const featuredImagePath = post.frontmatter.coverImage
+          ? path.join(parentDir, "images", post.frontmatter.coverImage)
+          : null
+
         return {
           id: post.id,
-          slug: post.slug,
-          component: blogPost,
-          featuredImagePath: null,
-          category: post.categories.nodes[0].name,
-          tags: post.tags.nodes.map(tag => tag.name),
-        }
+          slug: slug,
+          component: `${blogPost}`,
+          featuredImagePath: featuredImagePath,
+          category: post.frontmatter.categories ? post.frontmatter.categories[0] : null,
+          tags: post.frontmatter.tags || [],
+          description: post.frontmatter.title,
+          dateModified: post.frontmatter.date || null,
+          nodeType: "old-blog",
+        } as Post
       })
     )
 
@@ -115,11 +150,27 @@ export const createPages: GatsbyNode["createPages"] = async ({
 
   if (posts && posts.length > 0) {
     posts.forEach((post, index) => {
+      if (!post.category) {
+        reporter.warn(
+          `Post with slug "${post.slug}" has no category. Skipping page creation.`
+        )
+        return
+      }
+
+      const categoryPath = convertCategory(post.category)
+
+      if (!categoryPath) {
+        reporter.warn(
+          `Could not find a valid category path for "${post.category}" in post with slug "${post.slug}". Skipping page creation.`
+        )
+        return
+      }
+
       const previousPostId = index === 0 ? null : posts[index - 1].id
       const nextPostId = index === posts.length - 1 ? null : posts[index + 1].id
 
       createPage({
-        path: `/${convertCategory(post.category)}/${post.slug}`,
+        path: `/${categoryPath}/${post.slug}`,
         component: post.component,
         context: {
           id: post.id,
@@ -195,12 +246,21 @@ export const onCreateNode: GatsbyNode["onCreateNode"] = ({
 
   if (node.internal.type === `MarkdownRemark`) {
     const value = createFilePath({ node, getNode })
-
     createNodeField({
       name: `slug`,
       node,
       value,
     })
+
+    const parent = getNode(node.parent)
+    if (parent && parent.sourceInstanceName) {
+      const sourceName = parent.sourceInstanceName as string;
+      createNodeField({
+        name: `sourceInstanceName`,
+        node,
+        value: sourceName,
+      })
+    }
   }
 }
 
@@ -221,6 +281,7 @@ export const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] 
     type MarkdownRemark implements Node {
       frontmatter: Frontmatter
       fields: Fields
+      sourceInstanceName: String
     }
 
     type Frontmatter {
@@ -230,12 +291,15 @@ export const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] 
       dateModified: Date @dateformat
       nodeType: String
       category: String
+      categories: [String]
       tags: [String]
       featuredImagePath: String
+      coverImage: String
     }
 
     type Fields {
       slug: String
+      sourceInstanceName: String
     }
   `)
   }

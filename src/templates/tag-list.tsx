@@ -18,7 +18,7 @@ const CategoryList = ({
   location: Location
 }) => {
   const tagName = pageContext.tag as string
-  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
+  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.blogImages, data.oldBlogImages)
   const title = `【${tagName}】タグ 一覧`
 
   if (posts.length === 0) {
@@ -95,9 +95,9 @@ export const Head = ({
 
 export const pageQuery = graphql`
   query ($tag: String) {
-    allMarkdownRemark(
+    allBlogMarkdownRemark: allMarkdownRemark(
       sort: { frontmatter: { date: DESC } }
-      filter: { frontmatter: { tags: { in: [$tag] } } }
+      filter: { frontmatter: { tags: { in: [$tag] } }, fields: { sourceInstanceName: { eq: "blog" } } }
     ) {
       nodes {
         excerpt
@@ -113,19 +113,35 @@ export const pageQuery = graphql`
         }
       }
     }
-    allWpPost(
-      sort: { date: DESC }
-      filter: { tags: { nodes: { elemMatch: { name: { eq: $tag } } } } }
+    allOldBlogMarkdownRemark: allMarkdownRemark(
+      sort: { frontmatter: { date: DESC } }
+      filter: { frontmatter: { tags: { in: [$tag] } }, fields: { sourceInstanceName: { eq: "old-blog" } } }
     ) {
       nodes {
-        title
         excerpt
-        slug
-        date(formatString: "YYYY/MM/DD")
-        featuredImage {
-          node {
-            altText
-            gatsbyImage(
+        fields {
+          slug
+        }
+        frontmatter {
+          title
+          date(formatString: "YYYY/MM/DD")
+          coverImage
+          categories
+          tags
+        }
+        parent {
+          ... on File {
+            relativePath
+          }
+        }
+      }
+    }
+    blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+      edges {
+        node {
+          relativePath
+          childImageSharp {
+            gatsbyImageData(
               width: 100
               height: 100
               formats: [AUTO, WEBP, AVIF]
@@ -133,14 +149,14 @@ export const pageQuery = graphql`
             )
           }
         }
-        categories {
-          nodes {
-            name
-          }
-        }
       }
     }
-    allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+    oldBlogImages: allFile(
+      filter: {
+        sourceInstanceName: { eq: "old-blog" }
+        extension: { in: ["jpg", "jpeg", "png", "webp"] }
+      }
+    ) {
       edges {
         node {
           relativePath

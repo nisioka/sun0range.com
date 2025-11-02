@@ -73,4 +73,4 @@ NEXUSの起動シェルにJREのパスをオーバーライドできる部分が
 
 [https://help.sonatype.com/repomanager3/installation/java-runtime-environment](https://help.sonatype.com/repomanager3/installation/java-runtime-environment)
 
-http://localhost/information-technology/adopt-open-jdk9
+[Oracle Java8からAdoptOpenJDK9への変更方法](/information-technology/adopt-open-jdk9)

@@ -22,4 +22,4 @@ coverImage: "cropped-devLoveX.png"
 
 6/23分は以下にあります。
 
-http://localhost/event-report/devlove-x-0623
+[DevLOVE Xセッション資料まとめ（6/23(日)）](/event-report/devlove-x-0623)

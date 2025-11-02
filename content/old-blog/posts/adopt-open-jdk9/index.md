@@ -43,7 +43,7 @@ Oracle javaのようにインストーラが付いてきたりはしません。
 3. アーカイブ展開 まず、.zipなり、.tar.gzなりを使用する環境に合わせて解凍します。 それらを任意の場所に配置しましょう。 ex) Windows：「C:/Program Files/Java/jdk8u192-b12」 Linux：「/user/java/jdk8u192-b12」
 4. PATHを通す PATHはあまり弄りたくないので、JAVA\_HOMEという環境変数を介するようにしましょう（通例だと思います）。 PATHにはJAVA\_HOMEだけ登録し、javaのバージョン変更する際にはJAVA\_HOMEだけ書き換えれば影響を極小にできます。そして、環境変数もあまり弄りたくないので、JAVA\_HOMEが指す先もシンボリックリンクのディレクトリとします（latestとかdefaltなどが多いよう）。 PATH=%JAVA\_HOME%\\bin;(以降略) JAVA\_HOME="C:\\Program Files\\Java\\latest" [![image.png](images/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f62643639333539312d636333302d653464392d636464342d3636306536303664336261392e706e67)](https://camo.qiitausercontent.com/109f6b3f5cad120e727f21d3f67909d757312e32/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f62643639333539312d636333302d653464392d636464342d3636306536303664336261392e706e67) 以降のインストール時もここの手順はシンボリックリンクの向き先だけを変更する手順となります。もし何か上手く動かない場合もこの向き先を元に戻せばOKです。
 5. バージョン確認 java -versionを打ちましょう。 該当バージョンで、AdoptOpenJdkという文言が出るはずです。 [![image.png](images/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f62616231366461622d636465632d393334642d323162322d3139393330653066653737312e706e67)](https://camo.qiitausercontent.com/2d53240fe3b2f900503e1386d370eee8d05086cf/68747470733a2f2f71696974612d696d6167652d73746f72652e73332e616d617a6f6e6177732e636f6d2f302f3130353839342f62616231366461622d636465632d393334642d323162322d3139393330653066653737312e706e67)
-6. （おまけ）Javaのバージョン切り替えバッチ ここまで出来たら、環境のJavaを簡単に切り替えられるようにしておくと便利です。今後のバージョンアップ時も解凍まで済ませれば、このバッチを叩けばよいだけです。また、何かあったときに、すぐに古いバージョンに戻すということもやりやすいです。 設定方法はこちら： [http://localhost/information-technology/switching-java-version](http://localhost/information-technology/switching-java-version)
+6. （おまけ）Javaのバージョン切り替えバッチ ここまで出来たら、環境のJavaを簡単に切り替えられるようにしておくと便利です。今後のバージョンアップ時も解凍まで済ませれば、このバッチを叩けばよいだけです。また、何かあったときに、すぐに古いバージョンに戻すということもやりやすいです。 設定方法はこちら： [Javaのバージョンを動的に変更するバッチを作りました](/information-technology/switching-java-version)
 
 ### Java8
 
@@ -67,5 +67,3 @@ Oracle javaのようにインストーラが付いてきたりはしません。
 ## 参考
 
 https://qiita.com/nisioka/items/91b4a915d16bf514ad40
-
-http://localhost/information-technology/adopt-open-jdk9

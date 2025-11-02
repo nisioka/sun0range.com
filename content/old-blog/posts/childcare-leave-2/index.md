@@ -12,7 +12,7 @@ coverImage: "1688412_m.jpg"
 
 前回の記事はこちら：
 
-[http://localhost/life/childcare-leave-1/](http://localhost/life/childcare-leave-1/)
+[エンジニアの男性育休体験談～その1（育休取得前）](/life/childcare-leave-1/)
 
 ## タイムスケジュール
 
@@ -100,4 +100,4 @@ posted with [カエレバ](https://kaereba.com)
 
 なので、次回に続きます。
 
-[http://localhost/life/childcare-leave-3/](http://localhost/life/childcare-leave-3/)
+[エンジニアの男性育休体験談～その3（生後4～6ヶ月）](/life/childcare-leave-3/)

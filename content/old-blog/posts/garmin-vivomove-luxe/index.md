@@ -115,7 +115,7 @@ Bluetooth：4.2
 
 初期セットアップはちょっと長くなるので別記事にまとめました。
 
-http://localhost/review/vivomove-luxe-setup
+[vívomove Luxeの初期セットアップのやり方](/review/vivomove-luxe-setup)
 
 操作感を動画にしてみました。カラーの発色が綺麗ですし、時計の針がスーっと動くのがカッコいいです。
 

@@ -36,4 +36,4 @@ coverImage: "jjug-ccc-2019-spring.jpg"
 
 セッション一覧ベースでもまとめています。
 
-http://localhost/event-report/jjug-ccc-2019-spring-session-list
+[【JJUG CCC 2019 Spring】セッション資料まとめ【レベル別一覧版】](/event-report/jjug-ccc-2019-spring-session-list)

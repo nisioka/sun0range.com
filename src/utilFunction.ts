@@ -53,8 +53,6 @@ export function mergePosts(
           .replace(/^\//, "")
           .replace(/\/$/, "")
           .replace(/^posts\//, "")
-          .replace(/^custom\//, "")
-          .replace(/^pages\//, "")
         return {
           title: post.frontmatter.title,
           excerpt: removeHtmlTags(post.excerpt),

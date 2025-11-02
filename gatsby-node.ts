@@ -123,7 +123,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
     .concat(
       result.data.allOldBlogMarkdownRemark.nodes.map(post => {
         // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
-        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "").replace(/^custom\//, "").replace(/^pages\//, "")
+        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "")
 
         const parentDir = path.dirname(post.parent.relativePath)
         const featuredImagePath = post.frontmatter.coverImage

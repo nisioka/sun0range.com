@@ -10,7 +10,8 @@ tags:
 coverImage: "GoogleHomeMini.jpg"
 ---
 
-以下の記事で、Google Homeを導入して我が家をスマートホーム化してみたわけですが、率直な感想をまとめようと思います。もちろん、あくまで主観なので悪しからず。 http://localhost/life/google-home-mini-rm-mini3
+以下の記事で、Google Homeを導入して我が家をスマートホーム化してみたわけですが、率直な感想をまとめようと思います。もちろん、あくまで主観なので悪しからず。
+[格安でスマートホームに【Google Home mini&RM mini3】](/life/google-home-mini-rm-mini3)
 
 総合的に言えば、大変満足している、むしろ無い生活が考えられない体になってしまっています（笑）。
 
@@ -98,4 +99,4 @@ Broadlink
 
 ### ちょっとした小ネタをまとめました。
 
-http://localhost/life/tricks
+[【小ネタ】Google Home mini～ハッピーバースデーを歌わせる～](/life/tricks)

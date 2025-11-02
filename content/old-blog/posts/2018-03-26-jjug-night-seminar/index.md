@@ -21,7 +21,7 @@ JDKのリリースモデル変更について、あらためてそのポイン�
 
 3月20日にリリース予定のJDK10では12のJEPが提案され、実装/実現される見通しです。今回注目の新機能はJEP286: Local-Variable Type Inference- ローカル変数の型省略（var記法）です。このセッションではこのJEPの解説を中心に、その他主なJEPの紹介を行います。
 
-記事を投稿しました。→[中の人に聞く、Java10のvar記法の使い方について](http://localhost/event-report/jjug-java10-var)
+記事を投稿しました。→[中の人に聞く、Java10のvar記法の使い方について](/event-report/jjug-java10-var)
 
 ### Java 10でぼくたちの生活は どうかわるの？
 

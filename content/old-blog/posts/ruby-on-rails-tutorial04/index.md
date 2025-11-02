@@ -35,7 +35,7 @@ coverImage: "Ruby_On_Rails_Logo.svg.png"
 ### リンク
 
 - [第4章 Rails風味のRuby](https://railstutorial.jp/chapters/rails_flavored_ruby?version=5.1)
-- [GitHubにpushしようとしたら「error:1407742E:SSL」エラーが](http://localhost/information-technology/error-1407742e-ssl)
+- [GitHubにpushしようとしたら「error:1407742E:SSL」エラーが発生](/information-technology/error-1407742e-ssl)
 
 【スポンサードリンク】
 

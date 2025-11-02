@@ -120,4 +120,4 @@ YouTube Studio(ベータ版なのでレイアウトなど変更される可能�
 
 ### 関連記事
 
-http://localhost/life/theta360
+[360°カメラの「RICOH THETA V」がすごい！](/life/theta360)

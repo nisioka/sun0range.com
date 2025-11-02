@@ -25,7 +25,7 @@ RICOH THETA Vはプラグインによる機能拡張を行うことができま�
 
 これまで、セルフタイマーモードにするには、「WiFiボタン押しながら電源ボタンON」という起動ショートカットや、スマホと接続してモード切替するしかなかったのですが、第三の選択肢となります。既に電源を入れた状態でセルフタイマーに切り替えられるのは地味に便利ですし、水中ハウジングケースを装着した状態では唯一のセルフタイマー起動方法だったりします。
 
-私はこのプラグインを入れています。水中撮影では必携かなと思いました。 [http://localhost/life/waterproof-housing-case-of-theta](http://localhost/life/waterproof-housing-case-of-theta)
+私はこのプラグインを入れています。水中撮影では必携かなと思いました。 [RICHO THETA Vの防水ハウジングケースの使い方と注意点](/life/waterproof-housing-case-of-theta)
 
 ### File Cloud Upload（クラウドアップロード）
 

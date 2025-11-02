@@ -12,9 +12,9 @@ coverImage: "2342582_m.jpg"
 
 過去の記事はこちら：
 
-[http://localhost/life/childcare-leave-1/](http://localhost/life/childcare-leave-1/)
+[エンジニアの男性育休体験談～その1（育休取得前）](/life/childcare-leave-1/)
 
-[http://localhost/life/childcare-leave-2/](http://localhost/life/childcare-leave-2/)
+[エンジニアの男性育休体験談～その2（生後0～3ヶ月）](/life/childcare-leave-2/)
 
 ## 育休期間を当初予定の3ヶ月から、6ヶ月に延長しました
 

@@ -11,7 +11,7 @@ coverImage: "TDD.jpg"
 
 テスト駆動開発（TDD）についてはある程度知っているつもりだったのですが、改めて原典に触れようと思い、読み進めました。きっかけは以下の記事にまとめたように、和田和人さん([@t\_wada](https://twitter.com/t_wada))が訳しているのを聞いたからでした。
 
-http://localhost/event-report/t-wada
+[@t_wadaさんに組織にテストを書く文化を根付かせる戦略と戦術を話してもらった](/event-report/t-wada)
 
 読んだ本はこちらです。
 

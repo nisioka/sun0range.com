@@ -24,7 +24,7 @@ coverImage: "Ruby_On_Rails_Logo.svg.png"
 
 ### 独自にやったこと
 
-ちょっとハマったことです。RailsInstallerに同梱されているGitのクライアントソフトが古いようで、GitHubにpushできませんでした。（チュートリアルの標準ではBitBucketでソース管理をしているはずなので、そのとおりであれば関係ありません。） 以下の記事が対応した内容です。 http://localhost/information-technology/error-1407742e-ssl
+ちょっとハマったことです。RailsInstallerに同梱されているGitのクライアントソフトが古いようで、GitHubにpushできませんでした。（チュートリアルの標準ではBitBucketでソース管理をしているはずなので、そのとおりであれば関係ありません。） 以下の記事が対応した内容です。 [GitHubにpushしようとしたら「error:1407742E:SSL」エラーが発生](/information-technology/error-1407742e-ssl)
 
 ## 参考
 
@@ -41,7 +41,7 @@ https://github.com/nisioka/RubyOnRailsTutorial/tree/static-pages
 ### リンク
 
 - [第3章 ほぼ静的なページの作成](https://railstutorial.jp/chapters/static_pages?version=5.1#cha-static_pages)
-- [GitHubにpushしようとしたら「error:1407742E:SSL」エラーが発生](http://localhost/information-technology/error-1407742e-ssl)
+- [GitHubにpushしようとしたら「error:1407742E:SSL」エラーが発生](/information-technology/error-1407742e-ssl)
 
 【スポンサードリンク】
 

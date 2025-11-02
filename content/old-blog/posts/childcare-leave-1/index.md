@@ -65,10 +65,10 @@ coverImage: "Maternity.jpg"
 
 また、家電の力を最大限に使おうと買い揃えました。日々の家事負担を楽にするために、食器洗浄機やロボット掃除機、ウォーターサーバなんかもミルク作りに重宝しました。
 
-[http://localhost/life/recommended-home-appliances/](http://localhost/life/recommended-home-appliances/)
+[【育児中】時短できるおすすめ家電](/life/recommended-home-appliances/)
 
 ## 終わりに
 
 準備編はここまでです。次回より育休編です。
 
-[http://localhost/life/childcare-leave-2/](http://localhost/life/childcare-leave-2/)
+[エンジニアの男性育休体験談～その2（生後0～3ヶ月）](/life/childcare-leave-2/)

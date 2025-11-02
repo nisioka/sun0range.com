@@ -23,4 +23,4 @@ CloudFrontとは、AWSで提供されているContent Delivery Network (CDN)サ�
 
 [公式サイト](https://aws.amazon.com/jp/cloudfront/?nc=sn&loc=0)
 
-http://localhost/glossary/amazon-web-service-aws
+[Amazon Web Service (AWS)](amazon-web-service-aws)

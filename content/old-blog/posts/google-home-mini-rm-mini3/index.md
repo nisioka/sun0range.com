@@ -100,8 +100,4 @@ Broadlink
 - [RM mini3が「正規品ではないため日本国内で利用できません」とエラーが出て使えないときの回避策](http://obakasanyo.net/rm-mini3-error-eremote-mini/)
 - [RM mini 3とGoogle Homeで家電を操作してみよう](https://higehige4.blogspot.jp/2018/02/rm-mini-3google-home.html#site)
 
-### 関連記事
 
-http://localhost/life/review-google-home
-
-http://localhost/life/tricks

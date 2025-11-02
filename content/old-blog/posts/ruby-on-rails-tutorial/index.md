@@ -36,20 +36,20 @@ rubyやRailsに留まることなく、アプリケーションがどのよう�
 
 私自身が各章をやってみて、どれくらい時間がかかったか、どういうことが学べたかを残したいと思います。また、自分なりに工夫したことなんかも残したいと思います。
 
-1. 第1章 [ゼロからデプロイまで](https://railstutorial.jp/chapters/beginning?version=5.1#cha-beginning) http://localhost/information-technology/ruby-on-rails-tutorial01 実績：2時間
-2. 第2章 [Toyアプリケーション](https://railstutorial.jp/chapters/toy_app?version=5.1#cha-a_toy_app) http://localhost/information-technology/ruby-on-rails-tutorial02 実績：1.5時間
-3. 第3章 [ほぼ静的なページの作成](https://railstutorial.jp/chapters/static_pages?version=5.1#cha-static_pages) http://localhost/information-technology/ruby-on-rails-tutorial03 実績：3時間
-4. 第4章 [Rails風味のRuby](https://railstutorial.jp/chapters/rails_flavored_ruby?version=5.1#cha-rails_flavored_ruby) http://localhost/information-technology/ruby-on-rails-tutorial04 実績：1.5時間
-5. 第5章 [レイアウトを作成する](https://railstutorial.jp/chapters/filling_in_the_layout?version=5.1#cha-filling_in_the_layout) http://localhost/information-technology/ruby-on-rails-tutorial05 実績：1.5時間
-6. 第6章 [ユーザーのモデルを作成する](https://railstutorial.jp/chapters/modeling_users?version=5.1#cha-modeling_users) http://localhost/information-technology/ruby-on-rails-tutorial06 実績：3時間
-7. 第7章 [ユーザー登録](https://railstutorial.jp/chapters/sign_up?version=5.1#cha-sign_up) http://localhost/information-technology/ruby-on-rails-tutorial07 実績：4時間
-8. 第8章 [基本的なログイン機構](https://railstutorial.jp/chapters/basic_login?version=5.1#cha-basic_login) http://localhost/information-technology/ruby-on-rails-tutorial08 実績：2時間
-9. 第9章 [発展的なログイン機構](https://railstutorial.jp/chapters/advanced_login?version=5.1#cha-advanced_login) http://localhost/information-technology/ruby-on-rails-tutorial09 実績：1.5時間
-10. 第10章 [ユーザーの更新・表示・削除](https://railstutorial.jp/chapters/updating_and_deleting_users?version=5.1#cha-updating_showing_and_deleting_users) http://localhost/information-technology/ruby-on-rails-tutorial10 実績：2時間
-11. 第11章 [アカウントの有効化](https://railstutorial.jp/chapters/account_activation?version=5.1#cha-account_activation) http://localhost/information-technology/ruby-on-rails-tutorial11 実績：1.5時間
-12. 第12章 [パスワードの再設定](https://railstutorial.jp/chapters/password_reset?version=5.1#cha-password_reset) http://localhost/information-technology/ruby-on-rails-tutorial12 実績：1.5時間
-13. 第13章 [ユーザーのマイクロポスト](https://railstutorial.jp/chapters/user_microposts?version=5.1#cha-user_microposts) http://localhost/information-technology/ruby-on-rails-tutorial13 実績：4.5時間
-14. 第14章 [ユーザーをフォローする](https://railstutorial.jp/chapters/following_users?version=5.1#cha-following_users) http://localhost/information-technology/ruby-on-rails-tutorial14 実績：5時間
+1. 第1章 [ゼロからデプロイまで](https://railstutorial.jp/chapters/beginning?version=5.1#cha-beginning) --- [Ruby on Rails チュートリアルをやってみた【第1章】](/information-technology/ruby-on-rails-tutorial01) 実績：2時間
+2. 第2章 [Toyアプリケーション](https://railstutorial.jp/chapters/toy_app?version=5.1#cha-a_toy_app) --- [Ruby on Rails チュートリアルをやってみた【第2章】](/information-technology/ruby-on-rails-tutorial02) 実績：1.5時間
+3. 第3章 [ほぼ静的なページの作成](https://railstutorial.jp/chapters/static_pages?version=5.1#cha-static_pages) --- [Ruby on Rails チュートリアルをやってみた【第3章】](/information-technology/ruby-on-rails-tutorial03) 実績：3時間
+4. 第4章 [Rails風味のRuby](https://railstutorial.jp/chapters/rails_flavored_ruby?version=5.1#cha-rails_flavored_ruby) --- [Ruby on Rails チュートリアルをやってみた【第4章】](/information-technology/ruby-on-rails-tutorial04) 実績：1.5時間
+5. 第5章 [レイアウトを作成する](https://railstutorial.jp/chapters/filling_in_the_layout?version=5.1#cha-filling_in_the_layout) --- [Ruby on Rails チュートリアルをやってみた【第5章】](/information-technology/ruby-on-rails-tutorial05) 実績：1.5時間
+6. 第6章 [ユーザーのモデルを作成する](https://railstutorial.jp/chapters/modeling_users?version=5.1#cha-modeling_users) --- [Ruby on Rails チュートリアルをやってみた【第6章】](/information-technology/ruby-on-rails-tutorial06) 実績：3時間
+7. 第7章 [ユーザー登録](https://railstutorial.jp/chapters/sign_up?version=5.1#cha-sign_up) --- [Ruby on Rails チュートリアルをやってみた【第7章】](/information-technology/ruby-on-rails-tutorial07) 実績：4時間
+8. 第8章 [基本的なログイン機構](https://railstutorial.jp/chapters/basic_login?version=5.1#cha-basic_login) --- [Ruby on Rails チュートリアルをやってみた【第8章】](/information-technology/ruby-on-rails-tutorial08) 実績：2時間
+9. 第9章 [発展的なログイン機構](https://railstutorial.jp/chapters/advanced_login?version=5.1#cha-advanced_login) --- [Ruby on Rails チュートリアルをやってみた【第9章】](/information-technology/ruby-on-rails-tutorial09) 実績：1.5時間
+10. 第10章 [ユーザーの更新・表示・削除](https://railstutorial.jp/chapters/updating_and_deleting_users?version=5.1#cha-updating_showing_and_deleting_users) --- [Ruby on Rails チュートリアルをやってみた【第10章】](/information-technology/ruby-on-rails-tutorial10) 実績：2時間
+11. 第11章 [アカウントの有効化](https://railstutorial.jp/chapters/account_activation?version=5.1#cha-account_activation) --- [Ruby on Rails チュートリアルをやってみた【第11章】](/information-technology/ruby-on-rails-tutorial11) 実績：1.5時間
+12. 第12章 [パスワードの再設定](https://railstutorial.jp/chapters/password_reset?version=5.1#cha-password_reset) --- [Ruby on Rails チュートリアルをやってみた【第12章】](/information-technology/ruby-on-rails-tutorial12) 実績：1.5時間
+13. 第13章 [ユーザーのマイクロポスト](https://railstutorial.jp/chapters/user_microposts?version=5.1#cha-user_microposts) --- [Ruby on Rails チュートリアルをやってみた【第13章】](/information-technology/ruby-on-rails-tutorial13) 実績：4.5時間
+14. 第14章 [ユーザーをフォローする](https://railstutorial.jp/chapters/following_users?version=5.1#cha-following_users) --- [Ruby on Rails チュートリアルをやってみた【第14章】](/information-technology/ruby-on-rails-tutorial14) 実績：5時間
 
 合計実施時間：34時間
 

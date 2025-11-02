@@ -83,4 +83,4 @@ coverImage: "jjug-ccc-2019-spring.jpg"
 
 タイムテーブルベースでもまとめています。
 
-http://localhost/event-report/jjug-ccc-2019-spring-time-table
+[【JJUG CCC 2019 Spring】セッション資料まとめ【タイムテーブル版】](/event-report/jjug-ccc-2019-spring-time-table)

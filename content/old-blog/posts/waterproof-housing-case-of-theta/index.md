@@ -61,7 +61,7 @@ THETA本体に貼り付けるH型のシート（シール）が2枚付属して�
 
 追記：プラグイン機能を用いることで、この制約は解消できました。下記参照。
 
-[http://localhost/life/theta360-plugin](http://localhost/life/theta360-plugin)
+[【360°カメラ】RICOH THETA Vをプラグインでカスタマイズする方法](/life/theta360-plugin)
 
 ### 制約2 水中ではリモート接続できない
 

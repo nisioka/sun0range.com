@@ -2,7 +2,7 @@ import * as React from "react"
 
 import { graphql, Link } from "gatsby"
 import { PageContext } from "gatsby/internal"
-import { convertCategory, mergePosts } from "../utilFunction"
+import { convertCategory, convertCategoryJp, mergePosts } from "../utilFunction"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
@@ -19,7 +19,7 @@ const CategoryList = ({
 }) => {
   const categoryName = pageContext.category as string
   const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.blogImages, data.oldBlogImages)
-  const title = `【${categoryName}】カテゴリー 一覧`
+  const title = `【${convertCategoryJp(categoryName)}】カテゴリー 一覧`
 
   if (posts.length === 0) {
     return (
@@ -85,8 +85,8 @@ export const Head = ({
 }) => {
   return (
     <Seo
-      title={`【${pageContext.category}】カテゴリー 一覧`}
-      description={`【${pageContext.category}】カテゴリーの記事一覧です`}
+      title={`【${convertCategoryJp(pageContext.category)}】カテゴリー 一覧`}
+      description={`【${convertCategoryJp(pageContext.category)}】カテゴリーの記事一覧です`}
       location={location}
     />
   )

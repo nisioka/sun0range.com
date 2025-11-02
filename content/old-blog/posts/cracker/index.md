@@ -9,7 +9,7 @@ tags:
 
 - 意味
 
-\[名詞\] クラッカーとは、IT技術に長けた[ハッカー](http://localhost/glossary/hacker)のうち悪事を働く者の事を言う。
+\[名詞\] クラッカーとは、IT技術に長けた[ハッカー](/glossary/hacker)のうち悪事を働く者の事を言う。
 
 - 説明
 
@@ -26,4 +26,4 @@ tags:
 
 - 関連語
 
-[hacker 【ハッカー】](http://localhost/glossary/hacker)
+[hacker 【ハッカー】](/glossary/hacker)

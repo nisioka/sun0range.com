@@ -18,9 +18,9 @@ Amazonと言えば、GAFAの一角でもある最も巨大なIT企業の一つ�
 
 ## 関連サービス
 
-- [CloudFront](http://localhost/glossary/aws-cloudfront)
+- [CloudFront](/glossary/aws-cloudfront)
 - Elastic Compute Cloud (EC2)
-- [Simple Storage Service (S3)](http://localhost/glossary/aws-simple-storage-service-s3)
+- [Simple Storage Service (S3)](/glossary/aws-simple-storage-service-s3)
 
 ## 参考
 

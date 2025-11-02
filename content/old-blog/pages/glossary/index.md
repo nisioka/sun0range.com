@@ -12,7 +12,7 @@ coverImage: "book_yoko.png"
 
 - [Amazon Web Service (AWS)](/glossary/amazon-web-service-aws)
     - [CloudFront](/glossary/aws-cloudfront)
-    - [Simple Storage Service (S3)](/wp-admin/post.php?post=2698&action=edit)
+    - [Simple Storage Service (S3)](/glossary/aws-simple-storage-service-s3)
 
 ### B
 
@@ -61,7 +61,7 @@ coverImage: "book_yoko.png"
 
 ### S
 
-- [Simple Storage Service (S3)](/wp-admin/post.php?post=2698&action=edit)
+- [Simple Storage Service (S3)](/glossary/aws-simple-storage-service-s3)
 
 ### T
 

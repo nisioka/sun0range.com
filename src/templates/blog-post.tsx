@@ -5,7 +5,7 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import styled from "styled-components"
-import { convertCategory, mergePost, removeHtmlTags } from "../utilFunction"
+import { convertCategory, convertCategoryJp, mergePost, removeHtmlTags } from "../utilFunction"
 import RelatedList from "../components/related-list"
 import SyntaxHighlighter from "react-syntax-highlighter"
 import parse, { domToReact } from "html-react-parser"
@@ -125,7 +125,7 @@ const BlogPostTemplate = ({
           <dt>カテゴリ</dt>
           <dd>
             <Link to={`/category/${convertCategory(post.category)}`}>
-              {post.category}
+              {convertCategoryJp(post.category)}
             </Link>
           </dd>
         </Dl>

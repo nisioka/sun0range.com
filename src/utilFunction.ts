@@ -131,6 +131,27 @@ export function convertCategory(name: string): string | undefined {
   return ""
 }
 
+export function convertCategoryJp(name: string): string | undefined {
+  if (!name) return undefined
+  const normalizedName = name.replace("/", "")
+
+
+  // まず英語名 (eng) で探す
+  const foundByEng = categoryNames.find(c => c.eng === normalizedName)
+  if (foundByEng) {
+    return foundByEng.jp
+  }
+
+  // 次に日本語名 (jp) で探す
+  const foundByJp = categoryNames.find(c => c.jp === normalizedName)
+  if (foundByJp) {
+    return foundByJp.jp
+  }
+
+  console.log(`Not match convertCategory. Category name is: ${name}`);
+  return ""
+}
+
 export function removeHtmlTags(str: string | undefined) {
   if (!str) return ""
   return str.replace(/<[^a-zA-Z]*\/?>/g, "")

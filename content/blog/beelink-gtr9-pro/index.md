@@ -3,7 +3,7 @@ title: Beelink GTR9 ProでChat-GPT-OSS 120Bを動かしてみた結果──ロ�
 date: "2025-07-05"
 dateModified: "2025-07-17"
 description: "Beelink GTR9 Proのレビューと、Chat-GPT-OSS 120Bを動かしてみた結果"
-featuredImagePath: "featured/ai-cording.webp"
+featuredImagePath: "featured/beelink.webp"
 nodeType: blog
 category: 技術
 tags: ["AI", "LLM"]
@@ -59,16 +59,15 @@ GPUは内蔵のものになってしまいスペックは見劣りしますが�
 - 2025年9月24日: 商品到着
 中国からの配送で心配でしたが、1ヶ月かからず段ボール外箱からしてきれいな状態で問題なく届きました。
 ![box1.jpg](box1.jpg)
-![box2.jpg](box2.jpg)
 
 ## ローカルLLM実験結果：120Bモデルは少し動くけれどすぐにクラッシュ
 
 - LM Studio にgpt-oss-120B を導入して起動
 - Codex の入力に上記のローカルのgpt-oss-120Bを指定
 - LM Studioからコンテキスト長不足でクラッシュして応答が返されず、Codexは固まった状態
- - LM Studioの設定でコンテキスト長を10000KBやそれ以上にするとハードウェアのメモリ不足で立ち上がらない。
-  - BIOSのメモリ割り当てで、メイン64GB/GPU 64GBとメイン32GB/GPU 96GBとで設定変更できるが何れでもNG。
- - LM Studioの設定でコンテキスト長を8196KB程度だとギリギリ起動できるが、Codexでのコード生成には全く足りず、少しのチャットはできるが、ファイルを読み込ませたりするとすぐにコンテキストが足りなくなりまともにCodexが動かなくなる。
+  - LM Studioの設定でコンテキスト長を10000KBやそれ以上にするとハードウェアのメモリ不足で立ち上がらない。
+    - BIOSのメモリ割り当てで、メイン64GB/GPU 64GBとメイン32GB/GPU 96GBとで設定変更できるが何れでもNG。
+  - LM Studioの設定でコンテキスト長を8196KB程度だとギリギリ起動できるが、Codexでのコード生成には全く足りず、少しのチャットはできるが、ファイルを読み込ませたりするとすぐにコンテキストが足りなくなりまともにCodexが動かなくなる。
 
 結果としての限界点：
 → 「動作はするが、120Bでまともにコンテキストを維持できない」

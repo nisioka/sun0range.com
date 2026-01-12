@@ -1,7 +1,7 @@
 ---
 title: Beelink GTR9 ProでChat-GPT-OSS 120Bを動かしてみた結果──ローカル実行の壁と、それでも惚れた理由
-date: "2025-07-05"
-dateModified: "2025-07-17"
+date: "2025-10-19"
+dateModified: "2025-11-30"
 description: "Beelink GTR9 Proのレビューと、Chat-GPT-OSS 120Bを動かしてみた結果"
 featuredImagePath: "featured/beelink.webp"
 nodeType: blog

@@ -6,7 +6,7 @@ description: "AWS SNSでSMSを送信する際の文字数とメッセージ分�
 featuredImagePath: "featured/logo-amazon-sns.webp"
 nodeType: blog
 category: information-technology
-tags: ["AWS", "SMS", "SNS", "ツール"]
+tags: ["AWS", "SMS", "SNS", "便利ツール"]
 ---
 
 AWS SNS（Simple Notification Service）でSMSを送信する際、文字数によってメッセージが分割されることがあります。このツールを使って、送信前に文字数と分割数を確認できます。

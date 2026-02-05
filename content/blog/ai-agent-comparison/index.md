@@ -6,7 +6,7 @@ description: "ChatGPT, Gemini, Claude, GitHub Copilot, JetBrains Junieを、料�
 featuredImagePath: "featured/ai-cording.webp"
 nodeType: blog
 category: 技術
-tags: ["AI", "IDE", "ChatGPT", "Gemini", "Claude", "GitHub Copilot", "JetBrains"]
+tags: ["AI", "IDE", "ChatGPT", "Gemini", "Claude Code", "GitHub Copilot", "JetBrains"]
 ---
 
 ## TL;DR (結論から言うと)

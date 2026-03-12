@@ -385,7 +385,8 @@ const Article = styled.article`
   }
 `
 const BlogEntry = styled.div`
-  margin: 15px 0 30px;
+  margin: 24px 0 40px;
+  padding: 24px 0;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
 `

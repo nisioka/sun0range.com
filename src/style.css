@@ -33,7 +33,7 @@
   --black: #333;
   --orange: #FF8C00FF;
   --paddingBaseTop: 10px;
-  --paddingBaseLeft: 5px;
+  --paddingBaseLeft: 20px;
   --paddingBase: var(--paddingBaseTop);
   --paddingBaseVertical: var(--paddingBaseTop);
   --paddingBaseHorizontal: var(--paddingBaseLeft);
@@ -93,7 +93,7 @@ h3,
 h4,
 h5,
 h6 {
-  margin-top: var(--spacing-2);
+  margin-top: 2rem;
   margin-bottom: var(--spacing-2);
   line-height: var(--lineHeight-tight);
   letter-spacing: -0.025em;
@@ -211,11 +211,28 @@ table {
   width: 100%;
   margin-bottom: var(--spacing-8);
   border-collapse: collapse;
-  border-spacing: 0.25rem;
+  font-size: var(--fontSize-1);
 }
 
 table thead tr th {
+  background-color: var(--color-primary);
+  color: #fff;
+  font-weight: var(--fontWeight-bold);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+
+table tbody tr td {
+  padding: 0.5rem 0.75rem;
   border-bottom: 1px solid var(--color-accent);
+}
+
+table tbody tr:nth-child(even) {
+  background-color: #f7fafc;
+}
+
+table tbody tr:hover {
+  background-color: #edf2f7;
 }
 
 /* Link */

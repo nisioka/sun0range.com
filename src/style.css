@@ -32,8 +32,8 @@
   --color-accent: #d1dce5;
   --black: #333;
   --orange: #FF8C00FF;
-  --paddingBaseTop: 10px;
-  --paddingBaseLeft: 5px;
+  --paddingBaseTop: 16px;
+  --paddingBaseLeft: 20px;
   --paddingBase: var(--paddingBaseTop);
   --paddingBaseVertical: var(--paddingBaseTop);
   --paddingBaseHorizontal: var(--paddingBaseLeft);
@@ -324,6 +324,23 @@ a:focus {
 
 .blog-post header p {
   font-size: var(--fontSize-2);
+}
+
+.blog-post section h2 {
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+}
+
+.blog-post section h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+}
+
+.blog-post section h4,
+.blog-post section h5,
+.blog-post section h6 {
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
 }
 
 .blog-post-nav ul {

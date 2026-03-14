@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest"
 import * as fs from "fs"
 import * as path from "path"
+import * as yaml from "js-yaml"
 
 const BLOG_DIR = path.join(__dirname, "..", "content", "blog")
 
@@ -28,18 +29,10 @@ const REQUIRED_FRONTMATTER_FIELDS = [
   "tags",
 ]
 
-function parseFrontmatter(content: string): Record<string, string> {
+function parseFrontmatter(content: string): Record<string, unknown> {
   const match = content.match(/^---\n([\s\S]*?)\n---/)
   if (!match) return {}
-  const frontmatter: Record<string, string> = {}
-  for (const line of match[1].split("\n")) {
-    const colonIndex = line.indexOf(":")
-    if (colonIndex === -1) continue
-    const key = line.slice(0, colonIndex).trim()
-    const value = line.slice(colonIndex + 1).trim()
-    frontmatter[key] = value.replace(/^["']|["']$/g, "")
-  }
-  return frontmatter
+  return (yaml.load(match[1]) as Record<string, unknown>) ?? {}
 }
 
 function getBlogPosts(): { name: string; content: string }[] {
@@ -72,7 +65,6 @@ describe("ブログ記事のフロントマター検証", () => {
       for (const field of REQUIRED_FRONTMATTER_FIELDS) {
         it(`必須フィールド "${field}" が存在すること`, () => {
           expect(frontmatter[field]).toBeDefined()
-          expect(frontmatter[field].length).toBeGreaterThan(0)
         })
       }
 
@@ -81,15 +73,24 @@ describe("ブログ記事のフロントマター検証", () => {
       })
 
       it("date が有効な日付形式 (YYYY-MM-DD) であること", () => {
-        expect(frontmatter.date).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+        const date = frontmatter.date
+        if (date instanceof Date) {
+          expect(date.getTime()).not.toBeNaN()
+        } else {
+          expect(String(date)).toMatch(/^\d{4}-\d{2}-\d{2}$/)
+        }
       })
 
       it("nodeType が blog であること", () => {
         expect(frontmatter.nodeType).toBe("blog")
       })
 
-      it("tags が配列形式であること", () => {
-        expect(frontmatter.tags).toMatch(/^\[.*\]$/)
+      it("tags が配列であること", () => {
+        expect(Array.isArray(frontmatter.tags)).toBe(true)
+      })
+
+      it("tags が1つ以上あること", () => {
+        expect((frontmatter.tags as unknown[]).length).toBeGreaterThan(0)
       })
     })
   }

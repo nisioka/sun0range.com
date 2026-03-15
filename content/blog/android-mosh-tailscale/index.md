@@ -1,12 +1,12 @@
 ---
-title: "スマホからAIコーディング — Android × WSL リモート接続環境の構築【Mosh + Tailscale】"
+title: "Android × WSL リモート接続環境の構築【Mosh + Tailscale】～ スマホからAIコーディングするために"
 date: "2026-02-23"
 dateModified: "2026-02-23"
 description: "AIエージェントの登場で「スマホからPCに接続してコーディング」が現実的に。Termux・Mosh・Tailscaleを組み合わせ、AndroidからWSL環境へ安定接続する手順を解説します。"
-featuredImagePath: "featured/defaultThumbnail.png"
+featuredImagePath: "featured/mosh_sample.webp"
 nodeType: blog
 category: 技術
-tags: ["AI", "Claude Code", "Android", "WSL", "Mosh", "Tailscale"]
+tags: ["Android", "WSL", "Mosh", "Tailscale"]
 ---
 
 ## やりたいこと
@@ -17,7 +17,9 @@ tags: ["AI", "Claude Code", "Android", "WSL", "Mosh", "Tailscale"]
 
 iPhoneアプリだと Moshi というものがあるようですが、Androidにはそれらしきものがないため、組み合わせて同等の環境を作りたいと思います。私の環境はWindows WSLで開発しているので、(面倒なことになりがちな)WSLをサーバとします。
 
-ということで、 **AndroidスマホからWindows PC（WSL環境）にリモート接続**し、外出先からでもAIエージェントを操作できる環境を構築します。
+ということで、 **AndroidスマホからWindows PC（WSL環境）にリモート接続** できる環境を構築します。私の構築目的はAIコーディングしたいからではありますが、この記事でできることはスマホからPCへのリモート接続なので、AI利用に限らず使える手段です。
+
+> **補足（2026-02-25追記）**: Claude Code公式から [Remote Control](https://code.claude.com/docs/en/remote-control) 機能がリリースされました。ブラウザ経由でClaude Codeのセッションにリモートアクセスできる仕組みで、本記事で実現したいことの主軸と重なる部分があります。ターミナル環境のカスタマイズや他のCLIツールとの連携が不要であれば、公式のRemote Control機能だけで充足するケースも多いでしょう。
 
 ## 全体アーキテクチャ
 

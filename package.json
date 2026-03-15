@@ -27,6 +27,7 @@
     "gatsby-plugin-sitemap": "^6.16.0",
     "gatsby-plugin-styled-components": "^6.16.0",
     "gatsby-remark-images": "^7.16.0",
+    "gatsby-remark-mermaid": "^5.0.0",
     "gatsby-remark-responsive-iframe": "^6.16.0",
     "gatsby-source-filesystem": "^5.16.0",
     "gatsby-transformer-remark": "^6.16.0",

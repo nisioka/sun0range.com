@@ -374,6 +374,7 @@ const getCode = (node: any) => {
 
 const Article = styled.article`
   margin: 0 auto;
+  padding: 24px 20px 0;
   background-color: #fff;
 
   .time {
@@ -385,10 +386,32 @@ const Article = styled.article`
   }
 `
 const BlogEntry = styled.div`
-  margin: 24px 0 40px;
-  padding: 24px 0;
+  margin: 16px 0 40px;
+  padding: 16px 0;
   border-top: 1px solid #ccc;
   border-bottom: 1px solid #ccc;
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+  }
+
+  table th,
+  table td {
+    padding: 0.5em 0.8em;
+    border: 1px solid #e2e8f0;
+  }
+
+  table th {
+    background-color: #f0f4f8;
+    font-weight: 700;
+    text-align: left;
+  }
+
+  table tbody tr:hover {
+    background-color: #f7fafc;
+  }
 `
 const BlogPostNav = styled.nav`
   margin: 0 auto;

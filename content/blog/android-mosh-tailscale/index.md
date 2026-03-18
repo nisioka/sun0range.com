@@ -1,7 +1,7 @@
 ---
 title: "Android × WSL リモート接続環境の構築【Mosh + Tailscale】～ スマホからAIコーディングするために"
 date: "2026-02-23"
-dateModified: "2026-02-23"
+dateModified: "2026-02-25"
 description: "AIエージェントの登場で「スマホからPCに接続してコーディング」が現実的に。Termux・Mosh・Tailscaleを組み合わせ、AndroidからWSL環境へ安定接続する手順を解説します。"
 featuredImagePath: "featured/mosh_sample.webp"
 nodeType: blog

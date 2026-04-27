@@ -171,12 +171,12 @@ frontmatter の `category` には**日本語名**を記載する。URL変換は 
 ## ルール
 - 単体テスト（Jest等）は作成しない。ブログコンテンツが主体のリポジトリであり、テスト実装のコストに見合わない。
 
-## Stream idle timeout 対策
+## Stream idle timeout mitigation
 
-長いストリーミング応答による `Stream idle timeout - partial response received` エラーを避けるため、以下の制約を守る。
+Follow these constraints to avoid `Stream idle timeout - partial response received` errors caused by long streaming responses.
 
-1. **タスクは一つずつ実行する**: 番号付きタスクは1つずつ完了させ、動作確認してから次へ進む。複数タスクを1回の応答にまとめない。
-2. **1回のツール呼び出しで150行を超えるファイル書き込みを行わない**: 150行超のファイルを生成する場合は、複数回の append / edit パスに分割する。
-3. **会話が長くなったら新しいセッションを開始する**: ツール呼び出しが20回を超えたら、新規セッションに切り替えることを検討する。
-4. **検索出力は短く保つ**: `grep` / 検索系コマンドでは `--include` や `-l`（ファイル名のみ表示）などのフラグで出力量を抑える。
-5. **タイムアウトしたら短い形でリトライする**: タスク全体を最初からやり直さず、同じステップをより小さい単位で再実行する。
+1. **Do tasks ONE AT A TIME.** Complete and confirm each numbered task before moving on. Never batch multiple tasks into a single response.
+2. **Never write more than ~150 lines in a single tool call.** If a file will be longer, split it into multiple append / edit passes.
+3. **Start a fresh session when the conversation gets long** (roughly 20+ tool calls).
+4. **Keep search output short.** Use flags like `--include` and `-l` (list filenames only) on `grep` and similar commands to limit output size.
+5. **On timeout, retry the same step in a shorter form** instead of restarting the entire task from scratch.

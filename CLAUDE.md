@@ -1,111 +1,111 @@
-# CLAUDE.md - sun0range.com 技術ブログ
+# CLAUDE.md - sun0range.com tech blog
 
-## プロジェクト概要
+## Project overview
 
-Gatsby v5 ベースの日本語技術ブログ。GitHub Pages でホスティング。
-- **公開URL**: https://sun0range.tech.server-on.net
-- **著者**: nisioka
-- **言語**: 日本語 (HTMLのlang属性も `ja`)
+Japanese tech blog built on Gatsby v5, hosted on GitHub Pages.
+- **Published URL**: https://sun0range.tech.server-on.net
+- **Author**: nisioka
+- **Language**: Japanese (HTML `lang` attribute is also `ja`)
 
-## 技術スタック
+## Tech stack
 
-- **フレームワーク**: Gatsby 5 (TypeScript, strict mode)
-- **パッケージマネージャ**: pnpm
-- **スタイリング**: styled-components v6 + グローバルCSS (`src/style.css`)
-- **マークダウン処理**: gatsby-transformer-remark
-- **画像最適化**: gatsby-plugin-image / gatsby-plugin-sharp (WebP, quality: 70)
-- **コードハイライト**: react-syntax-highlighter (androidstudio テーマ)
-- **アイコン**: FontAwesome (react-fontawesome)
-- **フォント**: Montserrat (Variable), Merriweather
-- **フォーマッタ**: Prettier
+- **Framework**: Gatsby 5 (TypeScript, strict mode)
+- **Package manager**: pnpm
+- **Styling**: styled-components v6 + global CSS (`src/style.css`)
+- **Markdown processing**: gatsby-transformer-remark
+- **Image optimization**: gatsby-plugin-image / gatsby-plugin-sharp (WebP, quality: 70)
+- **Code highlighting**: react-syntax-highlighter (androidstudio theme)
+- **Icons**: FontAwesome (react-fontawesome)
+- **Fonts**: Montserrat (Variable), Merriweather
+- **Formatter**: Prettier
 
-## コマンド
+## Commands
 
 ```bash
-pnpm run build      # 本番ビルド (gatsby build) → public/ に出力
-pnpm run develop    # 開発サーバー起動
-pnpm run serve      # ビルド済みサイトのプレビュー
-pnpm run clean      # Gatsby キャッシュクリア
-pnpm run format     # Prettier でフォーマット
+pnpm run build      # production build (gatsby build) → outputs to public/
+pnpm run develop    # start dev server
+pnpm run serve      # preview the built site
+pnpm run clean      # clear Gatsby cache
+pnpm run format     # format with Prettier
 ```
 
-## ディレクトリ構成
+## Directory layout
 
 ```
 ├── content/
-│   ├── blog/              # 新規記事 (ここに記事を追加する)
+│   ├── blog/              # new posts (add new articles here)
 │   │   └── {slug}/
-│   │       ├── index.md   # 記事本文
-│   │       └── featured/  # アイキャッチ画像等
-│   └── old-blog/          # 旧WordPress移行記事 (読み取り専用)
+│   │       ├── index.md   # article body
+│   │       └── featured/  # featured image, etc.
+│   └── old-blog/          # legacy posts migrated from WordPress (read-only)
 │       └── posts/{slug}/
 │           ├── index.md
 │           └── images/
 ├── src/
-│   ├── @types/global.d.ts # グローバル型定義 (CommonPost, MdPost, MdOldPost 等)
-│   ├── components/        # 再利用コンポーネント
-│   │   ├── header.tsx     # ナビゲーション (ハンバーガーメニュー)
-│   │   ├── layout.tsx     # ルートレイアウト
+│   ├── @types/global.d.ts # global type definitions (CommonPost, MdPost, MdOldPost, etc.)
+│   ├── components/        # reusable components
+│   │   ├── header.tsx     # navigation (hamburger menu)
+│   │   ├── layout.tsx     # root layout
 │   │   ├── seo.tsx        # SEO (JSON-LD, OGP, Twitter Card)
-│   │   ├── bio.tsx        # 著者プロフィール
-│   │   ├── pagination.tsx # ページネーション
-│   │   ├── related-list.tsx  # 関連記事
-│   │   ├── tag-cloud.tsx     # タグクラウド
-│   │   ├── category-all.tsx  # カテゴリ一覧
+│   │   ├── bio.tsx        # author profile
+│   │   ├── pagination.tsx # pagination
+│   │   ├── related-list.tsx  # related posts
+│   │   ├── tag-cloud.tsx     # tag cloud
+│   │   ├── category-all.tsx  # category list
 │   │   ├── footer.tsx
 │   │   ├── age.tsx
-│   │   ├── disqus-comments.tsx  # (現在無効)
-│   │   └── google-adsense.tsx   # (プレースホルダ)
+│   │   ├── disqus-comments.tsx  # (currently disabled)
+│   │   └── google-adsense.tsx   # (placeholder)
 │   ├── pages/
-│   │   ├── index.tsx      # トップページ
-│   │   ├── search.tsx     # 検索ページ
+│   │   ├── index.tsx      # top page
+│   │   ├── search.tsx     # search page
 │   │   ├── 404.tsx
-│   │   ├── management/    # サイト情報ページ
-│   │   └── tools/         # ツールページ
+│   │   ├── management/    # site information pages
+│   │   └── tools/         # tool pages
 │   ├── templates/
-│   │   ├── blog-post.tsx     # 記事詳細テンプレート
-│   │   ├── page-list.tsx     # ページ送り付き記事一覧
-│   │   ├── category-list.tsx # カテゴリ別一覧
-│   │   └── tag-list.tsx      # タグ別一覧
-│   ├── utilFunction.ts    # ユーティリティ (mergePosts, convertCategory 等)
-│   ├── style.tsx          # styled-components 共通スタイル
-│   ├── style.css          # CSS カスタムプロパティ、グローバルスタイル
+│   │   ├── blog-post.tsx     # article detail template
+│   │   ├── page-list.tsx     # paginated post list
+│   │   ├── category-list.tsx # per-category list
+│   │   └── tag-list.tsx      # per-tag list
+│   ├── utilFunction.ts    # utilities (mergePosts, convertCategory, etc.)
+│   ├── style.tsx          # shared styled-components styles
+│   ├── style.css          # CSS custom properties, global styles
 │   ├── normalize.css
-│   └── images/            # サイト共通画像
-├── static/                # 静的ファイル (favicon.webp, background.webp)
-├── gatsby-config.ts       # Gatsby設定 (プラグイン、メタデータ)
-├── gatsby-node.ts         # ページ生成ロジック
-├── gatsby-browser.tsx     # フォント・CSSインポート
-├── gatsby-ssr.tsx         # SSR設定 (lang="ja")
-└── .github/workflows/static.yml  # GitHub Pages デプロイ
+│   └── images/            # site-wide images
+├── static/                # static files (favicon.webp, background.webp)
+├── gatsby-config.ts       # Gatsby config (plugins, metadata)
+├── gatsby-node.ts         # page generation logic
+├── gatsby-browser.tsx     # font / CSS imports
+├── gatsby-ssr.tsx         # SSR config (lang="ja")
+└── .github/workflows/static.yml  # GitHub Pages deploy
 ```
 
-## 新規ブログ記事の書き方
+## How to write a new blog post
 
-### 1. ディレクトリ作成
+### 1. Create the directory
 
-`content/blog/{slug}/index.md` を作成する。slug はURLの一部になる。
+Create `content/blog/{slug}/index.md`. The slug becomes part of the URL.
 
 ### 2. Frontmatter
 
 ```markdown
 ---
-title: "記事タイトル"
+title: "Article title"
 date: "YYYY-MM-DD"
 dateModified: "YYYY-MM-DD"
-description: "記事の説明文 (SEO用)"
+description: "Article description (used for SEO)"
 featuredImagePath: "featured/image-name.webp"
 nodeType: blog
 category: 技術
-tags: ["タグ1", "タグ2"]
+tags: ["tag1", "tag2"]
 ---
 ```
 
-**必須フィールド**: title, date, dateModified, description, featuredImagePath, nodeType (`blog` 固定), category, tags
+**Required fields**: title, date, dateModified, description, featuredImagePath, nodeType (always `blog`), category, tags
 
-### 3. カテゴリ一覧
+### 3. Category list
 
-| 日本語名 | URL slug |
+| Japanese name | URL slug |
 |---|---|
 | 技術 | information-technology |
 | イベントレポート | event-report |
@@ -114,59 +114,70 @@ tags: ["タグ1", "タグ2"]
 | 書評 | book-report |
 | 業務効率化 | business-efficiency |
 
-frontmatter の `category` には**日本語名**を記載する。URL変換は `src/utilFunction.ts` の `convertCategory()` が行う。
+Use the **Japanese name** in the frontmatter `category` field. URL conversion is handled by `convertCategory()` in `src/utilFunction.ts`.
 
-### 4. 画像
+### 4. Images
 
-- アイキャッチ画像は `content/blog/{slug}/featured/` に配置
-- 記事内画像も同ディレクトリに配置可能
-- 形式は WebP 推奨
-- デフォルトサムネイル: `featured/defaultThumbnail.png`
+- Place featured images in `content/blog/{slug}/featured/`
+- In-article images can go in the same directory
+- WebP is the recommended format
+- Default thumbnail: `featured/defaultThumbnail.png`
 
-### 5. 生成されるURL
+### 5. Generated URL
 
-`/{category-slug}/{slug}` (例: `/information-technology/mcp-slack-setup`)
+`/{category-slug}/{slug}` (e.g. `/information-technology/mcp-slack-setup`)
 
-## ページ生成ロジック (gatsby-node.ts)
+## Page generation logic (gatsby-node.ts)
 
-- 個別記事: `/{categoryPath}/{slug}` → `blog-post.tsx`
-- ページ一覧: `/page/{n}` (12記事/ページ) → `page-list.tsx`
-- カテゴリ一覧: `/category/{categorySlug}` → `category-list.tsx`
-- タグ一覧: `/tag/{tagName}` → `tag-list.tsx`
+- Individual posts: `/{categoryPath}/{slug}` → `blog-post.tsx`
+- Paginated post list: `/page/{n}` (12 posts per page) → `page-list.tsx`
+- Category list: `/category/{categorySlug}` → `category-list.tsx`
+- Tag list: `/tag/{tagName}` → `tag-list.tsx`
 
-新旧ブログの記事は `mergePosts()` で統合され、日付降順でソートされる。
+Posts from the new and old blogs are merged via `mergePosts()` and sorted by date descending.
 
-## 旧ブログ (content/old-blog) との違い
+## Differences from the old blog (content/old-blog)
 
-| | 新ブログ (blog) | 旧ブログ (old-blog) |
+| | New blog (blog) | Old blog (old-blog) |
 |---|---|---|
-| カテゴリ | `category: "技術"` (文字列) | `categories: ["information-technology"]` (配列) |
-| 画像 | `featuredImagePath` | `coverImage` |
-| 日付更新 | `dateModified` あり | `date` のみ |
-| 説明 | `description` あり | title を代用 |
+| Category | `category: "技術"` (string) | `categories: ["information-technology"]` (array) |
+| Image | `featuredImagePath` | `coverImage` |
+| Modified date | `dateModified` present | `date` only |
+| Description | `description` present | title is used as a substitute |
 
-## デプロイ
+## Deploy
 
-1. `pnpm run build` でローカルビルド
-2. `public/` ディレクトリをコミット・プッシュ
-3. GitHub Actions (`.github/workflows/static.yml`) が `master` ブランチへの push で自動デプロイ
-   - ビルド済みの `public/` をそのままアップロードする方式 (CI上でのビルドは行わない)
+1. Build locally with `pnpm run build`
+2. Commit and push the `public/` directory
+3. GitHub Actions (`.github/workflows/static.yml`) auto-deploys on push to the `master` branch
+   - Uploads the prebuilt `public/` directory as-is (no build runs on CI)
 
-## コーディング規約
+## Coding conventions
 
-- インデント: 2スペース
-- ファイル名: ケバブケース (例: `blog-post.tsx`)
-- コンポーネント名: PascalCase
-- 変数/関数: camelCase
-- 定数: UPPER_SNAKE_CASE
+- Indentation: 2 spaces
+- File names: kebab-case (e.g. `blog-post.tsx`)
+- Component names: PascalCase
+- Variables / functions: camelCase
+- Constants: UPPER_SNAKE_CASE
 - TypeScript strict mode
-- Gatsby の設定ファイルは `.ts` / `.tsx`
+- Gatsby config files use `.ts` / `.tsx`
 
-## 注意事項
+## Notes
 
-- `public/` ディレクトリはビルド出力でありコミット対象。CI上でビルドせずそのままデプロイするため
-- Disqus コメント機能はコード上存在するが現在無効化されている
-- Google AdSense はプレースホルダのみ
-- `trailingSlash: "never"` — URLの末尾スラッシュなし
-## ルール
-- 単体テスト（Jest等）は作成しない。ブログコンテンツが主体のリポジトリであり、テスト実装のコストに見合わない。
+- The `public/` directory is the build output and is committed, because CI deploys it as-is without building
+- Disqus comments code exists but is currently disabled
+- Google AdSense is a placeholder only
+- `trailingSlash: "never"` — URLs have no trailing slash
+
+## Rules
+- Do not write unit tests (Jest, etc.). This repository is primarily blog content, and the cost of maintaining tests does not justify it.
+
+## Stream idle timeout mitigation
+
+Follow these constraints to avoid `Stream idle timeout - partial response received` errors caused by long streaming responses.
+
+1. **Do tasks ONE AT A TIME.** Complete and confirm each numbered task before moving on. Never batch multiple tasks into a single response.
+2. **Never write more than ~150 lines in a single tool call.** If a file will be longer, split it into multiple append / edit operations.
+3. **Start a fresh session when the conversation gets long** (roughly 20+ tool calls).
+4. **Keep search output short.** Use flags like `--include` and `-l` (list filenames only) on `grep` and similar commands to limit output size.
+5. **On timeout, retry the step by splitting it into smaller chunks** instead of restarting the entire task from scratch.

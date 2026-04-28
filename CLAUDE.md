@@ -176,7 +176,7 @@ frontmatter の `category` には**日本語名**を記載する。URL変換は 
 Follow these constraints to avoid `Stream idle timeout - partial response received` errors caused by long streaming responses.
 
 1. **Do tasks ONE AT A TIME.** Complete and confirm each numbered task before moving on. Never batch multiple tasks into a single response.
-2. **Never write more than ~150 lines in a single tool call.** If a file will be longer, split it into multiple append / edit passes.
+2. **Never write more than ~150 lines in a single tool call.** If a file will be longer, split it into multiple append / edit operations.
 3. **Start a fresh session when the conversation gets long** (roughly 20+ tool calls).
 4. **Keep search output short.** Use flags like `--include` and `-l` (list filenames only) on `grep` and similar commands to limit output size.
-5. **On timeout, retry the same step in a shorter form** instead of restarting the entire task from scratch.
+5. **On timeout, retry the step by splitting it into smaller chunks** instead of restarting the entire task from scratch.

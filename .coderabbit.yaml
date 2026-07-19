@@ -1,0 +1,4 @@
+reviews:
+  # ビルド成果物はレビュー対象外(public/ はコミット運用のためファイル数上限に抵触する)
+  path_filters:
+    - "!public/**"

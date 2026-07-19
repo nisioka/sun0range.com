@@ -146,7 +146,11 @@ export const createPages: GatsbyNode["createPages"] = async ({
         } as Post
       })
     )
-    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .sort(
+      (a, b) =>
+        new Date(b.date).getTime() - new Date(a.date).getTime() ||
+        a.slug.localeCompare(b.slug)
+    )
 
   // Create blog posts pages
   // But only if there's at least one markdown file found at "content/blog" (defined in gatsby-config.js)

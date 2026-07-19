@@ -156,7 +156,7 @@ const config: GatsbyConfig = {
               })
             },
             query: `{
-              allMarkdownRemark(sort: {frontmatter: {dateModified: DESC}}, filter: {fields: {sourceInstanceName: {eq: "blog"}}}) {
+              allMarkdownRemark(sort: [{frontmatter: {dateModified: DESC}}, {fields: {slug: ASC}}], filter: {fields: {sourceInstanceName: {eq: "blog"}}}) {
                 nodes {
                   excerpt
                   html

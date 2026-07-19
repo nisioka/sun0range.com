@@ -12,6 +12,7 @@ const TagCloud = () => {
       graphql`
       query {
         allBlogMarkdownRemark: allMarkdownRemark(
+          sort: { fields: { slug: ASC } }
           filter: { fields: { sourceInstanceName: { eq: "blog" } } }
         ) {
           nodes {
@@ -21,6 +22,7 @@ const TagCloud = () => {
           }
         }
         allOldBlogMarkdownRemark: allMarkdownRemark(
+          sort: { fields: { slug: ASC } }
           filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
         ) {
           nodes {
@@ -61,7 +63,16 @@ const TagCloud = () => {
     tagsBase[
       Math.min(Math.floor((tagsBase.length * 2) / 3), tagsBase.length - 1)
     ].count
-  const tagsView = tagsBase.sort(() => Math.random() - 0.5)
+  // タグ名のハッシュ順に並べる。ランダム風の散らばりを保ちつつ、
+  // ビルドごとに順序が変わらない(ビルド成果物の差分と画面差分検出を安定させる)
+  const hashCode = (s: string) => {
+    let h = 0
+    for (let i = 0; i < s.length; i++) h = (h * 31 + s.charCodeAt(i)) | 0
+    return h
+  }
+  const tagsView = tagsBase
+    .slice()
+    .sort((a, b) => hashCode(a.name) - hashCode(b.name))
 
   return (
     <TagCloudList>

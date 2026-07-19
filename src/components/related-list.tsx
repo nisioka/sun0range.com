@@ -25,6 +25,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
     graphql`
       query {
         allBlogMarkdownRemark: allMarkdownRemark(
+          sort: { fields: { slug: ASC } }
           filter: { fields: { sourceInstanceName: { eq: "blog" } } }
         ) {
           nodes {
@@ -44,6 +45,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
           }
         }
         allOldBlogMarkdownRemark: allMarkdownRemark(
+          sort: { fields: { slug: ASC } }
           filter: { fields: { sourceInstanceName: { eq: "old-blog" } } }
         ) {
           nodes {
@@ -65,10 +67,14 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
             }
           }
         }
-        blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+        blogImages: allFile(
+      sort: { relativePath: ASC }
+      filter: { sourceInstanceName: { eq: "images" } }
+    ) {
           ...ThumbnailImages
         }
         oldBlogImages: allFile(
+          sort: { relativePath: ASC }
           filter: {
             sourceInstanceName: { eq: "old-blog" }
             extension: { in: ["jpg", "jpeg", "png", "webp"] }
@@ -100,12 +106,11 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
       return { post: post, relevance: point }
     })
     .filter(r => r.relevance >= 2)
-    .sort((a, b) =>
-      a.relevance === b.relevance
-        ? a.post.date < b.post.date
-          ? 1
-          : -1
-        : b.relevance - a.relevance
+    .sort(
+      (a, b) =>
+        b.relevance - a.relevance ||
+        new Date(b.post.date).getTime() - new Date(a.post.date).getTime() ||
+        a.post.slug.localeCompare(b.post.slug)
     )
     .slice(0, 6)
     .map(r => r.post)

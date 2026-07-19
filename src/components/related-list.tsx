@@ -124,18 +124,17 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
       return { post: post, relevance: point }
     })
     .filter(r => r.relevance >= 2)
-    .sort(
-      (a, b) =>
-        (a.relevance = b.relevance
-          ? a.post.date < b.post.date
-            ? 1
-            : -1
-          : b.relevance - a.relevance)
+    .sort((a, b) =>
+      a.relevance === b.relevance
+        ? a.post.date < b.post.date
+          ? 1
+          : -1
+        : b.relevance - a.relevance
     )
     .slice(0, 6)
     .map(r => r.post)
 
-  if (!posts) return <></>
+  if (posts.length === 0) return <></>
 
   return (
     <>

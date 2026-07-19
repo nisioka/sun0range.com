@@ -8,7 +8,6 @@ import path from "path"
 import { GatsbyNode } from "gatsby"
 import { createFilePath } from "gatsby-source-filesystem"
 import { convertCategory } from "./src/utilFunction"
-import { AllMarkdownOldRemark, AllMarkdownRemark } from "./src/@types/global"
 
 // Define the template for blog post
 const blogPost = path.resolve(`./src/templates/blog-post.tsx`)
@@ -50,6 +49,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
             category
             tags
             description
+            date
             dateModified
           }
         }
@@ -98,6 +98,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
     category: string
     tags: string[]
     description: string
+    date: string
     dateModified: string | null
     nodeType: string
     internal: {
@@ -116,6 +117,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
         category: post.frontmatter.category,
         tags: post.frontmatter.tags,
         description: post.frontmatter.description,
+        date: post.frontmatter.date,
         dateModified: post.frontmatter.dateModified,
         nodeType: "blog",
       } as Post
@@ -138,11 +140,13 @@ export const createPages: GatsbyNode["createPages"] = async ({
           category: post.frontmatter.categories ? post.frontmatter.categories[0] : null,
           tags: post.frontmatter.tags || [],
           description: post.frontmatter.title,
+          date: post.frontmatter.date,
           dateModified: post.frontmatter.date || null,
           nodeType: "old-blog",
         } as Post
       })
     )
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
 
   // Create blog posts pages
   // But only if there's at least one markdown file found at "content/blog" (defined in gatsby-config.js)
@@ -252,7 +256,7 @@ export const onCreateNode: GatsbyNode["onCreateNode"] = ({
       value,
     })
 
-    const parent = getNode(node.parent)
+    const parent = node.parent ? getNode(node.parent) : undefined
     if (parent && parent.sourceInstanceName) {
       const sourceName = parent.sourceInstanceName as string;
       createNodeField({

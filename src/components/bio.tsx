@@ -28,7 +28,7 @@ const Bio = () => {
         src="../../static/24okBlock.webp"
         width={50}
         height={50}
-        alt="Profile picture"
+        alt="著者のプロフィール画像"
       />
       <p>
         <strong>{author.name}</strong>: <small>{author.summary}</small>

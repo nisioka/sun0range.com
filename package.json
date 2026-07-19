@@ -1,11 +1,11 @@
 {
-  "name": "gatsby-starter-blog",
+  "name": "sun0range.com",
   "private": true,
-  "description": "A starter for a blog powered by Gatsby and Markdown",
+  "description": "誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "nisioka",
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/nisioka/sun0range.com/issues"
   },
   "dependencies": {
     "@fontsource-variable/montserrat": "^5.2.8",
@@ -16,7 +16,6 @@
     "@fortawesome/react-fontawesome": "^0.2.6",
     "babel-plugin-styled-components": "^2.1.4",
     "gatsby": "^5.16.0",
-    "gatsby-plugin-catch-links": "^5.16.0",
     "gatsby-plugin-disqus": "^1.2.6",
     "gatsby-plugin-feed": "^5.16.0",
     "gatsby-plugin-google-gtag": "^5.16.0",
@@ -37,11 +36,9 @@
     "react-dom": "^18.3.1",
     "react-syntax-highlighter": "^15.6.6",
     "sharp": "^0.33.5",
-    "styled-components": "^6.3.8",
-    "webpack-dev-middleware": "^7.4.5"
+    "styled-components": "^6.3.8"
   },
   "devDependencies": {
-    "@babel/eslint-parser": "^7.28.6",
     "@types/node": "^22.19.8",
     "@types/react": "^18.3.27",
     "@types/react-dom": "^18.3.7",
@@ -49,14 +46,14 @@
     "prettier": "^2.8.8",
     "typescript": "^4.9.5"
   },
-  "homepage": "https://github.com/gatsbyjs/gatsby-starter-blog#readme",
+  "homepage": "https://sun0range.tech.server-on.net",
   "keywords": [
     "gatsby"
   ],
   "license": "0BSD",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gatsbyjs/gatsby-starter-blog.git"
+    "url": "git+https://github.com/nisioka/sun0range.com.git"
   },
   "scripts": {
     "build": "gatsby build",
@@ -64,9 +61,13 @@
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "start": "gatsby develop",
     "serve": "gatsby serve",
-    "clean": "gatsby clean"
+    "clean": "gatsby clean",
+    "typecheck": "tsc --noEmit"
   },
   "pnpm": {
+    "overrides": {
+      "sharp": "$sharp"
+    },
     "ignoredBuiltDependencies": [
       "core-js",
       "core-js-pure",

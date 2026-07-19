@@ -1,1 +1,1925 @@
-<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Gatsby Starter Blog RSS Feed]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Tue, 12 May 2026 12:33:22 GMT</lastBuildDate></channel></rss>
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[分かりやすい技術ブログ RSSフィード]]></title><description><![CDATA[誰にでも分かりやすいをモットーに、IT技術的な内容を投稿するブログです。]]></description><link>https://sun0range.tech.server-on.net</link><generator>GatsbyJS</generator><lastBuildDate>Sun, 19 Jul 2026 00:56:10 GMT</lastBuildDate><item><title><![CDATA[tmuxで複数プロジェクトを一覧管理する自作コマンド「ws」]]></title><description><![CDATA[はじめに ws（Workspace Manager） は、tmux の機能を「セッション管理」と「ダッシュボード表示」に絞り、数コマンドだけで操作できるようにしたシェルスクリプトです。上記画像のイメージです。 tmux…]]></description><link>https://sun0range.tech.server-on.net/information-technology/ws-command-tmux-workspace</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/ws-command-tmux-workspace</guid><pubDate>Sun, 10 May 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;&lt;code&gt;ws&lt;/code&gt;（Workspace Manager）&lt;/strong&gt; は、tmux の機能を「セッション管理」と「ダッシュボード表示」に絞り、数コマンドだけで操作できるようにしたシェルスクリプトです。上記画像のイメージです。&lt;/p&gt;
+&lt;p&gt;tmux は高機能ですが、複数プロジェクトのターミナルを管理したいだけなのにセッション・ウィンドウ・ペインの操作など覚えることが多かったので、シンプルな体系にラップしました。&lt;/p&gt;
+&lt;h2&gt;ws コマンドでできること&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;各プロジェクトのターミナルを tmux セッションとして管理できます&lt;/li&gt;
+&lt;li&gt;別ターミナルにダッシュボードとしてまとめてタイル表示できます&lt;/li&gt;
+&lt;li&gt;セッションの追加・削除時にダッシュボードが自動でリアルタイム更新されます&lt;/li&gt;
+&lt;li&gt;グループ機能でセッションを分類し、グループ単位でフィルタ表示もできます&lt;/li&gt;
+&lt;li&gt;実際の具体的利用用途：複数のAIエージェントCLIを並列に実行させて、それぞれを一画面で&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;前提条件&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;tmux がインストールされていること&lt;/li&gt;
+&lt;li&gt;bash が利用可能なこと&lt;/li&gt;
+&lt;/ul&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# tmux のインストール（Ubuntu/Debian の場合）
+sudo apt install tmux
+
+# macOS の場合
+brew install tmux
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;セットアップ&lt;/h2&gt;
+&lt;p&gt;以下のスクリプトを &lt;code&gt;ws&lt;/code&gt; という名前で PATH の通ったディレクトリに保存し、実行権限を付与します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# 例: ~/bin に配置
+curl -o ~/bin/ws https://raw.githubusercontent.com/nisioka/myTools/refs/heads/main/shell/ws
+chmod +x ~/bin/ws
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;使い方&lt;/h2&gt;
+&lt;h3&gt;サブコマンド一覧&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;コマンド&lt;/th&gt;
+&lt;th&gt;説明&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;ws add [-g group] [name]&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;セッションを作成して attach（名前省略時はカレントディレクトリ名）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;ws rm [name]&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;セッションを終了（名前省略時はカレントディレクトリ名）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;ws list [-g group] [-G group]&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;ワークスペースの一覧表示&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;ws dash [-g group] [-G group]&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;ダッシュボードを開く&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;ws help&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;ヘルプを表示&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;code&gt;-g group&lt;/code&gt; はそのグループのみ表示、&lt;code&gt;-G group&lt;/code&gt; はそのグループを除外します。&lt;/p&gt;
+&lt;h3&gt;基本的な使い方&lt;/h3&gt;
+&lt;p&gt;各プロジェクトの ターミナルで &lt;code&gt;ws add&lt;/code&gt; を実行し、別ターミナルで &lt;code&gt;ws dash&lt;/code&gt; を開きます。&lt;br&gt;
+作業が終われば &lt;code&gt;ws rm&lt;/code&gt; をしたら、ダッシュボードからも自動で消えます。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# プロジェクトA のターミナルで
+cd ~/projects/api
+ws add
+# → セッション &quot;ws-api&quot; が作られて attach される
+
+# プロジェクトB のターミナルで
+cd ~/projects/web
+ws add
+# → セッション &quot;ws-web&quot; が作られて attach される
+
+# 別モニター / 別ターミナルで
+ws dash
+# → 全セッションがタイル表示でミラーされる
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;セッション名・グループを指定する&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# セッション名を指定
+ws add my-project
+
+# グループを指定して追加
+ws add -g backend api
+ws add -g backend batch
+ws add -g frontend web
+
+# 既存セッションにグループを後付けすることも可能
+ws add -g backend api
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;ワークスペースの一覧を確認&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ws list
+# ワークスペース:
+#   api  [backend]  (/home/user/projects/api)
+#   batch  [backend]  (/home/user/projects/batch)
+#   web  [frontend]  (/home/user/projects/web)
+
+# グループでフィルタ
+ws list -g backend
+#   api  [backend]  (/home/user/projects/api)
+#   batch  [backend]  (/home/user/projects/batch)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;グループ単位でダッシュボードを表示&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# backend グループだけのダッシュボードを開く
+ws dash -g backend
+
+# frontend グループを除外したダッシュボードを開く
+ws dash -G frontend
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;セッションを終了する&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ws rm api
+# ✓ &apos;api&apos; を終了しました
+#   ダッシュボードを更新しました
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;セッションから抜ける（デタッチ）&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;ws dash&lt;/code&gt; や &lt;code&gt;ws add&lt;/code&gt; で attach した状態のターミナルを、&lt;strong&gt;セッションを生かしたまま手放したい&lt;/strong&gt;ときは tmux の「デタッチ」を使います。中で動いているプロセスはバックグラウンドで動き続け、後から再接続できます。&lt;/p&gt;
+&lt;p&gt;なお、これは &lt;code&gt;ws&lt;/code&gt; 固有の機能ではなく &lt;strong&gt;tmux 標準の操作&lt;/strong&gt; です。&lt;code&gt;ws&lt;/code&gt; は tmux のラッパーなので、デタッチや再接続まわりは普段の tmux と同じ作法がそのまま使えます。&lt;code&gt;~/.tmux.conf&lt;/code&gt; で prefix キーを &lt;code&gt;Ctrl+a&lt;/code&gt; などに変更している場合は、以下の &lt;code&gt;Ctrl+b&lt;/code&gt; を自分の prefix に読み替えてください。&lt;/p&gt;
+&lt;p&gt;&lt;code&gt;exit&lt;/code&gt; や &lt;code&gt;Ctrl+d&lt;/code&gt; はペイン内のシェルを終了させてしまい、全ペインが閉じるとセッションごと消えてしまうため、&lt;strong&gt;生かしたまま抜けたい場合は必ず &lt;code&gt;Ctrl+b d&lt;/code&gt;&lt;/strong&gt; を使ってください。&lt;/p&gt;
+&lt;h2&gt;仕組みの解説&lt;/h2&gt;
+&lt;h3&gt;アーキテクチャ&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;ws&lt;/code&gt; コマンドは2つの tmux サーバーを使い分けています。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;デフォルトサーバー&lt;/strong&gt;: &lt;code&gt;ws add&lt;/code&gt; で作成される各プロジェクトのセッション&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;&lt;code&gt;ws-dash&lt;/code&gt; サーバー&lt;/strong&gt;: ダッシュボード専用。&lt;code&gt;-L ws-dash&lt;/code&gt; オプションで別サーバーとして起動&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;ダッシュボードの各ペインは &lt;code&gt;tmux attach&lt;/code&gt; でデフォルトサーバーのセッションに接続（ミラーリング）しています。そのため &lt;strong&gt;IDE 側で実行したコマンドや出力がダッシュボードにもリアルタイムで表示&lt;/strong&gt; されます。&lt;/p&gt;
+&lt;h3&gt;セッション名の管理&lt;/h3&gt;
+&lt;p&gt;セッション名には &lt;code&gt;ws-&lt;/code&gt; というプレフィックスが自動付与されます。これにより &lt;code&gt;ws&lt;/code&gt; が管理するセッションと、手動で作った tmux セッションを区別しています。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# 内部的なセッション名
+ws add api    # → tmux セッション名は &quot;ws-api&quot;
+ws add web    # → tmux セッション名は &quot;ws-web&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;また、セッション名に含まれる &lt;code&gt;.&lt;/code&gt; や &lt;code&gt;:&lt;/code&gt; は &lt;code&gt;_&lt;/code&gt; に自動変換されます（tmux のセッション名に使用できない文字への対応）。&lt;/p&gt;
+&lt;h3&gt;グループの管理&lt;/h3&gt;
+&lt;p&gt;グループ情報は &lt;code&gt;~/.config/ws/groups&lt;/code&gt; にタブ区切りで保存されます。&lt;code&gt;ws add -g&lt;/code&gt; で付与し、&lt;code&gt;ws rm&lt;/code&gt; で削除時に自動的にクリーンアップされます。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;api	backend
+batch	backend
+web	frontend
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;ws list&lt;/code&gt; や &lt;code&gt;ws dash&lt;/code&gt; の &lt;code&gt;-g&lt;/code&gt; / &lt;code&gt;-G&lt;/code&gt; オプションはこのファイルを参照してフィルタリングを行います。&lt;/p&gt;
+&lt;h3&gt;ダッシュボードのレイアウト&lt;/h3&gt;
+&lt;p&gt;ペイン数に応じて自動的にレイアウトが選択されます。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;3ペイン以下&lt;/strong&gt;: &lt;code&gt;even-horizontal&lt;/code&gt;（横並び）&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;4ペイン以上&lt;/strong&gt;: &lt;code&gt;tiled&lt;/code&gt;（タイル表示）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;各ペインの上部にはプロジェクト名がボーダーとして表示されるため、どのペインがどのプロジェクトかが一目で分かります。&lt;/p&gt;
+&lt;h3&gt;ダッシュボードの更新&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;ws add&lt;/code&gt; や &lt;code&gt;ws rm&lt;/code&gt; を実行すると、ダッシュボードが開いている場合は自動的に再構築されます。再構築の流れは以下の通りです。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;新しいウィンドウを作成し、現在のワークスペース一覧からペインを構築&lt;/li&gt;
+&lt;li&gt;古いウィンドウを削除&lt;/li&gt;
+&lt;li&gt;レイアウトを再適用&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;この方式により、ダッシュボードを閉じることなくシームレスにペインが更新されます。&lt;/p&gt;
+&lt;h2&gt;ソースコード&lt;/h2&gt;
+&lt;p&gt;完全なソースコードは以下のリポジトリで公開しています。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/nisioka/myTools/blob/main/shell/ws&quot;&gt;nisioka/myTools - shell/ws&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;ws&lt;/code&gt; コマンドは tmux の豊富な機能のうち、日常的に必要な操作だけを &lt;code&gt;add&lt;/code&gt; / &lt;code&gt;rm&lt;/code&gt; / &lt;code&gt;list&lt;/code&gt; / &lt;code&gt;dash&lt;/code&gt; の4コマンドに集約したものです。グループ機能を組み合わせれば、マイクロサービス群やモノレポ内の複数パッケージなど、プロジェクトの規模が大きくなっても整理して管理できます。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Microsoft Entra IDで`prompt=consent`が管理者同意済みでも一般ユーザーをブロックするようになった件]]></title><description><![CDATA[TL;DR Microsoft Entra ID (旧Azure AD) のOAuth認可フローで、prompt=consentを使用すると、テナント全体の管理者同意が付与済みであっても一般ユーザーが「管理者の承認が必要」画面でブロックされるように挙動が変わったよう prompt…]]></description><link>https://sun0range.tech.server-on.net/information-technology/microsoft-entra-id-bug</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/microsoft-entra-id-bug</guid><pubDate>Sun, 05 Apr 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;TL;DR&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Microsoft Entra ID (旧Azure AD) のOAuth認可フローで、&lt;code&gt;prompt=consent&lt;/code&gt;を使用すると、テナント全体の管理者同意が付与済みであっても一般ユーザーが「管理者の承認が必要」画面でブロックされるように挙動が変わったよう&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;prompt=select_account&lt;/code&gt; 等に変更すると同じユーザーが問題なく認証できる&lt;/li&gt;
+&lt;li&gt;2026年3月頃から複数の報告がMicrosoft Q&amp;#x26;Aに上がっている&lt;/li&gt;
+&lt;li&gt;クライアント側ではなくMicrosoft側でアナウンス無く挙動が変わっており、仕様変更か不具合かは不明だが私は不具合であると考えている(後述)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;背景&lt;/h2&gt;
+&lt;p&gt;Microsoft Graph API経由のOutlook連携機能のためにOAuth 2.0認可コードフローを使っていて、認可URLには&lt;code&gt;prompt=consent&lt;/code&gt;を指定していました。&lt;br&gt;
+これは、ユーザーにアプリがアクセスするスコープ（権限）を明示的に表示し、透明性を確保するためです。&lt;/p&gt;
+&lt;h2&gt;発生した事象&lt;/h2&gt;
+&lt;p&gt;2026年3月頃から、以下の事象が発生するようになりました:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Entra IDのユーザ同意設定が以下の何れかの場合：(組織利用では一般的な設定である理解)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;「ユーザーの同意を許可しない」&lt;/li&gt;
+&lt;li&gt;「選択したアクセス許可に対して、検証済みの発行元からのアプリに対するユーザーの同意を許可する」&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;テナントの管理者（Global Administrator）が「組織の代理として同意する」にチェックを入れて承諾済み&lt;/li&gt;
+&lt;li&gt;一般ユーザーがOutlook連携を行おうとすると「管理者の承認が必要」画面が表示される&lt;/li&gt;
+&lt;li&gt;管理者が再度承認しても、一般ユーザーのブロックは解消されない&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;再現条件の切り分け&lt;/h2&gt;
+&lt;p&gt;検証の結果、&lt;code&gt;prompt&lt;/code&gt;パラメータの値のみで結果が分かれることが判明しました:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;&lt;code&gt;prompt&lt;/code&gt;パラメータ&lt;/th&gt;
+&lt;th&gt;管理者同意済みの一般ユーザー&lt;/th&gt;
+&lt;th&gt;結果&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;prompt=consent&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;ブロックされる&lt;/td&gt;
+&lt;td&gt;NG&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;&lt;code&gt;prompt=select_account&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;正常に認証できる&lt;/td&gt;
+&lt;td&gt;OK&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;パラメータなし&lt;/td&gt;
+&lt;td&gt;正常に認証できる&lt;/td&gt;
+&lt;td&gt;OK&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;同じユーザー、同じ権限、同じ管理者同意の状態で、&lt;code&gt;prompt&lt;/code&gt;パラメータだけで結果が異なります。&lt;/p&gt;
+&lt;h2&gt;同時期のMicrosoft Q&amp;#x26;A上の類似報告&lt;/h2&gt;
+&lt;p&gt;同様の問題は2026年初頭から複数報告されています:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://learn.microsoft.com/en-ca/answers/questions/5806286/standard-users-cannot-access-microsoft-graph-mail&quot;&gt;Standard Users Cannot Access Microsoft Graph Mail.Read Despite Admin Consent (2026-03-03)&lt;/a&gt; — &lt;code&gt;prompt=consent&lt;/code&gt;の削除で解決&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://learn.microsoft.com/en-us/answers/questions/5807829/getting-error-for-enterprise-application&quot;&gt;Getting error for enterprise application - AADSTS90094 (2026-03-04)&lt;/a&gt; — 50人以上問題なかったアプリで突然発生、&lt;code&gt;prompt=consent&lt;/code&gt;が原因として言及&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://learn.microsoft.com/en-us/answers/questions/5775699/normal-users-cannot-complete-oauth-consent-for-mic&quot;&gt;Normal users cannot complete OAuth consent for Microsoft Graph Outlook integration (2026-02-14)&lt;/a&gt; — Outlook連携で非管理者がOAuth同意を完了できない&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Microsoftへの不具合報告&lt;/h2&gt;
+&lt;p&gt;上記Q&amp;#x26;Aなどでは、現挙動を仕様である前提として、&lt;code&gt;prompt=consent&lt;/code&gt;の削除での回避などで終わってしまっていたので、
+その仕様が不適切だとして「不具合では？」というQ&amp;#x26;Aを投稿することとした。ここでの反応が悪ければ別の手段も再考します。&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;https://learn.microsoft.com/en-us/answers/questions/5847660/bug-report-prompt-consent-blocks-non-admin-users-e&quot;&gt;https://learn.microsoft.com/en-us/answers/questions/5847660/bug-report-prompt-consent-blocks-non-admin-users-e&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;この挙動の問題点(不具合だと考え&lt;strong&gt;られ&lt;/strong&gt;る根拠)&lt;/h2&gt;
+&lt;h3&gt;1. &lt;code&gt;prompt=consent&lt;/code&gt;のOIDC仕様上の定義との乖離&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;prompt&lt;/code&gt;パラメータはMicrosoft独自仕様ではなく、&lt;a href=&quot;https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest&quot;&gt;OpenID Connect Core 1.0 Section 3.1.2.1&lt;/a&gt;で定義されている標準パラメータです:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The Authorization Server SHOULD prompt the End-User for consent before returning information to the Client.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;仕様上は「同意画面を表示する」というUIヒントであり、「ユーザーに同意権限がなければブロックする」とは定義されていません。&lt;/p&gt;
+&lt;h3&gt;2. 管理者同意の無効化&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;prompt=consent&lt;/code&gt;が指定されると、Entra IDは既存の管理者同意を無視して、あたかも同意が存在しないかのように振る舞います。これにより:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;prompt=select_account&lt;/code&gt;: 管理者同意が&lt;strong&gt;尊重される&lt;/strong&gt; → 通過&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;prompt=consent&lt;/code&gt;: 管理者同意が&lt;strong&gt;無視される&lt;/strong&gt; → ブロック&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ポリシー判定（アプリが認可されているかどうか）が、UXパラメータ（同意画面を出すかどうか）に依存しているのは論理的に不整合です。&lt;/p&gt;
+&lt;h3&gt;3. スコープ表示と管理者同意の両立が不可能に&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;prompt=consent&lt;/code&gt;には「ユーザーにアプリがアクセスするスコープを表示する」という正当なユースケースがあります。特にメールの読み書きのような高権限スコープでは、ユーザーへの透明性確保は重要です。&lt;/p&gt;
+&lt;p&gt;現在の挙動では:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;スコープを表示したい → &lt;code&gt;prompt=consent&lt;/code&gt;を使う → 一般ユーザーがブロックされる&lt;/li&gt;
+&lt;li&gt;ブロックを回避したい → &lt;code&gt;prompt=select_account&lt;/code&gt;を使う → スコープが表示されない&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;「スコープの表示」と「管理者同意の尊重」を両立する手段がなくなっています。&lt;/strong&gt;&lt;/p&gt;
+&lt;h3&gt;4. 管理者同意のみなら通るのに、ユーザー同意が加わると壊れる&lt;/h3&gt;
+&lt;p&gt;最も不可解な点です:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;ユーザーフローで同意が求められない場合（&lt;code&gt;prompt=select_account&lt;/code&gt;）: 管理者同意だけで十分 → &lt;strong&gt;OK&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;ユーザーフローで同意が求められる場合（&lt;code&gt;prompt=consent&lt;/code&gt;）: 管理者同意があっても、ユーザーにも同意権限が必要 → &lt;strong&gt;NG&lt;/strong&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;管理者同意が付与されている状態で、ユーザー同意のフローが「加わる」ことによって、かえって管理者同意が無効化されるという矛盾した挙動です。&lt;/p&gt;
+&lt;h3&gt;5. Microsoftの公式ガイダンスも実装困難&lt;/h3&gt;
+&lt;p&gt;Microsoftの&lt;a href=&quot;https://learn.microsoft.com/en-us/troubleshoot/entra/entra-id/app-integration/troubleshoot-consent-issues#step-7-verify-if-the-prompt-parameter-is-passed&quot;&gt;トラブルシューティングガイド Step 7&lt;/a&gt;では次のように案内されています:&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Sometimes, signing in to the application requires passing the prompt parameter of consent or admin_consent. Once the application obtains consent, make sure the prompt parameter isn&apos;t specified.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;これは「初回のconsent取得時はprompt=consentを使い、取得後は外す」ことを意味しますが、実装上これは非現実的です:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;認可URLを構築する時点（トークン取得前）で、そのテナントの同意状態を事前に知るAPIが存在しない&lt;/li&gt;
+&lt;li&gt;マルチテナントアプリでは、テナントごとに同意状態が異なり、Entra側で同意が取り消されてもアプリ側に通知されない&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;考えられる原因&lt;/h2&gt;
+&lt;p&gt;2025年7月にMicrosoftはテナントのデフォルトのユーザー同意ポリシーをより制限的な設定に自動移行しています（&lt;a href=&quot;https://learn.microsoft.com/en-us/answers/questions/5526830/sudden-change-to-microsoft-user-consent-settings-b&quot;&gt;MC1097272&lt;/a&gt;）。この変更自体は2025年8月末までにロールアウト完了とされていますが、&lt;code&gt;prompt=consent&lt;/code&gt;との組み合わせで問題が顕在化した時期は2026年初頭からです。&lt;/p&gt;
+&lt;p&gt;また、2026年3月にはConditional Accessの強化変更（OIDCスコープへの適用拡大）も予告されており、複数の変更が重なって影響している可能性があります。&lt;/p&gt;
+&lt;p&gt;いずれにしても、アプリケーション側の変更なしに挙動が変わっているため、Microsoft側の変更が原因であることは確実です。&lt;/p&gt;
+&lt;h2&gt;回避策&lt;/h2&gt;
+&lt;p&gt;認可URLの&lt;code&gt;prompt=consent&lt;/code&gt;を&lt;code&gt;prompt=select_account&lt;/code&gt;に変更します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-diff&quot;&gt;- prompt=consent
++ prompt=select_account
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;これにより:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;管理者同意が尊重され、一般ユーザーがブロックされなくなる&lt;/li&gt;
+&lt;li&gt;アカウント選択画面は表示されるため、UXとしても不自然ではない&lt;/li&gt;
+&lt;li&gt;ただし、ユーザーにスコープが表示されなくなるトレードオフがある&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;項目&lt;/th&gt;
+&lt;th&gt;内容&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;影響を受けるアプリ&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;prompt=consent&lt;/code&gt;を使用するOAuthアプリ全般&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;発生条件&lt;/td&gt;
+&lt;td&gt;一般ユーザーの同意制限あり + &lt;code&gt;prompt=consent&lt;/code&gt;使用&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;発生時期&lt;/td&gt;
+&lt;td&gt;2026年3月頃〜&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;回避策&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;prompt=select_account&lt;/code&gt;への変更&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;根本対応&lt;/td&gt;
+&lt;td&gt;Microsoft側の修正待ち&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;code&gt;prompt=consent&lt;/code&gt;は「同意画面を見せる」ための標準的なOIDCパラメータですが、現在のMicrosoft Entra IDでは管理者同意を無効化してユーザーをブロックするトリガーになってしまっています。同様の問題に遭遇した場合は、&lt;code&gt;prompt=select_account&lt;/code&gt;への変更を検討してください。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[Android × WSL リモート接続環境の構築【Mosh + Tailscale】～ スマホからAIコーディングするために]]></title><description><![CDATA[やりたいこと 一昔前までは、スマホの小さな画面でのコーディングは非現実的でしたが、 AIコーディングエージェント の登場によって、自然言語の指示からコードを生成・修正してくれるため、スマホからの入力でも十分に実用的になりました。 更に、普段開発に使っているPC…]]></description><link>https://sun0range.tech.server-on.net/information-technology/android-mosh-tailscale</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/android-mosh-tailscale</guid><pubDate>Wed, 25 Feb 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;やりたいこと&lt;/h2&gt;
+&lt;p&gt;一昔前までは、スマホの小さな画面でのコーディングは非現実的でしたが、 &lt;strong&gt;AIコーディングエージェント&lt;/strong&gt; の登場によって、自然言語の指示からコードを生成・修正してくれるため、スマホからの入力でも十分に実用的になりました。&lt;/p&gt;
+&lt;p&gt;更に、普段開発に使っているPCにもリモートでアクセスできれば、充分なスペックの実行環境でさえも文字通り掌の上にあるのでいつでもどこでもAIコーディングができるようになります。&lt;/p&gt;
+&lt;p&gt;iPhoneアプリだと Moshi というものがあるようですが、Androidにはそれらしきものがないため、組み合わせて同等の環境を作りたいと思います。私の環境はWindows WSLで開発しているので、(面倒なことになりがちな)WSLをサーバとします。&lt;/p&gt;
+&lt;p&gt;ということで、 &lt;strong&gt;AndroidスマホからWindows PC（WSL環境）にリモート接続&lt;/strong&gt; できる環境を構築します。私の構築目的はAIコーディングしたいからではありますが、この記事でできることはスマホからPCへのリモート接続なので、AI利用に限らず使える手段です。&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;補足（2026-02-25追記）&lt;/strong&gt;: Claude Code公式から &lt;a href=&quot;https://code.claude.com/docs/en/remote-control&quot;&gt;Remote Control&lt;/a&gt; 機能がリリースされました。ブラウザ経由でClaude Codeのセッションにリモートアクセスできる仕組みで、本記事で実現したいことの主軸と重なる部分があります。ターミナル環境のカスタマイズや他のCLIツールとの連携が不要であれば、公式のRemote Control機能だけで充足するケースも多いでしょう。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;全体アーキテクチャ&lt;/h2&gt;
+&lt;p&gt;&lt;svg id=&quot;mermaid-0&quot; width=&quot;100%&quot; xmlns=&quot;http://www.w3.org/2000/svg&quot; xmlns:xlink=&quot;http://www.w3.org/1999/xlink&quot; class=&quot;flowchart&quot; style=&quot;max-width: 1528.1875px;&quot; viewBox=&quot;0 0 1528.1875 284&quot; role=&quot;graphics-document document&quot; aria-roledescription=&quot;flowchart-v2&quot;&gt;&lt;style&gt;#mermaid-0{font-family:arial,sans-serif;font-size:16px;fill:#333;}@keyframes edge-animation-frame{from{stroke-dashoffset:0;}}@keyframes dash{to{stroke-dashoffset:0;}}#mermaid-0 .edge-animation-slow{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 50s linear infinite;stroke-linecap:round;}#mermaid-0 .edge-animation-fast{stroke-dasharray:9,5!important;stroke-dashoffset:900;animation:dash 20s linear infinite;stroke-linecap:round;}#mermaid-0 .error-icon{fill:#552222;}#mermaid-0 .error-text{fill:#552222;stroke:#552222;}#mermaid-0 .edge-thickness-normal{stroke-width:1px;}#mermaid-0 .edge-thickness-thick{stroke-width:3.5px;}#mermaid-0 .edge-pattern-solid{stroke-dasharray:0;}#mermaid-0 .edge-thickness-invisible{stroke-width:0;fill:none;}#mermaid-0 .edge-pattern-dashed{stroke-dasharray:3;}#mermaid-0 .edge-pattern-dotted{stroke-dasharray:2;}#mermaid-0 .marker{fill:#333333;stroke:#333333;}#mermaid-0 .marker.cross{stroke:#333333;}#mermaid-0 svg{font-family:arial,sans-serif;font-size:16px;}#mermaid-0 p{margin:0;}#mermaid-0 .label{font-family:arial,sans-serif;color:#333;}#mermaid-0 .cluster-label text{fill:#333;}#mermaid-0 .cluster-label span{color:#333;}#mermaid-0 .cluster-label span p{background-color:transparent;}#mermaid-0 .label text,#mermaid-0 span{fill:#333;color:#333;}#mermaid-0 .node rect,#mermaid-0 .node circle,#mermaid-0 .node ellipse,#mermaid-0 .node polygon,#mermaid-0 .node path{fill:#ECECFF;stroke:#9370DB;stroke-width:1px;}#mermaid-0 .rough-node .label text,#mermaid-0 .node .label text,#mermaid-0 .image-shape .label,#mermaid-0 .icon-shape .label{text-anchor:middle;}#mermaid-0 .node .katex path{fill:#000;stroke:#000;stroke-width:1px;}#mermaid-0 .rough-node .label,#mermaid-0 .node .label,#mermaid-0 .image-shape .label,#mermaid-0 .icon-shape .label{text-align:center;}#mermaid-0 .node.clickable{cursor:pointer;}#mermaid-0 .root .anchor path{fill:#333333!important;stroke-width:0;stroke:#333333;}#mermaid-0 .arrowheadPath{fill:#333333;}#mermaid-0 .edgePath .path{stroke:#333333;stroke-width:2.0px;}#mermaid-0 .flowchart-link{stroke:#333333;fill:none;}#mermaid-0 .edgeLabel{background-color:rgba(232,232,232, 0.8);text-align:center;}#mermaid-0 .edgeLabel p{background-color:rgba(232,232,232, 0.8);}#mermaid-0 .edgeLabel rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#mermaid-0 .labelBkg{background-color:rgba(232, 232, 232, 0.5);}#mermaid-0 .cluster rect{fill:#ffffde;stroke:#aaaa33;stroke-width:1px;}#mermaid-0 .cluster text{fill:#333;}#mermaid-0 .cluster span{color:#333;}#mermaid-0 div.mermaidTooltip{position:absolute;text-align:center;max-width:200px;padding:2px;font-family:arial,sans-serif;font-size:12px;background:hsl(80, 100%, 96.2745098039%);border:1px solid #aaaa33;border-radius:2px;pointer-events:none;z-index:100;}#mermaid-0 .flowchartTitleText{text-anchor:middle;font-size:18px;fill:#333;}#mermaid-0 rect.text{fill:none;stroke-width:0;}#mermaid-0 .icon-shape,#mermaid-0 .image-shape{background-color:rgba(232,232,232, 0.8);text-align:center;}#mermaid-0 .icon-shape p,#mermaid-0 .image-shape p{background-color:rgba(232,232,232, 0.8);padding:2px;}#mermaid-0 .icon-shape rect,#mermaid-0 .image-shape rect{opacity:0.5;background-color:rgba(232,232,232, 0.8);fill:rgba(232,232,232, 0.8);}#mermaid-0 .label-icon{display:inline-block;height:1em;overflow:visible;vertical-align:-0.125em;}#mermaid-0 .node .label-icon path{fill:currentColor;stroke:revert;stroke-width:revert;}#mermaid-0 :root{--mermaid-font-family:arial,sans-serif;}&lt;/style&gt;&lt;g&gt;&lt;marker id=&quot;mermaid-0_flowchart-v2-pointEnd&quot; class=&quot;marker flowchart-v2&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;5&quot; refY=&quot;5&quot; markerUnits=&quot;userSpaceOnUse&quot; markerWidth=&quot;8&quot; markerHeight=&quot;8&quot; orient=&quot;auto&quot;&gt;&lt;path d=&quot;M 0 0 L 10 5 L 0 10 z&quot; class=&quot;arrowMarkerPath&quot; style=&quot;stroke-width: 1; stroke-dasharray: 1, 0;&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;marker id=&quot;mermaid-0_flowchart-v2-pointStart&quot; class=&quot;marker flowchart-v2&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;4.5&quot; refY=&quot;5&quot; markerUnits=&quot;userSpaceOnUse&quot; markerWidth=&quot;8&quot; markerHeight=&quot;8&quot; orient=&quot;auto&quot;&gt;&lt;path d=&quot;M 0 5 L 10 10 L 10 0 z&quot; class=&quot;arrowMarkerPath&quot; style=&quot;stroke-width: 1; stroke-dasharray: 1, 0;&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;marker id=&quot;mermaid-0_flowchart-v2-circleEnd&quot; class=&quot;marker flowchart-v2&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;11&quot; refY=&quot;5&quot; markerUnits=&quot;userSpaceOnUse&quot; markerWidth=&quot;11&quot; markerHeight=&quot;11&quot; orient=&quot;auto&quot;&gt;&lt;circle cx=&quot;5&quot; cy=&quot;5&quot; r=&quot;5&quot; class=&quot;arrowMarkerPath&quot; style=&quot;stroke-width: 1; stroke-dasharray: 1, 0;&quot;&gt;&lt;/circle&gt;&lt;/marker&gt;&lt;marker id=&quot;mermaid-0_flowchart-v2-circleStart&quot; class=&quot;marker flowchart-v2&quot; viewBox=&quot;0 0 10 10&quot; refX=&quot;-1&quot; refY=&quot;5&quot; markerUnits=&quot;userSpaceOnUse&quot; markerWidth=&quot;11&quot; markerHeight=&quot;11&quot; orient=&quot;auto&quot;&gt;&lt;circle cx=&quot;5&quot; cy=&quot;5&quot; r=&quot;5&quot; class=&quot;arrowMarkerPath&quot; style=&quot;stroke-width: 1; stroke-dasharray: 1, 0;&quot;&gt;&lt;/circle&gt;&lt;/marker&gt;&lt;marker id=&quot;mermaid-0_flowchart-v2-crossEnd&quot; class=&quot;marker cross flowchart-v2&quot; viewBox=&quot;0 0 11 11&quot; refX=&quot;12&quot; refY=&quot;5.2&quot; markerUnits=&quot;userSpaceOnUse&quot; markerWidth=&quot;11&quot; markerHeight=&quot;11&quot; orient=&quot;auto&quot;&gt;&lt;path d=&quot;M 1,1 l 9,9 M 10,1 l -9,9&quot; class=&quot;arrowMarkerPath&quot; style=&quot;stroke-width: 2; stroke-dasharray: 1, 0;&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;marker id=&quot;mermaid-0_flowchart-v2-crossStart&quot; class=&quot;marker cross flowchart-v2&quot; viewBox=&quot;0 0 11 11&quot; refX=&quot;-1&quot; refY=&quot;5.2&quot; markerUnits=&quot;userSpaceOnUse&quot; markerWidth=&quot;11&quot; markerHeight=&quot;11&quot; orient=&quot;auto&quot;&gt;&lt;path d=&quot;M 1,1 l 9,9 M 10,1 l -9,9&quot; class=&quot;arrowMarkerPath&quot; style=&quot;stroke-width: 2; stroke-dasharray: 1, 0;&quot;&gt;&lt;/path&gt;&lt;/marker&gt;&lt;g class=&quot;root&quot;&gt;&lt;g class=&quot;clusters&quot;&gt;&lt;g class=&quot;cluster&quot; id=&quot;PC&quot; data-look=&quot;classic&quot;&gt;&lt;rect style=&quot;&quot; x=&quot;729.65625&quot; y=&quot;8&quot; width=&quot;790.53125&quot; height=&quot;268&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;cluster-label&quot; transform=&quot;translate(1034.6875, 8)&quot;&gt;&lt;foreignObject width=&quot;180.46875&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;Windows PC — 常時起動&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;cluster&quot; id=&quot;Tunnel&quot; data-look=&quot;classic&quot;&gt;&lt;rect style=&quot;&quot; x=&quot;492.296875&quot; y=&quot;28&quot; width=&quot;187.359375&quot; height=&quot;124&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;cluster-label&quot; transform=&quot;translate(502.3984375, 28)&quot;&gt;&lt;foreignObject width=&quot;167.15625&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;Tailscale VPN トンネル&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;cluster&quot; id=&quot;Android&quot; data-look=&quot;classic&quot;&gt;&lt;rect style=&quot;&quot; x=&quot;8&quot; y=&quot;28&quot; width=&quot;434.296875&quot; height=&quot;124&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;cluster-label&quot; transform=&quot;translate(197.5703125, 28)&quot;&gt;&lt;foreignObject width=&quot;55.15625&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;Android&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;cluster&quot; id=&quot;WSL&quot; data-look=&quot;classic&quot;&gt;&lt;rect style=&quot;&quot; x=&quot;754.65625&quot; y=&quot;28&quot; width=&quot;740.53125&quot; height=&quot;124&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;cluster-label&quot; transform=&quot;translate(1075.1171875, 28)&quot;&gt;&lt;foreignObject width=&quot;99.609375&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;WSL2 Ubuntu&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;edgePaths&quot;&gt;&lt;path d=&quot;M245.938,90L250.104,90C254.271,90,262.604,90,270.271,90C277.938,90,284.938,90,288.438,90L291.938,90&quot; id=&quot;L_Termux_TS_A_0&quot; class=&quot;edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link&quot; style=&quot;;&quot; data-edge=&quot;true&quot; data-et=&quot;edge&quot; data-id=&quot;L_Termux_TS_A_0&quot; data-points=&quot;W3sieCI6MjQ1LjkzNzUsInkiOjkwfSx7IngiOjI3MC45Mzc1LCJ5Ijo5MH0seyJ4IjoyOTUuOTM3NSwieSI6OTB9XQ==&quot; marker-end=&quot;url(#mermaid-0_flowchart-v2-pointEnd)&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M417.297,90L421.464,90C425.63,90,433.964,90,442.297,90C450.63,90,458.964,90,467.297,90C475.63,90,483.964,90,491.63,90C499.297,90,506.297,90,509.797,90L513.297,90&quot; id=&quot;L_TS_A_mosh_udp_0&quot; class=&quot;edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link&quot; style=&quot;;&quot; data-edge=&quot;true&quot; data-et=&quot;edge&quot; data-id=&quot;L_TS_A_mosh_udp_0&quot; data-points=&quot;W3sieCI6NDE3LjI5Njg3NSwieSI6OTB9LHsieCI6NDQyLjI5Njg3NSwieSI6OTB9LHsieCI6NDY3LjI5Njg3NSwieSI6OTB9LHsieCI6NDkyLjI5Njg3NSwieSI6OTB9LHsieCI6NTE3LjI5Njg3NSwieSI6OTB9XQ==&quot; marker-end=&quot;url(#mermaid-0_flowchart-v2-pointEnd)&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M654.656,90L658.823,90C662.99,90,671.323,90,679.656,90C687.99,90,696.323,90,704.656,90C712.99,90,721.323,90,729.656,90C737.99,90,746.323,90,753.99,90C761.656,90,768.656,90,772.156,90L775.656,90&quot; id=&quot;L_mosh_udp_tsd_0&quot; class=&quot;edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link&quot; style=&quot;;&quot; data-edge=&quot;true&quot; data-et=&quot;edge&quot; data-id=&quot;L_mosh_udp_tsd_0&quot; data-points=&quot;W3sieCI6NjU0LjY1NjI1LCJ5Ijo5MH0seyJ4Ijo2NzkuNjU2MjUsInkiOjkwfSx7IngiOjcwNC42NTYyNSwieSI6OTB9LHsieCI6NzI5LjY1NjI1LCJ5Ijo5MH0seyJ4Ijo3NTQuNjU2MjUsInkiOjkwfSx7IngiOjc3OS42NTYyNSwieSI6OTB9XQ==&quot; marker-end=&quot;url(#mermaid-0_flowchart-v2-pointEnd)&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M906.359,90L910.526,90C914.693,90,923.026,90,930.693,90C938.359,90,945.359,90,948.859,90L952.359,90&quot; id=&quot;L_tsd_sshd_0&quot; class=&quot;edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link&quot; style=&quot;;&quot; data-edge=&quot;true&quot; data-et=&quot;edge&quot; data-id=&quot;L_tsd_sshd_0&quot; data-points=&quot;W3sieCI6OTA2LjM1OTM3NSwieSI6OTB9LHsieCI6OTMxLjM1OTM3NSwieSI6OTB9LHsieCI6OTU2LjM1OTM3NSwieSI6OTB9XQ==&quot; marker-end=&quot;url(#mermaid-0_flowchart-v2-pointEnd)&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M1050.156,90L1054.323,90C1058.49,90,1066.823,90,1074.49,90C1082.156,90,1089.156,90,1092.656,90L1096.156,90&quot; id=&quot;L_sshd_mosh_s_0&quot; class=&quot;edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link&quot; style=&quot;;&quot; data-edge=&quot;true&quot; data-et=&quot;edge&quot; data-id=&quot;L_sshd_mosh_s_0&quot; data-points=&quot;W3sieCI6MTA1MC4xNTYyNSwieSI6OTB9LHsieCI6MTA3NS4xNTYyNSwieSI6OTB9LHsieCI6MTEwMC4xNTYyNSwieSI6OTB9XQ==&quot; marker-end=&quot;url(#mermaid-0_flowchart-v2-pointEnd)&quot;&gt;&lt;/path&gt;&lt;path d=&quot;M1249.063,90L1253.229,90C1257.396,90,1265.729,90,1273.396,90C1281.063,90,1288.063,90,1291.563,90L1295.063,90&quot; id=&quot;L_mosh_s_claude_0&quot; class=&quot;edge-thickness-normal edge-pattern-solid edge-thickness-normal edge-pattern-solid flowchart-link&quot; style=&quot;;&quot; data-edge=&quot;true&quot; data-et=&quot;edge&quot; data-id=&quot;L_mosh_s_claude_0&quot; data-points=&quot;W3sieCI6MTI0OS4wNjI1LCJ5Ijo5MH0seyJ4IjoxMjc0LjA2MjUsInkiOjkwfSx7IngiOjEyOTkuMDYyNSwieSI6OTB9XQ==&quot; marker-end=&quot;url(#mermaid-0_flowchart-v2-pointEnd)&quot;&gt;&lt;/path&gt;&lt;/g&gt;&lt;g class=&quot;edgeLabels&quot;&gt;&lt;g class=&quot;edgeLabel&quot;&gt;&lt;g class=&quot;label&quot; data-id=&quot;L_Termux_TS_A_0&quot; transform=&quot;translate(0, 0)&quot;&gt;&lt;foreignObject width=&quot;0&quot; height=&quot;0&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; class=&quot;labelBkg&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;edgeLabel&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;edgeLabel&quot;&gt;&lt;g class=&quot;label&quot; data-id=&quot;L_TS_A_mosh_udp_0&quot; transform=&quot;translate(0, 0)&quot;&gt;&lt;foreignObject width=&quot;0&quot; height=&quot;0&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; class=&quot;labelBkg&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;edgeLabel&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;edgeLabel&quot;&gt;&lt;g class=&quot;label&quot; data-id=&quot;L_mosh_udp_tsd_0&quot; transform=&quot;translate(0, 0)&quot;&gt;&lt;foreignObject width=&quot;0&quot; height=&quot;0&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; class=&quot;labelBkg&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;edgeLabel&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;edgeLabel&quot;&gt;&lt;g class=&quot;label&quot; data-id=&quot;L_tsd_sshd_0&quot; transform=&quot;translate(0, 0)&quot;&gt;&lt;foreignObject width=&quot;0&quot; height=&quot;0&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; class=&quot;labelBkg&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;edgeLabel&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;edgeLabel&quot;&gt;&lt;g class=&quot;label&quot; data-id=&quot;L_sshd_mosh_s_0&quot; transform=&quot;translate(0, 0)&quot;&gt;&lt;foreignObject width=&quot;0&quot; height=&quot;0&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; class=&quot;labelBkg&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;edgeLabel&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;edgeLabel&quot;&gt;&lt;g class=&quot;label&quot; data-id=&quot;L_mosh_s_claude_0&quot; transform=&quot;translate(0, 0)&quot;&gt;&lt;foreignObject width=&quot;0&quot; height=&quot;0&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; class=&quot;labelBkg&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;edgeLabel&quot;&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;nodes&quot;&gt;&lt;g class=&quot;node default&quot; id=&quot;flowchart-Termux-0&quot; transform=&quot;translate(139.46875, 90)&quot;&gt;&lt;rect class=&quot;basic label-container&quot; style=&quot;&quot; x=&quot;-106.46875&quot; y=&quot;-27&quot; width=&quot;212.9375&quot; height=&quot;54&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;label&quot; style=&quot;&quot; transform=&quot;translate(-76.46875, -12)&quot;&gt;&lt;rect&gt;&lt;/rect&gt;&lt;foreignObject width=&quot;152.9375&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;Termux &amp;#x26; mosh client&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;node default&quot; id=&quot;flowchart-TS_A-1&quot; transform=&quot;translate(356.6171875, 90)&quot;&gt;&lt;rect class=&quot;basic label-container&quot; style=&quot;&quot; x=&quot;-60.6796875&quot; y=&quot;-27&quot; width=&quot;121.359375&quot; height=&quot;54&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;label&quot; style=&quot;&quot; transform=&quot;translate(-30.6796875, -12)&quot;&gt;&lt;rect&gt;&lt;/rect&gt;&lt;foreignObject width=&quot;61.359375&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;Tailscale&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;node default&quot; id=&quot;flowchart-mosh_udp-2&quot; transform=&quot;translate(585.9765625, 90)&quot;&gt;&lt;rect class=&quot;basic label-container&quot; style=&quot;&quot; x=&quot;-68.6796875&quot; y=&quot;-27&quot; width=&quot;137.359375&quot; height=&quot;54&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;label&quot; style=&quot;&quot; transform=&quot;translate(-38.6796875, -12)&quot;&gt;&lt;rect&gt;&lt;/rect&gt;&lt;foreignObject width=&quot;77.359375&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;Mosh UDP&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;node default&quot; id=&quot;flowchart-TS_W-3&quot; transform=&quot;translate(1384.625, 214)&quot;&gt;&lt;rect class=&quot;basic label-container&quot; style=&quot;&quot; x=&quot;-78.90625&quot; y=&quot;-27&quot; width=&quot;157.8125&quot; height=&quot;54&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;label&quot; style=&quot;&quot; transform=&quot;translate(-48.90625, -12)&quot;&gt;&lt;rect&gt;&lt;/rect&gt;&lt;foreignObject width=&quot;97.8125&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;Tailscale 常駐&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;node default&quot; id=&quot;flowchart-sshd-4&quot; transform=&quot;translate(1003.2578125, 90)&quot;&gt;&lt;rect class=&quot;basic label-container&quot; style=&quot;&quot; x=&quot;-46.8984375&quot; y=&quot;-27&quot; width=&quot;93.796875&quot; height=&quot;54&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;label&quot; style=&quot;&quot; transform=&quot;translate(-16.8984375, -12)&quot;&gt;&lt;rect&gt;&lt;/rect&gt;&lt;foreignObject width=&quot;33.796875&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;sshd&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;node default&quot; id=&quot;flowchart-mosh_s-5&quot; transform=&quot;translate(1174.609375, 90)&quot;&gt;&lt;rect class=&quot;basic label-container&quot; style=&quot;&quot; x=&quot;-74.453125&quot; y=&quot;-27&quot; width=&quot;148.90625&quot; height=&quot;54&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;label&quot; style=&quot;&quot; transform=&quot;translate(-44.453125, -12)&quot;&gt;&lt;rect&gt;&lt;/rect&gt;&lt;foreignObject width=&quot;88.90625&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;mosh-server&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;node default&quot; id=&quot;flowchart-claude-6&quot; transform=&quot;translate(1384.625, 90)&quot;&gt;&lt;rect class=&quot;basic label-container&quot; style=&quot;&quot; x=&quot;-85.5625&quot; y=&quot;-27&quot; width=&quot;171.125&quot; height=&quot;54&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;label&quot; style=&quot;&quot; transform=&quot;translate(-55.5625, -12)&quot;&gt;&lt;rect&gt;&lt;/rect&gt;&lt;foreignObject width=&quot;111.125&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;AI等のコマンド&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;g class=&quot;node default&quot; id=&quot;flowchart-tsd-7&quot; transform=&quot;translate(843.0078125, 90)&quot;&gt;&lt;rect class=&quot;basic label-container&quot; style=&quot;&quot; x=&quot;-63.3515625&quot; y=&quot;-27&quot; width=&quot;126.703125&quot; height=&quot;54&quot;&gt;&lt;/rect&gt;&lt;g class=&quot;label&quot; style=&quot;&quot; transform=&quot;translate(-33.3515625, -12)&quot;&gt;&lt;rect&gt;&lt;/rect&gt;&lt;foreignObject width=&quot;66.703125&quot; height=&quot;24&quot;&gt;&lt;div xmlns=&quot;http://www.w3.org/1999/xhtml&quot; style=&quot;display: table-cell; white-space: nowrap; line-height: 1.5; max-width: 200px; text-align: center;&quot;&gt;&lt;span class=&quot;nodeLabel&quot;&gt;&lt;p&gt;tailscaled&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;/foreignObject&gt;&lt;/g&gt;&lt;/g&gt;&lt;/g&gt;&lt;/g&gt;&lt;/g&gt;&lt;/svg&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;通信の流れ&lt;/strong&gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Windows PC側ではTailscale・tailscaled・sshdが常時起動し、接続を待ち受けています&lt;/li&gt;
+&lt;li&gt;Android側でTailscaleをONにし、Termuxを起動します。TailscaleがWireGuardで暗号化されたVPNトンネルを確立します&lt;/li&gt;
+&lt;li&gt;TermuxからMoshで接続すると、トンネルを通ってWSL内のsshdに到達し、mosh-serverが起動されます&lt;/li&gt;
+&lt;li&gt;以降の通信はMosh（UDP）に切り替わり、電波断でもセッションが維持されます&lt;/li&gt;
+&lt;li&gt;Moshの通信はすべてTailscaleトンネルの中を通るため、インターネットに直接ポートを公開する必要がありません&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;サービス一覧&lt;/strong&gt;:&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&quot;left&quot;&gt;サービス&lt;/th&gt;
+&lt;th align=&quot;left&quot;&gt;場所&lt;/th&gt;
+&lt;th align=&quot;center&quot;&gt;動作&lt;/th&gt;
+&lt;th align=&quot;left&quot;&gt;備考&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;Tailscale&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Windows&lt;/td&gt;
+&lt;td align=&quot;center&quot;&gt;常駐&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;インストール時に設定されます&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;tailscaled&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;WSL内&lt;/td&gt;
+&lt;td align=&quot;center&quot;&gt;常駐&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;sshd&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;WSL内&lt;/td&gt;
+&lt;td align=&quot;center&quot;&gt;常駐&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Mosh接続の入口&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;Tailscale&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Android&lt;/td&gt;
+&lt;td align=&quot;center&quot;&gt;&lt;strong&gt;使用時にON&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;バッテリー節約のため普段はOFFの想定&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;Termux&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Android&lt;/td&gt;
+&lt;td align=&quot;center&quot;&gt;&lt;strong&gt;使用時に起動&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;閉じてもサーバー側のセッションは維持されます&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;mosh-server&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;WSL内&lt;/td&gt;
+&lt;td align=&quot;center&quot;&gt;接続時に自動起動&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;SSH経由で起動・終了されます&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2&gt;利用ツールの紹介&lt;/h2&gt;
+&lt;h3&gt;Tailscale — メッシュVPN&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://tailscale.com/&quot;&gt;Tailscale&lt;/a&gt; は、WireGuardプロトコルをベースにしたメッシュVPNサービスです。デバイス間を&lt;strong&gt;エンドツーエンド暗号化&lt;/strong&gt;で直接つなぎ、ポート開放やVPNサーバーの構築が一切不要になります。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;元Googleエンジニア4名が2019年に創業。累計$275Mの資金調達を受けており、Accel、Insight Partners等の大手VCが出資しています&lt;/li&gt;
+&lt;li&gt;暗号化には&lt;a href=&quot;https://www.wireguard.com/&quot;&gt;WireGuard&lt;/a&gt;（独立した暗号学的レビュー済みのオープンプロトコル）を使用&lt;/li&gt;
+&lt;li&gt;クライアントソフトは&lt;strong&gt;オープンソース&lt;/strong&gt;（&lt;a href=&quot;https://github.com/tailscale/tailscale&quot;&gt;GitHub&lt;/a&gt;）&lt;/li&gt;
+&lt;li&gt;外部セキュリティ監査を定期的に実施し、SOC 2 Type II認証を取得済みです&lt;/li&gt;
+&lt;li&gt;無料プラン（Personalプラン）で3ユーザー・100デバイスまで利用可能。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;Termux — Android上のLinuxターミナル環境&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://termux.dev/&quot;&gt;Termux&lt;/a&gt; は、Android上でLinuxのコマンドライン環境を提供するオープンソースのターミナルエミュレータです。root化不要で動作し、&lt;code&gt;apt&lt;/code&gt; でパッケージをインストールできます。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;GPLv3ライセンスでソースコード全体が&lt;a href=&quot;https://github.com/termux/termux-app&quot;&gt;GitHub&lt;/a&gt;上に公開&lt;/li&gt;
+&lt;li&gt;root権限を要求せず、ユーザー空間で完全に動作します&lt;/li&gt;
+&lt;li&gt;ストレージアクセス等の権限はデフォルトで無効です。必要に応じてユーザーが明示的に許可します&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;Google Play版ではなくF-Droid版を使う理由&lt;/strong&gt;: Google Play版はストアポリシー対応のため機能が制限されており、更新も停止しています。F-Droid版が最新の安定版として公式に推奨されています。&lt;/p&gt;
+&lt;h3&gt;F-Droid — オープンソース専門のアプリストア&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://f-droid.org/&quot;&gt;F-Droid&lt;/a&gt; は、オープンソースアプリのみを扱うAndroid向けアプリリポジトリです。Termuxの最新版を入手するために使用します。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;2010年から運営されているコミュニティ主導のプロジェクトです。100名以上のコントリビューターが開発に参加しています&lt;/li&gt;
+&lt;li&gt;掲載アプリはすべてオープンソースであることが必須です。F-Droidのサーバー上で&lt;strong&gt;ソースコードからビルド&lt;/strong&gt;されるため、開発者がバイナリに不正なコードを混入するリスクが低くなっています&lt;/li&gt;
+&lt;li&gt;アカウント登録不要。ユーザーの行動追跡や広告は一切無し&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://cure53.de/&quot;&gt;Cure53&lt;/a&gt;等の外部セキュリティ企業による監査を受けています&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;strong&gt;注意点&lt;/strong&gt;: Google Play以外からのアプリインストールとなるため、Androidの設定で「不明なソースからのインストール」を許可する必要があります。F-Droidアプリに対してのみ許可すれば、他のアプリへの影響はありません。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;セットアップ手順&lt;/h2&gt;
+&lt;h3&gt;Step 1: WSL内にSSHサーバーとMoshをインストール&lt;/h3&gt;
+&lt;p&gt;WSLのターミナルを開き、以下を実行します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo apt update &amp;#x26;&amp;#x26; sudo apt upgrade -y
+sudo apt install -y openssh-server mosh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;SSHサーバーの設定と起動を行います。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo systemctl enable ssh
+sudo systemctl start ssh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;WSLの場合、&lt;code&gt;systemd&lt;/code&gt; が有効になっていない環境もあります。その場合は以下で直接起動します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo service ssh start
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;WSL起動時にsshdとtailscaledを自動起動させたい場合は、&lt;code&gt;~/.bashrc&lt;/code&gt; に以下を追記します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# WSL起動時にsshd・tailscaledを自動起動
+if ! pgrep -x sshd &gt; /dev/null; then
+    sudo service ssh start &gt; /dev/null 2&gt;&amp;#x26;1
+fi
+if ! pgrep -x tailscaled &gt; /dev/null; then
+    sudo tailscaled &gt; /dev/null 2&gt;&amp;#x26;1 &amp;#x26;
+fi
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;これらコマンドのみ&lt;code&gt;sudo&lt;/code&gt; をパスワードなしで実行するために &lt;code&gt;/etc/sudoers&lt;/code&gt; を編集して以下を追記します（&lt;code&gt;sudo visudo&lt;/code&gt;）。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ユーザー名 ALL=(ALL) NOPASSWD: /usr/sbin/service ssh start, /usr/bin/tailscaled
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;Step 2: ネットワーク基盤 (Tailscale)&lt;/h3&gt;
+&lt;p&gt;Windows - WSL環境ではポートフォワーディングの設定が煩雑になるため、&lt;strong&gt;Tailscale&lt;/strong&gt;を使って直接接続するのが圧倒的に楽です。&lt;br&gt;
+Windows と WSLそれぞれにインストールする必要がありますが、通信部分はよしなにやってくれるので非常に便利です。&lt;/p&gt;
+&lt;h4&gt;Windows側&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;https://tailscale.com/&quot;&gt;Tailscale公式サイト&lt;/a&gt;からインストーラーをダウンロードし、インストールします&lt;/li&gt;
+&lt;li&gt;ログインして接続状態にします&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4&gt;WSL側&lt;/h4&gt;
+&lt;p&gt;WSL内にもTailscaleをインストールします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;curl -fsSL https://tailscale.com/install.sh | sh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;tailscaled&lt;/code&gt; を起動します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo tailscaled &amp;#x26;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;: &lt;code&gt;address already in use&lt;/code&gt; エラーが出る場合は、 &lt;code&gt;tailscaled&lt;/code&gt; プロセスが残っています。 &lt;code&gt;sudo killall tailscaled&lt;/code&gt; で停止してから再実行してください。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;補足&lt;/strong&gt;: 起動時に &lt;code&gt;TPM: error opening: stat /dev/tpmrm0: no such file or directory&lt;/code&gt; という警告が出ますが、WSL2にTPMデバイスがないだけなので&lt;strong&gt;無視して問題ありません&lt;/strong&gt;。&lt;code&gt;tailscaled&lt;/code&gt; 自体は正常に起動しています。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;tailscaled&lt;/code&gt; を起動すると大量のログが流れますが、&lt;code&gt;NeedsLogin&lt;/code&gt; という表示が出ていれば起動成功です。続けて &lt;code&gt;tailscale up&lt;/code&gt; を実行します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo tailscale up
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;表示されるURLをブラウザで開き、同じアカウントでログインします。これでWSLに固有のTailscale IPアドレス（&lt;code&gt;100.x.y.z&lt;/code&gt;）が割り当てられます。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;tailscale ip -4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4&gt;Android側&lt;/h4&gt;
+&lt;p&gt;PlayストアからTailscaleアプリをインストールし、同じアカウントでログインします。&lt;/p&gt;
+&lt;h3&gt;Step 3: Android側の環境構築 (Termux)&lt;/h3&gt;
+&lt;p&gt;&lt;a href=&quot;https://f-droid.org/&quot;&gt;F-Droid&lt;/a&gt;からTermuxをインストールし、起動して以下を実行します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;pkg update &amp;#x26;&amp;#x26; pkg upgrade
+pkg install -y openssh mosh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;Step 4: SSH公開鍵の設定&lt;/h3&gt;
+&lt;p&gt;TermuxからWSLへSSH接続するために、公開鍵認証を設定します。&lt;/p&gt;
+&lt;h4&gt;Termux側（Android）で鍵ペアを生成&lt;/h4&gt;
+&lt;p&gt;Termuxで以下を実行します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ssh-keygen -t ed25519
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4&gt;WSL側で公開鍵を受け入れる準備&lt;/h4&gt;
+&lt;p&gt;WSLのターミナルで以下を実行し、&lt;code&gt;authorized_keys&lt;/code&gt; ファイルを作成しておきます。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+touch ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h4&gt;Termux側からWSLへ公開鍵を転送&lt;/h4&gt;
+&lt;p&gt;Termuxに戻り、生成した公開鍵をWSLに転送します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ssh-copy-id ユーザー名@WSLのTailscale IP
+&lt;/code&gt;&lt;/pre&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;注意&lt;/strong&gt;: &lt;code&gt;ssh-copy-id&lt;/code&gt; の実行時はパスワード認証が必要です。WSL側の &lt;code&gt;/etc/ssh/sshd_config&lt;/code&gt; で &lt;code&gt;PasswordAuthentication&lt;/code&gt; がコメントアウトされている（デフォルトでyes）ことを確認してください。もし &lt;code&gt;PasswordAuthentication no&lt;/code&gt; と明示されている場合は、一時的に &lt;code&gt;yes&lt;/code&gt; に変更し、&lt;code&gt;sudo service ssh restart&lt;/code&gt; でsshdを再起動してから実行します。転送が完了したら &lt;code&gt;no&lt;/code&gt; に戻して構いません。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&lt;code&gt;ssh-copy-id&lt;/code&gt; が使えない場合は、Termuxで公開鍵の中身を表示し、手動でWSL側の &lt;code&gt;~/.ssh/authorized_keys&lt;/code&gt; に追記する方法でも構いません。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# Termuxで公開鍵を表示
+cat ~/.ssh/id_ed25519.pub
+# → 出力された内容をWSL側の ~/.ssh/authorized_keys に追記
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;Step 6: 接続テスト&lt;/h3&gt;
+&lt;p&gt;TermuxからWSLへ接続してみます。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;mosh ユーザー名@100.x.y.z
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;h2&gt;日常の作業イメージ&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;Tailscale ON&lt;/strong&gt;: AndroidのTailscaleアプリを開き、接続をONにします&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Termux起動&lt;/strong&gt;: Termuxを開き、MoshでWSLに接続します
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;mosh ユーザー名@100.x.y.z
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;指示&lt;/strong&gt;: &lt;code&gt;claude&lt;/code&gt; を起動し、タスクを指示します&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;放置&lt;/strong&gt;: 指示を出したら、Moshなので移動中に地下鉄で電波が切れても自動で再接続されます&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;終了時&lt;/strong&gt;: 作業が終わったらTermuxを閉じ、TailscaleをOFFにします。バッテリーへの影響はほぼなくなります&lt;/li&gt;
+&lt;/ol&gt;
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;補足&lt;/strong&gt;: Termuxを閉じても、WSL側のmosh-serverはセッションを保持し続けます。次回接続時に同じ &lt;code&gt;mosh&lt;/code&gt; コマンドを実行すれば、前回の画面がそのまま復帰します。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;hr&gt;
+&lt;h2&gt;WSL固有のトラブルシューティング&lt;/h2&gt;
+&lt;h3&gt;tailscaled が「address already in use」で起動しない&lt;/h3&gt;
+&lt;p&gt;以下のようなエラーが出る場合、前回の &lt;code&gt;tailscaled&lt;/code&gt; プロセスが残ってソケットファイル (&lt;code&gt;/var/run/tailscale/tailscaled.sock&lt;/code&gt;) を掴んでいます。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;safesocket.Listen: /var/run/tailscale/tailscaled.sock: address already in use
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;対処法は、既存プロセスを停止してから再起動します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo killall tailscaled
+sudo tailscaled &amp;#x26;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;それでもダメな場合はソケットファイルを直接削除します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo rm /var/run/tailscale/tailscaled.sock
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;systemd が有効でない&lt;/h3&gt;
+&lt;p&gt;WSL2はデフォルトで &lt;code&gt;systemd&lt;/code&gt; が無効な場合があります。&lt;code&gt;/etc/wsl.conf&lt;/code&gt; に以下を追記して WSL を再起動すると &lt;code&gt;systemd&lt;/code&gt; が有効になります。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-ini&quot;&gt;[boot]
+systemd=true
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&quot;language-powershell&quot;&gt;# PowerShellからWSLを再起動
+wsl --shutdown
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;Mosh接続がタイムアウトする&lt;/h3&gt;
+&lt;p&gt;Moshサーバーが起動していない、またはUDPポートがブロックされている可能性があります。以下を確認してください。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;# WSL側でMoshサーバーが存在するか確認
+which mosh-server
+
+# Tailscale経由でUDPが通るかテスト
+# Android側のTermuxから
+ssh ユーザー名@WSLのTailscale IP &quot;echo OK&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;h2&gt;本家Moshiとの比較&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&quot;left&quot;&gt;機能&lt;/th&gt;
+&lt;th align=&quot;left&quot;&gt;Moshi (iOS)&lt;/th&gt;
+&lt;th align=&quot;left&quot;&gt;本構成 (Android + WSL)&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;接続プロトコル&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Mosh&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Mosh&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;自由度&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;アプリの範囲内&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;無制限（任意のCLIツールと連携可）&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;コスト&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;無料(Beta)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;無料&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;Tailscale + Mosh + Termux の組み合わせにより、Android端末からWSL上のAIエージェントを快適に操作できる環境が構築できます。&lt;/p&gt;
+&lt;p&gt;特にWSL環境では、ネットワーク周りの設定が直接Linuxマシンより一手間かかりますが、Tailscaleを使うことでWSL固有のポートフォワーディング問題をスキップできる点がポイントです。&lt;/p&gt;
+&lt;p&gt;一度セットアップしてしまえば、通勤中の電車の中からでもAIエージェントに作業を指示できるようになります。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[SlackのMCPをワークスペースにインストール無しで Claude Code から使う方法]]></title><description><![CDATA[やりたいこと Claude Code などのAIエージェントから Slack のメッセージの読み書きをしたい。 ただし、ワークスペースに Slack App をインストールする権限がない、あるいはインストールしたくない。 方法 @kazuph/mcp-slack…]]></description><link>https://sun0range.tech.server-on.net/information-technology/mcp-slack-setup</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/mcp-slack-setup</guid><pubDate>Wed, 04 Feb 2026 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;やりたいこと&lt;/h2&gt;
+&lt;p&gt;Claude Code などのAIエージェントから Slack のメッセージの読み書きをしたい。&lt;br&gt;
+ただし、ワークスペースに Slack App をインストールする権限がない、あるいはインストールしたくない。&lt;/p&gt;
+&lt;h2&gt;方法&lt;/h2&gt;
+&lt;p&gt;&lt;a href=&quot;https://github.com/kazuph/mcp-slack&quot;&gt;&lt;code&gt;@kazuph/mcp-slack&lt;/code&gt;&lt;/a&gt; を使う。&lt;/p&gt;
+&lt;p&gt;このツールは Slack のBot Tokenではなく、ブラウザの Cookie ベース認証（&lt;code&gt;xoxc&lt;/code&gt; / &lt;code&gt;xoxd&lt;/code&gt; トークン）を利用する。そのため &lt;strong&gt;ワークスペースへのアプリインストールが不要&lt;/strong&gt; で、自分のブラウザセッション情報で動作する。&lt;/p&gt;
+&lt;h2&gt;注意点&lt;/h2&gt;
+&lt;p&gt;この方法は自分のブラウザセッション（Cookie）をそのまま使う。つまり &lt;strong&gt;自分が Slack 上でできることすべてと同等の権限&lt;/strong&gt; を持つ。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;DM（ダイレクトメッセージ）を含む、自分がアクセスできるすべてのチャンネル・メッセージが読み取り可能&lt;/strong&gt; になる。&lt;/li&gt;
+&lt;li&gt;Bot Token のように「招待されたチャンネルのみ」といったスコープの制限がない。&lt;/li&gt;
+&lt;li&gt;トークンが漏洩した場合、自分のアカウントと同等の操作が第三者に可能になる。&lt;/li&gt;
+&lt;li&gt;Slack 公式の認証方式ではないため、Slack 側の仕様変更で動作しなくなる可能性がある。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@kazuph/mcp-slack&lt;/code&gt; は &lt;strong&gt;Slack 社とは無関係の非公式ライブラリ&lt;/strong&gt; である。利用前にリポジトリのソースコードやライセンスを自身で確認すること&lt;/li&gt;
+&lt;li&gt;Cookie ベースのトークンには有効期限があり、&lt;strong&gt;ブラウザセッションが切れると再取得が必要&lt;/strong&gt; になる&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;また、トークンは &lt;code&gt;.mcp.json&lt;/code&gt; に平文で記載することになるため、&lt;strong&gt;リポジトリに含めない&lt;/strong&gt;（&lt;code&gt;.gitignore&lt;/code&gt; に追加する）、共有マシンでの利用を避けるなど、取り扱いには十分注意すること。&lt;/p&gt;
+&lt;h2&gt;動作確認環境&lt;/h2&gt;
+&lt;p&gt;MCP サーバーとして、Claude Code に限らず各種 AI エージェントでも利用できると思われるが、 &lt;strong&gt;Claude Code でのみ動作確認&lt;/strong&gt; している。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;OS: Windows (WSL2)&lt;/li&gt;
+&lt;li&gt;WSL ディストリビューション: Ubuntu 24.04 LTS&lt;/li&gt;
+&lt;li&gt;CPU アーキテクチャ: x86_64&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;セットアップ手順&lt;/h2&gt;
+&lt;h3&gt;1. Slack トークンを取得する&lt;/h3&gt;
+&lt;p&gt;ブラウザから以下の2つのトークンを取得する。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;ブラウザで Slack にログイン&lt;/li&gt;
+&lt;li&gt;DevTools (F12) を開く&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Console タブ&lt;/strong&gt; で &lt;code&gt;JSON.parse(localStorage.localConfig_v2).teams[Object.keys(JSON.parse(localStorage.localConfig_v2).teams)[0]].token&lt;/code&gt; を実行した結果の値を取得 → これが &lt;code&gt;SLACK_MCP_XOXC_TOKEN&lt;/code&gt;
+&lt;ul&gt;
+&lt;li&gt;ブラウザの制限で最初は実行できないかもしれない。英語でメッセージがでたりするので確認して&lt;code&gt;allow&lt;/code&gt;などを別途打ち込む必要があるかもしれない。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Application &gt; Cookies&lt;/strong&gt; から &lt;code&gt;d&lt;/code&gt; cookie の値を取得 → これが &lt;code&gt;SLACK_MCP_XOXD_TOKEN&lt;/code&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;2. インストールと設定&lt;/h3&gt;
+&lt;p&gt;パッケージをインストールし、&lt;code&gt;.mcp.json&lt;/code&gt; に設定を追加する。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;pnpm add -g @kazuph/mcp-slack
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;.mcp.json&lt;/code&gt;（プロジェクトルートまたは &lt;code&gt;~/.claude/.mcp.json&lt;/code&gt;）に以下を追加する。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;mcpServers&quot;: {
+    &quot;slack&quot;: {
+      &quot;command&quot;: &quot;mcp-slack&quot;,
+      &quot;args&quot;: [],
+      &quot;env&quot;: {
+        &quot;SLACK_MCP_XOXC_TOKEN&quot;: &quot;xoxc-取得した値&quot;,
+        &quot;SLACK_MCP_XOXD_TOKEN&quot;: &quot;xoxd-取得した値&quot;
+      }
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;3. 動作確認&lt;/h3&gt;
+&lt;p&gt;Claude Code を再起動し、/mcp コマンドを実行して、&lt;code&gt;slack · ✔ connected&lt;/code&gt; と出ていればOK。&lt;/p&gt;
+&lt;h2&gt;補足: npx で接続に失敗する場合&lt;/h2&gt;
+&lt;p&gt;README には npx で直接実行する方法が記載されておりこれで良い。ただ私の環境では arm64/x64 のアーキテクチャ判定のミスマッチにより接続に失敗したため、上記の通り環境にグローバルインストールすることにした。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;mcpServers&quot;: {
+    &quot;slack&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@kazuph/mcp-slack&quot;]
+    }
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;この場合、上記のように &lt;code&gt;pnpm add -g&lt;/code&gt; でグローバルインストールし、&lt;code&gt;command&lt;/code&gt; を &lt;code&gt;mcp-slack&lt;/code&gt; に変更すれば解決する。&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;項目&lt;/th&gt;
+&lt;th&gt;変更前&lt;/th&gt;
+&lt;th&gt;変更後&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;command&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;npx&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;mcp-slack&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;args&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;[&quot;-y&quot;, &quot;@kazuph/mcp-slack&quot;]&lt;/code&gt;&lt;/td&gt;
+&lt;td&gt;&lt;code&gt;[]&lt;/code&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;</content:encoded></item><item><title><![CDATA[AWS SNS 文字数チェッカー]]></title><description><![CDATA[AWS SNS（Simple Notification Service）でSMSを送信する際、文字数によってメッセージが分割されることがあります。このツールを使って、送信前に文字数と分割数を確認できます。 使い方 テキストエリアにSMS…]]></description><link>https://sun0range.tech.server-on.net/information-technology/aws-sms-checker</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/aws-sms-checker</guid><pubDate>Mon, 12 Jan 2026 00:00:00 GMT</pubDate><content:encoded>&lt;p&gt;AWS SNS（Simple Notification Service）でSMSを送信する際、文字数によってメッセージが分割されることがあります。このツールを使って、送信前に文字数と分割数を確認できます。&lt;/p&gt;
+&lt;iframe src=&quot;/tools/aws-sms-checker&quot; width=&quot;100%&quot; height=&quot;535&quot; frameborder=&quot;0&quot; style=&quot;border: 1px solid #ccc; border-radius: 8px;&quot;&gt;&lt;/iframe&gt;
+&lt;h2&gt;使い方&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;テキストエリアにSMSメッセージを入力します。&lt;/li&gt;
+&lt;li&gt;リアルタイムで以下の情報が表示されます：
+&lt;ul&gt;
+&lt;li&gt;文字数&lt;/li&gt;
+&lt;li&gt;エンコーディング（GSM 03.38 または UCS-2）&lt;/li&gt;
+&lt;li&gt;メッセージ分割数&lt;/li&gt;
+&lt;li&gt;残り文字数&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;エンコーディングについて&lt;/h2&gt;
+&lt;h3&gt;GSM 03.38 (7-bit)&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;半角英数字、一部の記号、ヨーロッパ文字が対象&lt;/li&gt;
+&lt;li&gt;1通あたり最大160文字&lt;/li&gt;
+&lt;li&gt;分割時は1通あたり153文字（ヘッダー用に7文字使用）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;UCS-2 (16-bit)&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;日本語、絵文字、その他のUnicode文字が対象&lt;/li&gt;
+&lt;li&gt;1通あたり最大70文字&lt;/li&gt;
+&lt;li&gt;分割時は1通あたり67文字（ヘッダー用に3文字使用）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;参考リンク&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://docs.aws.amazon.com/ja_jp/sns/latest/dg/welcome.html&quot;&gt;Amazon SNS とは&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</content:encoded></item><item><title><![CDATA[Beelink GTR9 ProでChat-GPT-OSS 120Bを動かしてみた結果──ローカル実行の壁と、それでも惚れた理由]]></title><description><![CDATA[1. はじめに：ローカルで120Bを動かしたい！ AI最盛期の今「クラウドではなくローカルでLLMを動かす」無料でAI使い放題を夢見て購入をしました。
+Chat-GPT-OSS 120B…]]></description><link>https://sun0range.tech.server-on.net/information-technology/beelink-gtr9-pro</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/beelink-gtr9-pro</guid><pubDate>Sun, 30 Nov 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;1. はじめに：ローカルで120Bを動かしたい！&lt;/h2&gt;
+&lt;p&gt;AI最盛期の今「クラウドではなくローカルでLLMを動かす」無料でAI使い放題を夢見て購入をしました。
+Chat-GPT-OSS 120B がオープンウェイトモデルとしては中々パフォーマンスが良さそうなので、をローカルで使いたい理由（コスト／プライバシー／レスポンス）&lt;/p&gt;
+&lt;p&gt;そのためにBeelink GTR9 Proを選んだ経緯&lt;/p&gt;
+&lt;h3&gt;→ 結論（先出し）&lt;/h3&gt;
+&lt;p&gt;120Bは起動できたが、コンテキスト長を確保するとメモリ不足で破綻。
+つまり &lt;strong&gt;動く&lt;/strong&gt; けど &lt;strong&gt;実用には至らず&lt;/strong&gt; 。
+しかし、それでもこの価格帯でこの性能は非常に魅力的で、言い訳がましいが満足感はある。&lt;/p&gt;
+&lt;h2&gt;2. Beelink GTR9 Pro 概要レビュー&lt;/h2&gt;
+&lt;h3&gt;ハードウェア仕様&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;AMD Ryzen™ AI Max+ 395 Processor&lt;/li&gt;
+&lt;li&gt;AMD Radeon™ 8060S GPU (内蔵GPU)&lt;/li&gt;
+&lt;li&gt;128GB RAM LPDDR5x-8000&lt;/li&gt;
+&lt;li&gt;2TB Crucial SSD&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;特筆すべきは、 &lt;strong&gt;AMD Ryzen™ AI Max+ 395&lt;/strong&gt; 搭載と、 &lt;strong&gt;128GBという特大メモリサイズ&lt;/strong&gt;
+ユニファイドメモリというなのでCPUとGPUで共有する形にはなりますが、それぞれ最大96GBものメモリを使うことができるのが利点です。
+GPUは内蔵のものになってしまいスペックは見劣りしますが、低コストで高速大容量のVRAMが使えるという点ではパフォーマンスの利点があります。&lt;/p&gt;
+&lt;p&gt;:::note info
+ユニファイドメモリとは、CPUとGPUが単一のメモリ領域を共有するアーキテクチャのこと。Appleシリコンなどで採用され、CPUとGPUがデータを高速にやり取りできるため、効率とパフォーマンスが向上します。一般的なPCのようにRAMとVRAMが別々にあるのではなく、必要に応じてメモリを動的に融通し合えるのが最大の特徴です。
+:::&lt;/p&gt;
+&lt;h3&gt;実際の使用感&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;この値段でここまでの潤沢なメモリ性能&lt;/strong&gt; という圧倒的コスパの良さ&lt;/li&gt;
+&lt;li&gt;本体サイズと筐体品質&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ファン音はとても静かです。基本的に動作音は聞こえないです。&lt;/p&gt;
+&lt;h2&gt;3. 商品購入から届くまで&lt;/h2&gt;
+&lt;h3&gt;価格&lt;/h3&gt;
+&lt;p&gt;定価は $2,799だが、当時のキャンペーン価格で $1,985&lt;br&gt;
+日本円では30万円(304,861)。逆算ですが為替レートは153.5円/ドル
+また、関税を払う必要があった。3,580円。 なのでトータルで31万円弱といったコストでした。&lt;/p&gt;
+&lt;h3&gt;到着まで&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;2025年8月31日: 注文。予約受注扱いで、35日以内に発送という形。&lt;/li&gt;
+&lt;li&gt;2025年9月19日: DHLという配送会社からLINEで配達予定の通知。合わせて関税の支払いについての依頼も来た。&lt;/li&gt;
+&lt;li&gt;2025年9月24日: 商品到着&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;中国からの配送で心配でしたが、1ヶ月かからず段ボール外箱からしてきれいな状態で問題なく届きました。
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; margin-left: initial;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/5d90bcb71d55b15ccc35d2cb76593098/9bc07/box1.jpg&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 46.666666666666664%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/jpeg;base64,/9j/2wBDABALDA4MChAODQ4SERATGCgaGBYWGDEjJR0oOjM9PDkzODdASFxOQERXRTc4UG1RV19iZ2hnPk1xeXBkeFxlZ2P/2wBDARESEhgVGC8aGi9jQjhCY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2NjY2P/wgARCAAJABQDASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAIDAf/EABUBAQEAAAAAAAAAAAAAAAAAAAAC/9oADAMBAAIQAxAAAAGjRcQ0mv/EABsQAAIBBQAAAAAAAAAAAAAAAAECAAMQEiIy/9oACAEBAAEFAsgFpmO2x6t//8QAFREBAQAAAAAAAAAAAAAAAAAAEBH/2gAIAQMBAT8Bh//EABURAQEAAAAAAAAAAAAAAAAAABAR/9oACAECAQE/Aaf/xAAZEAACAwEAAAAAAAAAAAAAAAAAASAhIjH/2gAIAQEABj8C4aRSh//EABoQAAMBAAMAAAAAAAAAAAAAAAABEXEQITH/2gAIAQEAAT8hcaLolqYE3XUjywXH/9oADAMBAAIAAwAAABDbz//EABYRAQEBAAAAAAAAAAAAAAAAAAEAIf/aAAgBAwEBPxDRABf/xAAWEQEBAQAAAAAAAAAAAAAAAAABABH/2gAIAQIBAT8QMMqu3//EAB4QAQACAgEFAAAAAAAAAAAAAAEAESExQWFxgcHw/9oACAEBAAE/EAbxKto+ObgsCjdtlxx/Vg2z7us9Zy95/9k=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/static/5d90bcb71d55b15ccc35d2cb76593098/85704/box1.webp 240w,
+/static/5d90bcb71d55b15ccc35d2cb76593098/2d484/box1.webp 480w,
+/static/5d90bcb71d55b15ccc35d2cb76593098/ac99e/box1.webp 960w,
+/static/5d90bcb71d55b15ccc35d2cb76593098/4df83/box1.webp 1440w,
+/static/5d90bcb71d55b15ccc35d2cb76593098/655e1/box1.webp 1840w&quot;
+              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/static/5d90bcb71d55b15ccc35d2cb76593098/bda9e/box1.jpg 240w,
+/static/5d90bcb71d55b15ccc35d2cb76593098/1b9de/box1.jpg 480w,
+/static/5d90bcb71d55b15ccc35d2cb76593098/71613/box1.jpg 960w,
+/static/5d90bcb71d55b15ccc35d2cb76593098/289c2/box1.jpg 1440w,
+/static/5d90bcb71d55b15ccc35d2cb76593098/9bc07/box1.jpg 1840w&quot;
+            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+            type=&quot;image/jpeg&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/static/5d90bcb71d55b15ccc35d2cb76593098/71613/box1.jpg&quot;
+            alt=&quot;box1.jpg&quot;
+            title=&quot;&quot;
+            loading=&quot;lazy&quot;
+            decoding=&quot;async&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h2&gt;ローカルLLM実験結果：120Bモデルは少し動くけれどすぐにクラッシュ&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;LM Studio にgpt-oss-120B を導入して起動&lt;/li&gt;
+&lt;li&gt;Codex の入力に上記のローカルのgpt-oss-120Bを指定&lt;/li&gt;
+&lt;li&gt;LM Studioからコンテキスト長不足でクラッシュして応答が返されず、Codexは固まった状態
+&lt;ul&gt;
+&lt;li&gt;LM Studioの設定でコンテキスト長を10000KBやそれ以上にするとハードウェアのメモリ不足で立ち上がらない。
+&lt;ul&gt;
+&lt;li&gt;BIOSのメモリ割り当てで、メイン64GB/GPU 64GBとメイン32GB/GPU 96GBとで設定変更できるが何れでもNG。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;LM Studioの設定でコンテキスト長を8196KB程度だとギリギリ起動できるが、Codexでのコード生成には全く足りず、少しのチャットはできるが、ファイルを読み込ませたりするとすぐにコンテキストが足りなくなりまともにCodexが動かなくなる。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;結果としての限界点：
+→ 「動作はするが、120Bでまともにコンテキストを維持できない」
+→ もっと軽量モデルでないと、賢さ云々以前にまともに動かない。&lt;/p&gt;
+&lt;h2&gt;8. 総評：ローカルAI開発の夢破れても、大容量メモリは優秀&lt;/h2&gt;
+&lt;p&gt;　
+Chat-GPT-OSS 120Bを使ったローカルAI開発には届かなかったが、
+この価格帯でここまで静か・速い・安定して動作するのは驚異的。
+開発用途には十分戦えるマシン
+とはいいつつも、CPUのAI最適化機能を使えてはないのでもったいなさはある。
+GPU性能も活用できてないが、ゲーミング用途に今後使える可能性はあるか。現状未検証。&lt;/p&gt;
+&lt;p&gt;今後は「ローカルでどこまで現実的に使えるか」を継続検証していく&lt;/p&gt;</content:encoded></item><item><title><![CDATA[AIコーディングツールをエンジニア目線で比較【料金・IDE連携】]]></title><description><![CDATA[TL;DR (結論から言うと) 今、個人開発者が無料で始めるなら「Gemini CLI」が圧倒的にお得です。 Googleアカウントでログインするだけで、高性能なGemini 2.5 Proモデルを1日1,00…]]></description><link>https://sun0range.tech.server-on.net/information-technology/ai-agent-comparison</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/ai-agent-comparison</guid><pubDate>Thu, 17 Jul 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;TL;DR (結論から言うと)&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;今、個人開発者が無料で始めるなら「&lt;a href=&quot;https://ai.google.dev/docs/gemini_cli&quot;&gt;Gemini CLI&lt;/a&gt;」が圧倒的にお得です。&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;Googleアカウントでログインするだけで、高性能な&lt;code&gt;Gemini 2.5 Pro&lt;/code&gt;モデルを1日1,000リクエストまで無料で利用できます。ターミナル上で直接、コード生成やリファクタリング、エラー分析などが可能です。試すどころか常用できるレベルの圧倒的無料枠。&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;AIの進化は凄まじく、自律的にタスクをこなす「AIエージェント」へと進化し、開発現場に欠かせない存在となりつつあります。&lt;/p&gt;
+&lt;p&gt;そこでこの記事では、主要なAIコーディング支援ツールを「料金（特に無料枠）」と「IDEとの親和性」という、開発者にとって重要だと思う2つの観点から比較します。&lt;/p&gt;
+&lt;p&gt;ただし、最も重要であろうコード品質、要は賢さというような観点は比較が難しいので除いています。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;この記事について&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;2025年7月時点の情報を基にしています。この記事は適宜更新していくつもりですが、最新の公式情報をご確認いただくことをお勧めします。&lt;/p&gt;
+&lt;h2&gt;AIコーディングツール比較表&lt;/h2&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th align=&quot;left&quot;&gt;AIツール&lt;/th&gt;
+&lt;th align=&quot;left&quot;&gt;開発元&lt;/th&gt;
+&lt;th align=&quot;left&quot;&gt;無料枠&lt;/th&gt;
+&lt;th align=&quot;left&quot;&gt;有料プラン（個人）&lt;/th&gt;
+&lt;th align=&quot;left&quot;&gt;IDE連携&lt;/th&gt;
+&lt;th align=&quot;left&quot;&gt;強み&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;&lt;a href=&quot;https://ai.google.dev/&quot;&gt;Gemini&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Google&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;1日1,000リクエスト&lt;/strong&gt; (Gemini 2.5 Pro)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;(APIは従量課金)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;ターミナル (CLI), VS Code, JetBrains&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;圧倒的な無料枠&lt;/strong&gt;。CLIで完結する手軽さ。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;&lt;a href=&quot;https://claude.ai/&quot;&gt;Claude&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Anthropic&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;利用制限あり&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;$20/月&lt;/strong&gt; (Pro)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;VS Code (公式)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;長文読解の鬼&lt;/strong&gt;。大規模コードベースの理解。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;&lt;a href=&quot;https://www.jetbrains.com/ai-assistant/&quot;&gt;JetBrains AI&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;JetBrains&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;IDEライセンスに付属 (少量)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;$10/月&lt;/strong&gt; (AI Pro)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;JetBrains IDEs&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;IDEネイティブ&lt;/strong&gt;。プロジェクト全体のコンテキスト理解。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;&lt;a href=&quot;https://github.com/features/copilot&quot;&gt;GitHub Copilot&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;GitHub&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;学生/OSSメンテナーは無料&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;$10/月&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;VS Code, JetBrains IDEs, Vim/Neovim&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;万能ペアプログラマー&lt;/strong&gt;。各エディタとの豊富な統合。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;&lt;a href=&quot;https://chatgpt.com/&quot;&gt;ChatGPT&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;OpenAI&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;メッセージ数制限あり&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;$20/月&lt;/strong&gt; (Plus)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;VS Code (公式/サードパーティ)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;万能な相談役&lt;/strong&gt;。自然言語での指示に強い。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;&lt;a href=&quot;https://kiro.dev/&quot;&gt;Kiro&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;Amazon Web Service&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;無料 (プレビュー版)&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;$19/月&lt;/strong&gt; (Pro)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;スタンドアロンIDE&lt;/strong&gt; (VS Code互換)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;仕様駆動開発&lt;/strong&gt;。自律的なタスク実行。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;&lt;a href=&quot;https://openrouter.ai/&quot;&gt;OpenRouter&lt;/a&gt;&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;OpenRouter&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;無料モデルあり (レート制限付き)&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;従量課金&lt;/strong&gt;&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;API経由で各種ツールと連携&lt;/td&gt;
+&lt;td align=&quot;left&quot;&gt;&lt;strong&gt;マルチモデルゲートウェイ&lt;/strong&gt;。400+モデルに単一APIでアクセス。&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h2&gt;各ツールの詳細&lt;/h2&gt;
+&lt;h3&gt;1. &lt;a href=&quot;https://ai.google.dev/&quot;&gt;Google Gemini&lt;/a&gt; - 無料で始めるなら現最強&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;IDE連携:&lt;/strong&gt; Google公式の「Gemini Code Assist」プラグインがVS CodeやJetBrains IDEs向けに提供されています。しかし、特筆すべきは「&lt;a href=&quot;https://ai.google.dev/docs/gemini_cli&quot;&gt;Gemini CLI&lt;/a&gt;」です。ターミナルから直接実行でき、IDEに縛られない軽快な開発が可能。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;料金/無料枠:&lt;/strong&gt; CLIはGoogleアカウントでログインすれば&lt;strong&gt;1日1,000リクエストまで無料&lt;/strong&gt;。これは他の追随を許さない圧倒的な量です。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;所感:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;まず無料でAI支援を試したいすべての人にオススメ。&lt;/li&gt;
+&lt;li&gt;ゆくゆく課金が必要になると予想されるので、今のうちに使い倒そう。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;2. &lt;a href=&quot;https://claude.ai/&quot;&gt;Claude&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;IDE連携:&lt;/strong&gt; Anthropic公式のVS Code拡張機能が提供されています。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;料金/無料枠:&lt;/strong&gt; 無料枠はありますが、AIエージェントのClaude Codeを使うならProプラン（$20/月）以上が必要。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;所感:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;料金的に高めなんですが、コードの品質は一番高いように感じます。&lt;/li&gt;
+&lt;li&gt;今はGemini CLIの無料枠で行くか、リッチにMaxプランでぶん回すかの2極化なユースが多い気がします。&lt;/li&gt;
+&lt;li&gt;ビジネスユースのためにMaxプランでガンガン使うのがコスパ・タイパ高いと思います。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;3. &lt;a href=&quot;https://www.jetbrains.com/ai-assistant/&quot;&gt;JetBrains AI (Junie)&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;IDE連携:&lt;/strong&gt; JetBrains IDEsのためだけに作られたAIエージェント。IDEが持つプロジェクト全体のインデックスや構造理解をフル活用するため、他のツールとは一線を画すコンテキスト認識能力を持ちます。「このクラスにCRUD処理を追加して」といった抽象的な指示で、テストまで自律的に実行します。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;料金/無料枠:&lt;/strong&gt; IDEライセンスに無料枠が付属しますが、本格的に使うならAI Proプラン（$10/月）が必要です。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;所感:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;私はIntelliJ IDEAなどJetBrains製IDEのユーザですが、IDEとしっかり親和性のあるAIエージェントになっていて使い心地は良いです。&lt;/li&gt;
+&lt;li&gt;体感ですが、残念ながら無料枠はすぐなくなり、Proプランも本格的に使うには物足りなさがあります。&lt;/li&gt;
+&lt;li&gt;今バグがあって、All Products PackからIDE licenseに変えた人はAIプランの30日無料期間が過ぎた後Freeプランが使えない。 &lt;a href=&quot;https://youtrack.jetbrains.com/issue/LLM-17817&quot;&gt;https://youtrack.jetbrains.com/issue/LLM-17817&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;4. &lt;a href=&quot;https://github.com/features/copilot&quot;&gt;GitHub Copilot&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;IDE連携:&lt;/strong&gt; VS Codeとの連携は基本です。JetBrains IDEsやVim/Neovim向けのプラグインもあり。Githubとの統合も強力で、GithubのWebサイトから呼び出したりという使い方も便利。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;料金/無料枠:&lt;/strong&gt; 月額$10。学生やOSSメンテナーは無料で利用できるそう。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;所感:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;Github &amp;#x26; VS Codeをメインで使っている開発者はオススメ。&lt;/li&gt;
+&lt;li&gt;無難に安定感がある印象。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;5. &lt;a href=&quot;https://chatgpt.com/&quot;&gt;ChatGPT&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;IDE連携:&lt;/strong&gt; OpenAI公式のVS Code拡張機能がありますが、Web UIの完成度も高いため、ブラウザとIDEを並べて使うスタイルが主流です。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;料金/無料枠:&lt;/strong&gt; 無料でも利用できますが、最新モデルを快適に使うならPlusプラン（$20/月）が必要です。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;所感:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;コーディングよりもどちらかと言えば自然言語処理系が強力な印象。&lt;/li&gt;
+&lt;li&gt;なので上流工程の、実装方針の相談や要件・設計などのドキュメンテーションに使うのがオススメ。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;6. &lt;a href=&quot;https://kiro.dev/&quot;&gt;Kiro&lt;/a&gt;&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;IDE連携:&lt;/strong&gt; Kiroはそれ自体がAIネイティブなスタンドアロンのIDEです。VS Codeの拡張機能や設定との互換性も備えています。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;料金/無料枠:&lt;/strong&gt; 現在はプレビュー版として無料で提供されており、ウェイトリストに登録することで利用できます。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;所感:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;「仕様駆動開発」を掲げ、要件定義→システム設計→タスク分割→実装までを自律的に行うことを目指しています。&lt;/li&gt;
+&lt;li&gt;特に上流工程の流れがフレームワークのようになっていて、雰囲気コーディングにレールを敷いてくれている感があり、AI開発全体の精度向上になると感じる。&lt;/li&gt;
+&lt;li&gt;現状、プレビュー版故不安定さがある。実際「The model you&apos;ve selected is experiencing a high volume of traffic. Try changing the model and re-running your prompt.」のエラーが頻発し、Retryを押すだけなのですが実用に耐えかねるレベル。Claude Sonnet 3.7に落とすとマシになるらしい。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 674px; margin-left: initial;&quot;
+    &gt;
+      &lt;a
+    class=&quot;gatsby-resp-image-link&quot;
+    href=&quot;/static/8c39610121d298957975d06dffa74eb8/ed48a/kiroError.png&quot;
+    style=&quot;display: block&quot;
+    target=&quot;_blank&quot;
+    rel=&quot;noopener&quot;
+  &gt;
+    &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 19.583333333333332%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAAECAYAAACOXx+WAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAkElEQVR42qWPXQrCMBCEc48qtbZJSn6axDRCRAV98BQieP9DjEkspSI++fAxuzMDy5LH/YljvKBZM9RV95PNihbqin5nk5dzcj3fEMMJg/AFI0dosYNV47wP0hcvq+S2eFaHdy+p6l3JBDMgJg17f0imBW0E2FZ+wFs1zaKQO7yV6Ds995dKgotw6cryrX94AVVgdLfc+W9RAAAAAElFTkSuQmCC&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/static/8c39610121d298957975d06dffa74eb8/85704/kiroError.webp 240w,
+/static/8c39610121d298957975d06dffa74eb8/2d484/kiroError.webp 480w,
+/static/8c39610121d298957975d06dffa74eb8/eb2ae/kiroError.webp 674w&quot;
+              sizes=&quot;(max-width: 674px) 100vw, 674px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/static/8c39610121d298957975d06dffa74eb8/74bfa/kiroError.png 240w,
+/static/8c39610121d298957975d06dffa74eb8/b3a52/kiroError.png 480w,
+/static/8c39610121d298957975d06dffa74eb8/ed48a/kiroError.png 674w&quot;
+            sizes=&quot;(max-width: 674px) 100vw, 674px&quot;
+            type=&quot;image/png&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/static/8c39610121d298957975d06dffa74eb8/ed48a/kiroError.png&quot;
+            alt=&quot;kiroError.png&quot;
+            title=&quot;&quot;
+            loading=&quot;lazy&quot;
+            decoding=&quot;async&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+  &lt;/a&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h3&gt;7. &lt;a href=&quot;https://openrouter.ai/&quot;&gt;OpenRouter&lt;/a&gt; - 複数モデルを使い分けたいなら&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;IDE連携:&lt;/strong&gt; OpenRouter自体はIDEプラグインを提供していませんが、OpenAI互換のAPIを提供しているため、OpenAI APIに対応した各種ツールやエディタ拡張から利用可能です。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;料金/無料枠:&lt;/strong&gt; 従量課金制で、各モデルの料金はプロバイダーの価格そのまま（マークアップなし）。一部のモデルには&lt;code&gt;:free&lt;/code&gt;バリアントがあり、レート制限付きで無料利用可能。BYOK（Bring Your Own Key）も対応しており、月100万リクエストまで無料。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;所感:&lt;/strong&gt;
+&lt;ul&gt;
+&lt;li&gt;Claude、GPT、Gemini、Llama等、400以上のモデルに単一のAPIでアクセスできるのが最大の魅力。&lt;/li&gt;
+&lt;li&gt;モデルごとの得意分野に応じて使い分けたい開発者や、複数プロバイダーを一元管理したいチームに向いています。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;:nitro&lt;/code&gt;（高速応答優先）や&lt;code&gt;:floor&lt;/code&gt;（低コスト優先）などのルーティングオプションも便利。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;AIコーディングツールを選ぶ際は、単体の性能だけでなく「普段使っているIDEでいかに良い開発フローになるか」という視点が非常に重要です。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;まずは&lt;code&gt;Gemini CLI&lt;/code&gt;を試す: 無料で始められIDEに依存しないため、AI支援の第一歩として最適。&lt;/li&gt;
+&lt;li&gt;IDE連携を重視するなら:
+&lt;ul&gt;
+&lt;li&gt;VS Codeユーザー → &lt;code&gt;GitHub Copilot&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;JetBrains IDEsユーザー → &lt;code&gt;JetBrains AI&lt;/code&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;より高度な利用や次世代の開発体験を求めるなら: &lt;code&gt;ChatGPT&lt;/code&gt;や&lt;code&gt;Claude&lt;/code&gt;の併用、あるいは&lt;code&gt;Kiro&lt;/code&gt;のような新しいAI IDEを試す。&lt;/li&gt;
+&lt;li&gt;複数モデルを柔軟に使い分けたいなら: &lt;code&gt;OpenRouter&lt;/code&gt;で一元管理する。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;これが今現在の、賢いAIコーディングツールの選び方かと思います。ぜひ、最適な「AIの相棒」を見つけて、開発効率を飛躍させてください。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[WindowsからLinuxへのSSH接続]]></title><description><![CDATA[WindowsマシンからLinux(UbuntuServer)への公開鍵を使ったSSH接続 単純なWindowsマシンからLinux(UbuntuServer)へのSSH接続の方法を紹介します。
+特別な事はしませんが、よく忘れるので備忘です。 環境 Windows 11 Home…]]></description><link>https://sun0range.tech.server-on.net/information-technology/connect-ssh</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/connect-ssh</guid><pubDate>Sun, 16 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;WindowsマシンからLinux(UbuntuServer)への公開鍵を使ったSSH接続&lt;/h1&gt;
+&lt;p&gt;単純なWindowsマシンからLinux(UbuntuServer)へのSSH接続の方法を紹介します。
+特別な事はしませんが、よく忘れるので備忘です。&lt;/p&gt;
+&lt;h2&gt;環境&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Windows 11 Home&lt;/li&gt;
+&lt;li&gt;Ubuntu Server 22.04 LTS
+&lt;ul&gt;
+&lt;li&gt;本記事での説明では、ユーザ名を &lt;code&gt;ubuntu&lt;/code&gt; 、IPアドレスを &lt;code&gt;192.168.1.100&lt;/code&gt; としています。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;Ubuntu ServerでSSHを有効にする&lt;/h2&gt;
+&lt;p&gt;Ubuntu ServerがSSH接続を許可するように設定します。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;OpenSSHのインストール&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Ubuntu ServerにSSHサーバーがインストールされているか確認し、なければインストールします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-sh&quot;&gt;sudo apt update
+sudo apt install -y openssh-server
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;SSHサービスの起動と有効化&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;SSHサービスを開始し、再起動後も有効にします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-sh&quot;&gt;sudo systemctl enable --now ssh
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;ファイアウォールの設定（必要に応じて）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;ufw を使用してSSHを許可します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-sh&quot;&gt;sudo ufw allow OpenSSH
+sudo ufw enable
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&quot;4&quot;&gt;
+&lt;li&gt;Ubuntu ServerのIPアドレスを確認
+Ubuntu ServerのローカルIPアドレスを確認します。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&quot;language-sh&quot;&gt;ip a | grep &quot;inet &quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;または&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-sh&quot;&gt;hostname -I
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;例えば 192.168.1.100 というIPが表示されたら、それをWindowsから使用します。&lt;/p&gt;
+&lt;h2&gt;WindowsからSSH接続&lt;/h2&gt;
+&lt;p&gt;Windowsでは以下の方法でSSH接続できます。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;WindowsのコマンドプロンプトまたはPowerShellを使用&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;まずは接続確認のためにパスワード認証でSSH接続できることを確認します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-powershell&quot;&gt;ssh ユーザー名@IPアドレス
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;例:&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-powershell&quot;&gt;ssh ubuntu@192.168.1.100
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h3&gt;Windowsから公開鍵を使ったSSH接続&lt;/h3&gt;
+&lt;p&gt;セキュリティ面でも楽という面でもパスワード無しでSSH接続するほうがよいので、WindowsでSSHキーを作成し、Ubuntu Serverに登録します。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;WindowsでSSHキーを作成&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;PowerShellまたはWindows Terminalで以下を実行：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-powershell&quot;&gt;ssh-keygen -t rsa -b 4096
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;デフォルトの保存場所（C:\Users\ユーザー名.ssh\id_rsa）でEnterを押します。&lt;/p&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;公開鍵をUbuntuにコピー&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以下のコマンドでUbuntu Serverに公開鍵を登録。ユーザ名・IPアドレスは適宜変更してください。パスワードも聞かれます。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-powershell&quot;&gt;type $HOME\.ssh\id_rsa.pub | ssh ubuntu@192.168.1.100 &quot;mkdir -p ~/.ssh &amp;#x26;&amp;#x26; cat &gt;&gt; ~/.ssh/authorized_keys&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;鍵認証でSSH接続&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;今後は以下でパスワードなし接続が可能：&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-powershell&quot;&gt;ssh ubuntu@192.168.1.100
+&lt;/code&gt;&lt;/pre&gt;</content:encoded></item><item><title><![CDATA[Ubuntu ServerでWiFiを使えるようにする手順(MacBook Airでの事例)]]></title><description><![CDATA[Ubuntu ServerでWiFiを使えるようにする手順(MacBook Airでの事例) はじめに 自宅用にServerマシンを構築しようと考えました。k8sを入れたり、色々と使い倒したかったので、少々スペックが欲しかったこともあり、伝手で中古のMacBook Air…]]></description><link>https://sun0range.tech.server-on.net/information-technology/set-up-wifi-on-ubuntu-in-mac</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/set-up-wifi-on-ubuntu-in-mac</guid><pubDate>Sun, 09 Mar 2025 00:00:00 GMT</pubDate><content:encoded>&lt;h1&gt;Ubuntu ServerでWiFiを使えるようにする手順(MacBook Airでの事例)&lt;/h1&gt;
+&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;自宅用にServerマシンを構築しようと考えました。k8sを入れたり、色々と使い倒したかったので、少々スペックが欲しかったこともあり、伝手で中古のMacBook Airを安く手に入り、その上にUbuntuをインストールしました。&lt;/p&gt;
+&lt;p&gt;Ubuntuをインストールすること自体は簡単ですが、WiFiを使えるようにするのが大変面倒でした。ネット上でも同様の苦労が多数見受けられたので、私も事例を残しておきたいと思います。インターネット接続がない状態での作業は、特にWiFiドライバのインストールにおいて苦労することがあります。本記事では、スマートフォンを使ったUSBテザリングを利用して、Ubuntu上でWiFiを使えるようにする手順を紹介します。&lt;/p&gt;
+&lt;h2&gt;環境情報&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;MacBook Air（2017）
+&lt;ul&gt;
+&lt;li&gt;CPU: Intel Core i5-5350U @ 1.80GHz&lt;/li&gt;
+&lt;li&gt;RAM: 8GB&lt;/li&gt;
+&lt;li&gt;GPU: Intel HD Graphics 6000&lt;/li&gt;
+&lt;li&gt;SSD: 128GB&lt;/li&gt;
+&lt;li&gt;WiFi: Broadcom BCM4360&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Ubuntu Server 22.04 LTS
+&lt;ul&gt;
+&lt;li&gt;上記MacBook Airにインストール済み。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;手順&lt;/h2&gt;
+&lt;h3&gt;初期状態の確認&lt;/h3&gt;
+&lt;p&gt;&lt;code&gt;ip a&lt;/code&gt;コマンドを実行して、WiFiデバイスが認識されていることを確認します。(仮にコマンドを使えない場合は、&lt;code&gt;networkctl&lt;/code&gt;コマンドを使ってもOKです。)&lt;br&gt;
+下記のような出力になるのではないかと思います。&lt;br&gt;
+&lt;code&gt;ip a&lt;/code&gt;コマンドの場合。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ip a
+1: lo: &amp;#x3C;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.0/8 scope host lo
+       valid_lft forever preferred_lft forever
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;code&gt;networkctl&lt;/code&gt;コマンドの場合。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;networkctl
+IDX LINK             TYPE               OPERATIONAL SETUP
+  1 lo               loopback           carrier     unmanaged
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;ここでのポイントは&lt;code&gt;wl～&lt;/code&gt;始まりのデバイスがないことで、wlはwirelessを表し、つまりWiFiデバイスが認識されていないことです。&lt;br&gt;
+通常各種installをしていって解消していくわけですが、そのためのネットワーク接続がなくて困るわけです。&lt;br&gt;
+なので、USBテザリングを使ってインターネット接続を確保します。&lt;/p&gt;
+&lt;h4&gt;補足&lt;/h4&gt;
+&lt;p&gt;WiFi以外のネットワーク接続として、他の候補としては以下があります。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;有線LAN (→LANコネクタはMacBookにはなく、変換コネクタの類も持っていなかった)&lt;/li&gt;
+&lt;li&gt;Bluetooth (→Bluetoothの設定は面倒そうだったので避けた)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;USBテザリングの準備&lt;/h2&gt;
+&lt;p&gt;まず以下の物理的接続を行います。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;スマートフォンとMacBookをUSBケーブルで接続し、スマートフォンの設定からUSBテザリングを有効にします。&lt;/li&gt;
+&lt;li&gt;MacBookにスマートフォンを接続します。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;その状態で再度&lt;code&gt;ip a&lt;/code&gt;コマンドを実行すると、&lt;code&gt;en～&lt;/code&gt;始まりのデバイスが増えているはずです。enはethernetを表す有線接続のデバイスです。&lt;br&gt;
+その増えた&lt;code&gt;en～&lt;/code&gt;始まりのデバイスをメモしておきます。ちなみにこれは接続するたびに変わるので、毎回確認が必要です。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ip a
+1: lo: &amp;#x3C;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.0/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: enp0s20u1: &amp;#x3C;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether ab:cd:12:34:56:ef brd ff:ff:ff:ff:ff:ff
+    inet 192.168.119.142/24 brd 192.168.119.255 scope global dynamic noprefixroute enp0s20u1
+       valid_lft 86399sec preferred_lft 86399sec
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;USBテザリングの設定&lt;/h2&gt;
+&lt;p&gt;次に、netplanを使って、USBテザリングを使ってインターネット接続を確保します。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;sudo vi /etc/netplan/60-tmp-tethering.yaml&lt;/code&gt;(ファイル名は任意)のコマンドを入力して、ファイルを作成します。テキストエディタはここではviを使っていますが、他のエディタでも構いません。&lt;/li&gt;
+&lt;li&gt;以下の通りファイルの中身を編集します。viの場合、&lt;code&gt;i&lt;/code&gt; でまず入力モードにしたあと &lt;code&gt;escキー&lt;/code&gt; → &lt;code&gt;:wq&lt;/code&gt; で保存して終了します。この時、&lt;em&gt;USBテザリングの準備&lt;/em&gt; で確認した&lt;code&gt;en～&lt;/code&gt;始まりのデバイス名を下記例で言うところの&lt;code&gt;enp0s20u1&lt;/code&gt;を置き換えてください。
+&lt;pre&gt;&lt;code class=&quot;language-yaml:/etc/netplan/60-tmp-tethering.yaml&quot;&gt; network:
+   version: 2
+   renderer: networkd
+   ethernets:
+      enp0s20u1:
+         dhcp4: true
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;以下のコマンドを実行して、設定を反映します。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt; sudo netplan try
+&lt;/code&gt;&lt;/pre&gt;
+ここで設定不備などあればErrorが出ます。特に問題なければ下記のようになるので、&lt;code&gt;Enterキー&lt;/code&gt; を入力して設定を適用します。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt; Do you want to keep these settings?
+ 
+ Press ENTER before the timeout to accept the new configuration
+
+ Chages will revert in 120 seconds
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;これで暫定的なインターネット接続が確保されました。&lt;code&gt;sudo apt update&lt;/code&gt; などでインターネット接続が確認できるか確認してみてください。&lt;/p&gt;
+&lt;h3&gt;補足: netplanとは&lt;/h3&gt;
+&lt;p&gt;netplanは、Ubuntu 17.10以降で採用されているネットワーク設定ツールです。
+&lt;code&gt;/etc/netplan/&lt;/code&gt; にあるYAMLファイルをアルファベット順に読み取ってネットワーク設定を行います。
+元々 &lt;code&gt;/etc/netplan/50-cloud-init.yaml&lt;/code&gt; があるはずですが、それは編集せずに新しいファイルを作成します。&lt;/p&gt;
+&lt;h2&gt;WiFiドライバのインストール&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;PCI接続されているであろう内蔵ネットワークカードを &lt;code&gt;lspci&lt;/code&gt; コマンドで確認します。grepで&lt;code&gt;Network&lt;/code&gt;を含む行を抽出すると見やすいです。(ネットワークカードによって表記が違う場合もあるのでその場合はgrep無しで確認してください)
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;lspci | grep Network
+03:00.0 Network controller: Broadcom Inc. and subsidiaries BCM4360 802.11ac Wireless Network Adapter (rev 03)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;ターミナルを開き、以下のコマンドを入力して必要なパッケージをインストールします。&lt;br&gt;
+ただし、これはBroadcomのBCM4360の場合であり、他のネットワークカードの場合は適切なドライバをインストールしてください。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo apt-get update
+sudo apt-get --reinstall install bcmwl-kernel-source
+sudo modprobe -r b43 ssb wl brcmfmac brcmsmac bcma
+sudo modprobe wl
+sudo reboot
+&lt;/code&gt;&lt;/pre&gt;
+※参考URL: &lt;a href=&quot;https://help.ubuntu.com/community/WifiDocs/Driver/bcm43xx#Installing_STA_drivers&quot;&gt;https://help.ubuntu.com/community/WifiDocs/Driver/bcm43xx#Installing_STA_drivers&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;再起動後、再度&lt;code&gt;ip a&lt;/code&gt;コマンドを実行して、&lt;code&gt;wl～&lt;/code&gt;始まりのWiFiデバイスが認識されていることを確認します。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;ip a
+1: lo: &amp;#x3C;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.0/8 scope host lo
+       valid_lft forever preferred_lft forever
+2: wlp3s0: &amp;#x3C;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UP group default qlen 1000
+    link/ether zy:xw:98:76:54:vu brd ff:ff:ff:ff:ff:ff
+    inet 192.168.11.10/24 brd 192.168.11.255 scope global dynamic noprefixroute wlp3s0
+       valid_lft 167552sec preferred_lft 167552sec
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;再びnetplanを使って、WiFi用の設定を&lt;code&gt;sudo vi /etc/netplan/90-wifi.yaml&lt;/code&gt;(ファイル名は任意)のコマンドで以下の通りファイルの中身を編集します。&lt;br&gt;
+この時、上記で確認した&lt;code&gt;wl～&lt;/code&gt;始まりのデバイス名を下記例で言うところの&lt;code&gt;wlp3s0&lt;/code&gt;を置き換えてください。また、&lt;code&gt;{wifi_SSID_name}&lt;/code&gt; と &lt;code&gt;{your_wifi_password}&lt;/code&gt; はそれぞれ、WiFiのSSID名とパスワードに置き換えてください。
+&lt;pre&gt;&lt;code class=&quot;language-yaml:/etc/netplan/90-wifi.yaml&quot;&gt; network:
+   version: 2
+   renderer: networkd
+   wifis:
+     wlp3s0:
+       dhcp4: true
+       optional: true
+       access-points:
+         {wifi_SSID_name}:
+           password: &quot;{your_wifi_password}&quot;
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;再び以下のコマンドを実行して、設定を反映します。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt; sudo netplan try
+&lt;/code&gt;&lt;/pre&gt;
+これでWiFiを使えるようになるはずなのですが、私の環境ではうまくいきませんでした。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;NetworkManagerに変更&lt;/h3&gt;
+&lt;p&gt;追加対応ですが、networkdからNetworkManagerに変更します。&lt;br&gt;
+これらは本来、serverではnetworkdを、desktopではNetworkManagerを使うという想定ですがWiFi利用において私はうまくいかなかったので切り替えてみます。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;以下のコマンドを実行して、NetworkManagerをインストールします。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo apt install network-manager
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;netplanの設定をnetworkdからNetworkManagerに変更します。先ほどの &lt;code&gt;90-wifi.yaml&lt;/code&gt; のrendererだけを変えます。
+&lt;pre&gt;&lt;code class=&quot;language-yaml:/etc/netplan/90-wifi.yaml&quot;&gt; network:
+   version: 2
+   renderer: NetworkManager
+# 以下略
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;li&gt;USBテザリングを外した上で&lt;code&gt;sudo apt update&lt;/code&gt; などでインターネット接続が確認できるか確認してみてください。&lt;/li&gt;
+&lt;li&gt;ネット接続できることが分かったら、テザリング用のnetplan設定は不要なので削除しておいてください。
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;sudo rm /etc/netplan/60-tmp-tethering.yaml
+&lt;/code&gt;&lt;/pre&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;本記事では、中古のMacBook AirにUbuntu Serverをインストールし、WiFiを使用できるようにする手順を詳しく解説しました。特に、インターネット接続がない状態でのWiFiドライバのインストールに苦労した経験を共有し、スマートフォンを利用したUSBテザリングを活用する方法を示しました。&lt;/p&gt;
+&lt;p&gt;この手順が、同様の環境で作業を行う他のユーザーにとって役立つことを願っています。Ubuntuの柔軟性を活かして、快適なサーバーライフを楽しんでください。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[顔認識をするChrome拡張を実装したので、その紹介と技術的解説]]></title><description><![CDATA[はじめに 子どもを幼稚園に通わせていると、各種イベントの写真がアルバムサイトにアップされることがあります。 今どき多くのサイトでは顔写真検索機能があったりすることも多いのですが、無い所もあって、そういう場合のために自作してしまおうと思ったのがこのChrome…]]></description><link>https://sun0range.tech.server-on.net/information-technology/chrome-extention-family-photo-finder</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/chrome-extention-family-photo-finder</guid><pubDate>Wed, 24 Jul 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;子どもを幼稚園に通わせていると、各種イベントの写真がアルバムサイトにアップされることがあります。&lt;br&gt;
+今どき多くのサイトでは顔写真検索機能があったりすることも多いのですが、無い所もあって、そういう場合のために自作してしまおうと思ったのがこのChrome拡張を作成した背景です。&lt;br&gt;
+実際のChrome拡張： &lt;a href=&quot;https://chromewebstore.google.com/detail/family-photo-finder/fikdbpibhbgbedmnmlcfckckpohadebi?authuser=0&amp;#x26;hl=ja&quot;&gt;Family Photo Finder&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;Chrome拡張の機能概要&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;集合写真やアルバムサイトで家族の姿を見逃さないためのツール。&lt;/li&gt;
+&lt;li&gt;家族や友人の顔画像を事前に登録し、任意のWebページで同じ人物が写っている写真を見つけて枠で囲って表示する。&lt;/li&gt;
+&lt;li&gt;機械学習による顔認識なので精度は100%ではなく、検知漏れや誤検知があることをご了承ください。
+&lt;ul&gt;
+&lt;li&gt;残念なことに、子どもの顔は精度が低いことが多いです。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;使用方法&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;Chrome拡張をインストールします。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;a href=&quot;https://chromewebstore.google.com/detail/family-photo-finder/fikdbpibhbgbedmnmlcfckckpohadebi?authuser=0&amp;#x26;hl=ja&quot;&gt;ここ&lt;/a&gt;から「Chromeに追加」でインストールできます。&lt;br&gt;
+2. 探したい人物の顔画像を登録。(初回のみ)
+右上にある拡張アイコンをクリックして、ポップアップを開きます。&lt;br&gt;
+すると下記のように、表示する「名前」「枠の色」そして「対象人物の顔画像」を登録してください。1人につき3画像登録でき、多く登録するほど検知精度が上がります。&lt;br&gt;
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; margin-left: initial;&quot;
+    &gt;
+      &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 73.33333333333334%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADwAwCdASoUAA8APtFUo0uoJKMhsAgBABoJZwCsACKUZtNFHidhJA1gAP7rao83R2wGDfSgyCpl+9yB8+YzIlz71zTiHAVeU+sZ8Kjb68zHvxi35ECPNKE/aTGF01sR21UUQAAA&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/static/14340cc92a50ee5f4f925f3fbcb400ab/85704/popup.webp 240w,
+/static/14340cc92a50ee5f4f925f3fbcb400ab/2d484/popup.webp 480w,
+/static/14340cc92a50ee5f4f925f3fbcb400ab/ac99e/popup.webp 960w,
+/static/14340cc92a50ee5f4f925f3fbcb400ab/9b43f/popup.webp 1213w&quot;
+              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/static/14340cc92a50ee5f4f925f3fbcb400ab/85704/popup.webp 240w,
+/static/14340cc92a50ee5f4f925f3fbcb400ab/2d484/popup.webp 480w,
+/static/14340cc92a50ee5f4f925f3fbcb400ab/ac99e/popup.webp 960w,
+/static/14340cc92a50ee5f4f925f3fbcb400ab/9b43f/popup.webp 1213w&quot;
+            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+            type=&quot;image/webp&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/static/14340cc92a50ee5f4f925f3fbcb400ab/ac99e/popup.webp&quot;
+            alt=&quot;popup&quot;
+            title=&quot;&quot;
+            loading=&quot;lazy&quot;
+            decoding=&quot;async&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+    &lt;/span&gt;&lt;br&gt;
+ちなみにこの登録情報はGoogleアカウントで同期されるので、複数のPCで同じ情報が共有されます。&lt;br&gt;
+3. 任意のWebページを開きます。
+画像に登録した人物が写っている場合、自動で枠が表示されます。
+例：
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; margin-left: initial;&quot;
+    &gt;
+      &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 62.5%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/webp;base64,UklGRqAAAABXRUJQVlA4IJQAAAAwBACdASoUAA0APtFUo0uoJKMhsAgBABoJQBOkERwWIk5WI+doIxWbegAA/shzKyjpTGgvHlLmHaUXnUwMPbh7zx8gHjksaH13Yy53KxSIhomRPCu25wZbgKYMGX00Ow3fgjnbOB4bEpkQpIPAQJAAU1uJ15m+CmKXL4f+u8WH8mLeViBqmP0VWxo9oFCheG09wAAA&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/static/7619f7e5aefbf444c0541979ca7073fc/85704/sample.webp 240w,
+/static/7619f7e5aefbf444c0541979ca7073fc/2d484/sample.webp 480w,
+/static/7619f7e5aefbf444c0541979ca7073fc/ac99e/sample.webp 960w,
+/static/7619f7e5aefbf444c0541979ca7073fc/90b83/sample.webp 1280w&quot;
+              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/static/7619f7e5aefbf444c0541979ca7073fc/85704/sample.webp 240w,
+/static/7619f7e5aefbf444c0541979ca7073fc/2d484/sample.webp 480w,
+/static/7619f7e5aefbf444c0541979ca7073fc/ac99e/sample.webp 960w,
+/static/7619f7e5aefbf444c0541979ca7073fc/90b83/sample.webp 1280w&quot;
+            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+            type=&quot;image/webp&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/static/7619f7e5aefbf444c0541979ca7073fc/ac99e/sample.webp&quot;
+            alt=&quot;sample&quot;
+            title=&quot;&quot;
+            loading=&quot;lazy&quot;
+            decoding=&quot;async&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2&gt;技術的な解説&lt;/h2&gt;
+&lt;p&gt;Githubリポジトリはこちら。&lt;a href=&quot;https://github.com/nisioka/face-api-on-chrome-extention&quot;&gt;https://github.com/nisioka/face-api-on-chrome-extention&lt;/a&gt;&lt;/p&gt;
+&lt;h3&gt;前提1: 使用ライブラリ&lt;/h3&gt;
+&lt;pre&gt;&lt;code class=&quot;language-json&quot;&gt;{
+  &quot;devDependencies&quot;: {
+    &quot;@crxjs/vite-plugin&quot;: &quot;2.0.0-beta.23&quot;,
+    &quot;@types/chrome&quot;: &quot;^0.0.268&quot;,
+    &quot;typescript&quot;: &quot;^5.5.4&quot;,
+    &quot;vite&quot;: &quot;^5.3.5&quot;
+  },
+  &quot;dependencies&quot;: {
+    &quot;@extend-chrome/storage&quot;: &quot;^1.5.0&quot;,
+    &quot;@vladmandic/face-api&quot;: &quot;^1.7.13&quot;
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;特筆しておくと、&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;@crxjs/vite-plugin&lt;/code&gt;はChrome拡張のビルドを行うためのViteプラグインです。マニフェストをTypescriptで型を持ちつつかけたり、いい感じにbuildしてくれたりで、Chrome拡張開発には最適でした。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@extend-chrome/storage&lt;/code&gt;はChromeのストレージを使うためのラッパーライブラリで、無くてもそこまで困りませんが、async/awaitが使えて楽に綺麗に書きやすかったです。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;@vladmandic/face-api&lt;/code&gt;はface-api.jsのラッパーライブラリで、TypeScriptで書かれているため、型がしっかりしていて使いやすかったです。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;前提2: face-api.jsの紹介&lt;/h3&gt;
+&lt;p&gt;本Chrome拡張では、顔認識機能を実装するためにface-api.jsを使用しています。&lt;br&gt;
+face-api.jsとは、ブラウザ上で動作する顔認識用のJavaScriptライブラリです。TensorFlow.jsをベースにしており、高度な顔認識機能を簡単に利用できるように設計されています。&lt;br&gt;
+以下はface-api.jsの主な特徴と機能についての説明です。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;ブラウザ対応&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;ブラウザ上で動作するため、クライアントサイドで顔認識を行え、Chrome拡張での利用にも適しています。
+サーバーとの通信が不要なため、プライバシー保護にも寄与します。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;高精度の顔認識&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;ディープラーニング技術を使用しており、高精度な顔認識が可能です。
+事前に学習されたモデルを利用することで、すぐに顔認識機能を実装できます。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;多機能&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;顔検出、特徴点の抽出、顔のランドマークの検出、顔の特徴ベクトルの取得など、様々な顔認識機能を提供しています。
+本Chrome拡張では、顔検出と特徴点の抽出、枠の描画機能も使っていたりします。そのため下記3つのモデルをロードしています。
+1つ目は顔検出のために必要、2つ目はランドマーク検出に必要でこれは軽量(tiny)版もありましたが精度が悪く感じたので無印版を、3つ目は顔の特徴ベクトルを取得するために必要です。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;ssd_mobilenetv1.weights&lt;/li&gt;
+&lt;li&gt;face_landmark_68_model.weights&lt;/li&gt;
+&lt;li&gt;face_recognition_model.weights&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;ちなみにこれらのモデルデータは、&lt;a href=&quot;https://github.com/justadudewhohacks/face-api.js-models/tree/master/uncompressed&quot;&gt;ここ&lt;/a&gt;から取得しました。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;参考&lt;/strong&gt;&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://justadudewhohacks.github.io/face-api.js/docs/index.html&quot;&gt;https://justadudewhohacks.github.io/face-api.js/docs/index.html&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://itnext.io/face-api-js-javascript-api-for-face-recognition-in-the-browser-with-tensorflow-js-bcc2a6c4cf07&quot;&gt;https://itnext.io/face-api-js-javascript-api-for-face-recognition-in-the-browser-with-tensorflow-js-bcc2a6c4cf07&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;前提3: Chrome拡張マニフェストV3を使用&lt;/h3&gt;
+&lt;p&gt;拡張機能プラットフォームの最新バージョンであるマニフェストV3を使用しています。マニフェストV2は段階的に廃止されています。
+スクリプトの実行箇所としては、Webページでの動作の&lt;code&gt;content_scripts&lt;/code&gt;と、バックグラウンドで動く&lt;code&gt;service_worker&lt;/code&gt;がありますが、前者のみを使用しています。
+後者はマニフェストV3からの物で、これで動かそうとしましたが、face-api.jsが上手く起動されませんでした。
+getEnvに失敗した旨のエラーが出ており、&lt;a href=&quot;https://github.com/justadudewhohacks/face-api.js/issues/47&quot;&gt;こちら&lt;/a&gt;のissueの議論を参考にも見ましたが、WebWorker環境での適切な設定がわからず断念しました。&lt;/p&gt;
+&lt;h3&gt;処理詳細説明&lt;/h3&gt;
+&lt;h4&gt;1. &lt;a href=&quot;https://github.com/nisioka/face-api-on-chrome-extention/blob/master/src/popup.ts&quot;&gt;popup.ts&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;顔画像の登録としてChromeのストレージに保存、設定値の表示を行うためのものです。&lt;br&gt;
+popup.htmlは空っぽで、Chromeストレージから現設定値を初期値として取得し、それを元にゴリゴリとDOMを動的に生成しています。&lt;br&gt;
+正直汚くレスポンスも遅いのですが、勢いで書いてしまっています。&lt;br&gt;
+ここでユーザが顔写真を登録すると、face-api.jsで顔検出ならびに顔特徴ベクトル(face descriptor)を取得し、それをChromeのsyncストレージに保存しています。&lt;br&gt;
+画像自体はChromeのlocalストレージに保存しています。syncには容量の関係で保存が難しいですが、同一端末だけでも画像が見れたほうがいいかと思っての仕様です。&lt;/p&gt;
+&lt;p&gt;※注： ここで「ストレージ」といっているのは、&lt;a href=&quot;https://developer.chrome.com/docs/extensions/reference/api/storage?hl=ja&quot;&gt;chrome.storage&lt;/a&gt;のことで、一般的なWebブラウザのローカルストレージとかではないです。&lt;/p&gt;
+&lt;h4&gt;2. &lt;a href=&quot;https://github.com/nisioka/face-api-on-chrome-extention/blob/master/src/content_script.ts&quot;&gt;content_script.ts&lt;/a&gt;&lt;/h4&gt;
+&lt;p&gt;各Webページで動作するスクリプトです。&lt;br&gt;
+Webページ読み込み時に、当該ページの「imgタグ」と「CSSでbackground-imageを持つもの」を対象に処理を行います。&lt;br&gt;
+face-api.jsを使って、顔検出を行いその全てに足して、登録した顔画像と顔特徴ベクトルが近いかどうかを判定し、一致する場合は強調のための枠を描画します。
+canvasを用いて描画していて、そのデータURLを、元の画像URLに差し替えることで、表示しています。&lt;/p&gt;
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;以上のように、face-api.jsを用いてChrome拡張機能を実装してみました。&lt;br&gt;
+Chrome拡張が故に制約が多くて苦労したところも多かったですが、face-api.jsという強力な機械学習ライブラリがブラウザ上で動くことに感動する気持ちが大きかったです。&lt;/p&gt;
+&lt;hr&gt;
+&lt;div class=&quot;booklink-box&quot; style=&quot;text-align:left;padding-bottom:20px;font-size:small;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-image&quot; style=&quot;float:left;margin:0 15px 10px 0;&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;&lt;img src=&quot;https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/2644/9784777522644_1_2.jpg?_ex=200x200&quot; style=&quot;border: none;&quot;&gt;&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;booklink-info&quot; style=&quot;line-height:120%;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-name&quot; style=&quot;margin-bottom:10px;line-height:120%&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Chrome拡張×ChatGPTで作業効率化&lt;/a&gt;&lt;div class=&quot;booklink-powered-date&quot; style=&quot;font-size:8pt;margin-top:5px;font-family:verdana;line-height:120%&quot;&gt;posted with &lt;a href=&quot;https://yomereba.com&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot;&gt;ヨメレバ&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-detail&quot; style=&quot;margin-bottom:5px;&quot;&gt;I/O編集部 工学社 2023年08月29日頃    &lt;/div&gt;&lt;div class=&quot;booklink-link2&quot; style=&quot;margin-top:10px;&quot;&gt;&lt;div class=&quot;shoplinkamazon&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fexec%2Fobidos%2FASIN%2F4777522644&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Amazon&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;shoplinkkindle&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fgp%2Fsearch%3Fkeywords%3DChrome%25E6%258B%25A1%25E5%25BC%25B5%25C3%2597ChatGPT%25E3%2581%25A7%25E4%25BD%259C%25E6%25A5%25AD%25E5%258A%25B9%25E7%258E%2587%25E5%258C%2596%26__mk_ja_JP%3D%2583J%2583%255E%2583J%2583i%26url%3Dnode%253D2275256051&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Kindle&lt;/a&gt;&lt;/div&gt;                               	   	   	  	  &lt;div class=&quot;shoplinktoshokan&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;http://calil.jp/book/4777522644&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;図書館&lt;/a&gt;&lt;/div&gt;	&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-footer&quot; style=&quot;clear: left&quot;&gt;&lt;/div&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[静的サイトでの動的なサイト内検索機能の実装を紹介]]></title><description><![CDATA[はじめに 本ブログは GatsbyJS…]]></description><link>https://sun0range.tech.server-on.net/information-technology/introduce-search-page</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/introduce-search-page</guid><pubDate>Wed, 26 Jun 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;本ブログは GatsbyJS を使用して静的サイトとして運用しています。&lt;/p&gt;
+&lt;p&gt;ただ、それでもサイト内検索などの動的な機能が必要であると考え、実装しました。
+非常に軽快で満足できる実装になりました。ぜひこちらの&lt;a href=&quot;/search&quot; target=&quot;_brank&quot;&gt;検索ページ&lt;/a&gt;をご覧いただき、お試しください。&lt;/p&gt;
+&lt;p&gt;実際のコードが見たい場合は、&lt;a href=&quot;https://github.com/nisioka/sun0range.com/blob/master/src/pages/search.tsx&quot; target=&quot;_blank&quot;&gt;こちら&lt;/a&gt;をご覧ください。&lt;/p&gt;
+&lt;h2&gt;全体仕様&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;このページは、検索機能を提供します。API コールを行わず、ブラウザの JavaScript で動作します。
+&lt;ul&gt;
+&lt;li&gt;モバイル環境でも軽快に動作しますが、検索対象の増加によって性能が低下する可能性があります。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;検索文字列の入力 1 文字ごとにインタラクティブに検索結果を表示します。&lt;/li&gt;
+&lt;li&gt;URL のクエリパラメータに検索文字列が含まれ、入力フォームと同期しているため、リロードしても同じ表示が行われ、検索結果の URL で共有もできます。&lt;/li&gt;
+&lt;li&gt;検索対象は全ての記事であり、タイトルか記事内容に文字列が含まれるかどうかで判定します。複数ワード検索はスペースで区切って行えます。大文字と小文字は区別しません。&lt;/li&gt;
+&lt;li&gt;検索結果には、ヒット件数と記事のタイトルと説明文が表示されます。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;詳細説明&lt;/h2&gt;
+&lt;p&gt;必要最小限のコードを抜粋しています。これに基づいて後述します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;import React, { useEffect, useState } from &quot;react&quot;
+import { graphql, Link } from &quot;gatsby&quot;
+import { convertCategory, mergePosts } from &quot;../utilFunction&quot;
+
+const Search = ({ data, location }: { data: any; location: Location }) =&gt; {
+  const posts = mergePosts(data.allMarkdownRemark, data.allWpPost, data.allFile)
+  const initQuery = decodeURI(
+    location.href?.split(&quot;?q=&quot;)[1] || &quot;&quot;
+  ).toLowerCase()
+  const [state, setState] = useState({
+    filteredData: filterByQuery(initQuery.split(/\s+/)),
+    query: initQuery,
+  })
+  const { filteredData, query } = state
+
+  function filterByQuery(queryWords: string[]) {
+    return posts.filter(post =&gt; {
+      for (const word of queryWords) {
+        if (
+          !post.title.toLowerCase().includes(word) &amp;#x26;&amp;#x26;
+          !post.description?.toLowerCase().includes(word)
+        ) {
+          return false
+        }
+      }
+      return true
+    })
+  }
+  function handleInputChange(event: React.ChangeEvent&amp;#x3C;HTMLInputElement&gt;) {
+    const queryWords = event.target.value.toLowerCase().split(/\s+/)
+
+    setState(prevState =&gt; ({
+      ...prevState,
+      filteredData: filterByQuery(queryWords),
+      query: queryWords.join(&quot; &quot;),
+    }))
+  }
+
+  useEffect(() =&gt; {
+    // ユーザーの入力があるたびにURLのクエリパラメータを更新
+    const params = new URLSearchParams()
+    if (query) {
+      params.append(&quot;q&quot;, query)
+    } else {
+      params.delete(&quot;q&quot;)
+    }
+    window.history.replaceState(
+      &quot;&quot;,
+      &quot;&quot;,
+      location.href.split(&quot;?&quot;)[0] +
+        (params.size &gt; 0 ? &quot;?&quot; + params.toString() : &quot;&quot;)
+    )
+  }, [state.query])
+
+  return (
+    &amp;#x3C;&gt;
+      &amp;#x3C;input
+        type=&quot;text&quot;
+        aria-label=&quot;Search&quot;
+        placeholder=&quot;検索ワードを入力...&quot;
+        onChange={handleInputChange}
+        value={query}
+      /&gt;
+      &amp;#x3C;div className=&quot;result-inner__res&quot;&gt;
+        {query !== &quot;&quot;
+          ? query + &quot; の検索結果: &quot; + filteredData.length + &quot;件&quot;
+          : filteredData.length + &quot;件の記事があります&quot;}
+      &amp;#x3C;/div&gt;
+      &amp;#x3C;h1&gt;サイト内検索&amp;#x3C;/h1&gt;
+      &amp;#x3C;p&gt;{filteredData.length} 記事あります&amp;#x3C;/p&gt;
+      {filteredData.map(post =&gt; {
+        return (
+          &amp;#x3C;li key={post.slug}&gt;
+            &amp;#x3C;Link to={`/${convertCategory(post.category)}/${post.slug}`}&gt;
+              &amp;#x3C;h2&gt;
+                &amp;#x3C;span&gt;{post.title}&amp;#x3C;/span&gt;
+              &amp;#x3C;/h2&gt;
+              &amp;#x3C;section&gt;
+                &amp;#x3C;p dangerouslySetInnerHTML={{ __html: post.excerpt }} /&gt;
+              &amp;#x3C;/section&gt;
+            &amp;#x3C;/Link&gt;
+          &amp;#x3C;/li&gt;
+        )
+      })}
+    &amp;#x3C;/&gt;
+  )
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;ol&gt;
+&lt;li&gt;検索対象となる全記事データを取得します。これはほぼ GatsbyJS の機能を利用しています。&quot;mergePosts&quot;関数は単に&lt;code&gt;pageQuery&lt;/code&gt;で取得した data を使いやすい形に整形しているだけです。&lt;/li&gt;
+&lt;li&gt;&quot;useState&quot;フックを使用して、フィルタリングされたデータとクエリを保持する&quot;state&quot;と&quot;setState&quot;を定義します。初期値として、URL のクエリパラメータに基づいて設定します。&lt;/li&gt;
+&lt;li&gt;&quot;filterByQuery&quot;関数を定義しています。この関数は、クエリワードに基づいて記事をフィルタリングします。各記事のタイトルと説明をクエリワードと比較し、一致する記事のみを返します。&lt;/li&gt;
+&lt;li&gt;&quot;handleInputChange&quot;関数も定義しています。ユーザーの入力に応じてクエリを更新し、フィルタリングされたデータを更新します。&lt;/li&gt;
+&lt;li&gt;&quot;useEffect&quot;フックは、コンポーネントのレンダリング後に実行されます。ユーザーが入力したクエリで URL のクエリパラメータを更新します。つまり、同期させます。&lt;/li&gt;
+&lt;li&gt;最後に、レイアウトと検索結果を表示する JSX が返されます。入力欄、検索結果の表示、およびフィルタリングされた記事のリストが表示されます。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2&gt;おわりに&lt;/h2&gt;
+&lt;p&gt;以上です。少ない記述でやりたいことができるので、ぜひ参考にしてみてください。&lt;br&gt;
+React の強力さを感じました。&lt;/p&gt;
+&lt;hr&gt;
+&lt;div class=&quot;booklink-box&quot; style=&quot;text-align:left;padding-bottom:20px;font-size:small;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-image&quot; style=&quot;float:left;margin:0 15px 10px 0;&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;&lt;img src=&quot;https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9546/9784844379546.jpg?_ex=200x200&quot; style=&quot;border: none;&quot;&gt;&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;booklink-info&quot; style=&quot;line-height:120%;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-name&quot; style=&quot;margin-bottom:10px;line-height:120%&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;【POD】React &amp;amp; Gatsby開発入門&lt;/a&gt;&lt;div class=&quot;booklink-powered-date&quot; style=&quot;font-size:8pt;margin-top:5px;font-family:verdana;line-height:120%&quot;&gt;posted with &lt;a href=&quot;https://yomereba.com&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot;&gt;ヨメレバ&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-detail&quot; style=&quot;margin-bottom:5px;&quot;&gt;竹本 雄貴 インプレスR&amp;amp;D 2021年04月02日頃    &lt;/div&gt;&lt;div class=&quot;booklink-link2&quot; style=&quot;margin-top:10px;&quot;&gt;&lt;div class=&quot;shoplinkamazon&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fexec%2Fobidos%2FASIN%2F4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Amazon&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;shoplinkkindle&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fgp%2Fsearch%3Fkeywords%3D%25E3%2580%2590POD%25E3%2580%2591React%2520%2526%2520Gatsby%25E9%2596%258B%25E7%2599%25BA%25E5%2585%25A5%25E9%2596%2580%26__mk_ja_JP%3D%2583J%2583%255E%2583J%2583i%26url%3Dnode%253D2275256051&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Kindle&lt;/a&gt;&lt;/div&gt;                               	   	   	  	  &lt;div class=&quot;shoplinktoshokan&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;http://calil.jp/book/4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;図書館&lt;/a&gt;&lt;/div&gt;	&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-footer&quot; style=&quot;clear: left&quot;&gt;&lt;/div&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[MarkdownでもWordPressでも使えるGatsbyJSでの構文ハイライト]]></title><description><![CDATA[概要 GatsbyJS での汎用的な構文ハイライト(syntax highlight)の実装方法を紹介します。 本ブログは Markdown ファイルと WordPress の両方のコンテンツを Gatsby…]]></description><link>https://sun0range.tech.server-on.net/information-technology/syntax-highlight-on-gatsbyjs</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/syntax-highlight-on-gatsbyjs</guid><pubDate>Mon, 10 Jun 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;概要&lt;/h2&gt;
+&lt;p&gt;GatsbyJS での汎用的な構文ハイライト(syntax highlight)の実装方法を紹介します。&lt;br&gt;
+本ブログは Markdown ファイルと WordPress の両方のコンテンツを Gatsby で表示していて、その場合に使えるやり方です。もちろんどちらかのみの場合でも OK です。&lt;br&gt;
+&lt;code&gt;react-syntax-highlighter&lt;/code&gt;というプラグインを使って、それに上手くコンテンツデータを渡すということをやってます。&lt;/p&gt;
+&lt;p&gt;参考にしたサイトはこちら。&lt;br&gt;
+&lt;a href=&quot;https://dimitri.codes/adding-syntax-highlighting-wordpress-gatsby/&quot; target=&quot;_blank&quot;&gt;&lt;a href=&quot;https://dimitri.codes/adding-syntax-highlighting-wordpress-gatsby/&quot;&gt;https://dimitri.codes/adding-syntax-highlighting-wordpress-gatsby/&lt;/a&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;また、実コードが見たい方は、実際の変更コミットはこちらを見てください。&lt;br&gt;
+&lt;a href=&quot;https://github.com/nisioka/sun0range.com/commit/7a469363fc9b309f720cf7903ba1da5ce39f9895&quot; target=&quot;_blank&quot;&gt;&lt;a href=&quot;https://github.com/nisioka/sun0range.com/commit/7a469363fc9b309f720cf7903ba1da5ce39f9895&quot;&gt;https://github.com/nisioka/sun0range.com/commit/7a469363fc9b309f720cf7903ba1da5ce39f9895&lt;/a&gt;&lt;/a&gt;&lt;/p&gt;
+&lt;h2&gt;前提・準備&lt;/h2&gt;
+&lt;p&gt;Gatsby でのコンテンツを表示に、&lt;code&gt;dangerouslySetInnerHtml={{__html=content}}&lt;/code&gt; を使用していることを想定していて、それを書き換えていきます。
+また、TypeScript も使用しているので以降のコードも.ts もしくは.tsx です。&lt;/p&gt;
+&lt;p&gt;まずは依存関係のインストールを行ってください。(TypeScript なので、開発のしやすさのために@types も dev に入れてます。)&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;npm install --save html-react-parser react-syntax-highlighter
+npm install --save-dev @types/react-syntax-highlighter
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;実装&lt;/h2&gt;
+&lt;p&gt;まず、修正前の実装イメージを示します。&lt;strong&gt;post.content&lt;/strong&gt;がコンテンツデータで、それを dangerouslySetInnerHTML に渡して表示しているとします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;import * as React from &quot;react&quot;
+
+const BlogPostTemplate = () =&gt; {
+  // ノイズになるため省略。ここでpostのデータを取得したりしている。
+
+  return (
+    &amp;#x3C;&gt;
+      // ノイズになるため省略。実際は他にもレイアウトしている。
+      &amp;#x3C;section dangerouslySetInnerHTML={{ __html: post.content }} /&gt;
+    &amp;#x3C;/&gt;
+  )
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;修正後のコードが下記です。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-typescript&quot;&gt;import * as React from &quot;react&quot;
+import { Link, graphql } from &quot;gatsby&quot;
+
+import parse, { domToReact } from &quot;html-react-parser&quot;
+import SyntaxHighlighter from &quot;react-syntax-highlighter&quot;
+import { androidstudio } from &quot;react-syntax-highlighter/dist/cjs/styles/hljs&quot;
+
+const BlogPostTemplate = () =&gt; {
+  // ノイズになるため省略。ここでpostのデータを取得したりしている。
+
+  return (
+    &amp;#x3C;&gt;
+      // ノイズになるため省略。実際は他にもレイアウトしている。
+      &amp;#x3C;section&gt;{parse(post.content, { replace: replaceCode })}&amp;#x3C;/section&gt;
+    &amp;#x3C;/&gt;
+  )
+}
+
+const replaceCode = (node: any) =&gt; {
+  if (!node) return node
+  if (node.name === &quot;pre&quot;) {
+    const dom = domToReact(getCode(node))
+    let result = &quot;&quot;
+    switch (typeof dom) {
+      case &quot;string&quot;:
+        result = dom as string
+        break
+      case &quot;object&quot;:
+        if (Array.isArray(dom)) {
+          // React.JSX.Element[]
+          const elmArr = dom as React.JSX.Element[]
+          elmArr.map(elm =&gt; {
+            if (elm.props &amp;#x26;&amp;#x26; elm.props.children) {
+              result += elm.props.children as string
+            }
+          })
+        } else {
+          // React.JSX.Element
+          const elm = dom as React.JSX.Element
+          if (elm.props &amp;#x26;&amp;#x26; elm.props.children) {
+            result = elm.props.children as string
+          }
+        }
+        break
+    }
+
+    return (
+      node.children.length &gt; 0 &amp;#x26;&amp;#x26; (
+        &amp;#x3C;SyntaxHighlighter
+          style={androidstudio}
+          language={getLanguage(node)}
+          showLineNumbers={true}
+        &gt;
+          {result}
+        &amp;#x3C;/SyntaxHighlighter&gt;
+      )
+    )
+  }
+}
+
+const getLanguage = (node: any) =&gt; {
+  function getClassInLanguage(className: string) {
+    let result = &quot;&quot;
+    className.split(/\s+/).forEach(s =&gt; {
+      if (s.startsWith(&quot;language-&quot;)) {
+        result = s.replace(&quot;language-&quot;, &quot;&quot;)
+        break
+      }
+    })
+    return result
+  }
+
+  if (node.attribs.class &amp;#x26;&amp;#x26; node.attribs.class !== &quot;wp-block-code&quot;) {
+    return getClassInLanguage(node.attribs.class as string)
+  } else if (node.children[0]?.attribs?.class) {
+    return getClassInLanguage(node.children[0].attribs.class as string)
+  }
+  return &quot;java&quot; // default
+}
+
+const getCode = (node: any) =&gt; {
+  if (node.children.length &gt; 0 &amp;#x26;&amp;#x26; node.children[0].name === &quot;code&quot;) {
+    return node.children[0].children
+  } else {
+    return node.children
+  }
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;上記コードについて説明します。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;元々&lt;code&gt;dangerouslySetInnerHTML&lt;/code&gt;を使っていたものを、&lt;code&gt;html-react-parser&lt;/code&gt;ライブラリの&lt;code&gt;parse&lt;/code&gt;関数を使うように変更します。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;parse&lt;/code&gt;関数は HTML を React コンポーネントに変換し、後述する自作の&lt;code&gt;replaceCode&lt;/code&gt;関数を使用して&lt;code&gt;&amp;#x3C;code&gt;&lt;/code&gt;ブロックを検出します。それ以外はそのままです。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;replaceCode&lt;/code&gt;関数はコードブロックをハイライト表示するための処理を行います。
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;parse&lt;/code&gt;関数が DOM 要素を node として一つづつ渡してくるので、node が「&lt;code&gt;&amp;#x3C;pre&gt;&lt;/code&gt;タグ内に&lt;code&gt;&amp;#x3C;code&gt;&lt;/code&gt;の子を持つ要素」&lt;strong&gt;以外&lt;/strong&gt;の要素の場合は、置き換えせずそのままです。&lt;/li&gt;
+&lt;li&gt;「&lt;code&gt;&amp;#x3C;pre&gt;&lt;/code&gt;タグ内に&lt;code&gt;&amp;#x3C;code&gt;&lt;/code&gt;の子を持つ要素」である場合、その中のコードを取得し、&lt;code&gt;react-syntax-highlighter&lt;/code&gt;ライブラリの&lt;code&gt;SyntaxHighlighter&lt;/code&gt;コンポーネントで整形します。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;SyntaxHighlighter&lt;/code&gt;コンポーネントでは、言語やスタイルが選べて、
+&lt;ol&gt;
+&lt;li&gt;&lt;code&gt;language&lt;/code&gt;には&lt;a href=&quot;https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/HEAD/AVAILABLE_LANGUAGES_HLJS.MD&quot; target=&quot;_blank&quot;&gt;ここ&lt;/a&gt;にある言語を指定します。その言語の指定の仕方はメタ情報として付与されている html の class 名を使って自作の&lt;code&gt;getLanguage&lt;/code&gt;関数で判定しています。
+&lt;ol&gt;
+&lt;li&gt;Markdown では、&lt;code&gt; ```javascript&lt;/code&gt;というようにコードブロックの先頭に指定します。&lt;/li&gt;
+&lt;li&gt;WordPress では，「高度な設定」の「追加 CSS クラス」に&lt;code&gt;language-XXX&lt;/code&gt;というように XXX に言語を指定します。(※1)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;style&lt;/code&gt;には&lt;a href=&quot;https://github.com/react-syntax-highlighter/react-syntax-highlighter/blob/HEAD/AVAILABLE_STYLES_HLJS.MD&quot; target=&quot;_blank&quot;&gt;ここ&lt;/a&gt;にある好きなスタイルを指定します。色々と試して好きな見た目を選んでください。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;※1: WordPress の「高度な設定」の例。
+&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 428px; margin-left: initial;&quot;
+    &gt;
+      &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 126.25%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADwAwCdASoUABkAPtFgqU+oJaOiKAgBABoJaWZAABtpPv5NaNbZIPAAAP7xPjXQ5H1FJFMEGpXXawNXdJQ9UT+vOuw37DYX463ZeYb0Vpc0pOnes6x+/OUyEoRya9IAAAA=&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/static/e5f0aa6338a6db2c83efeef2006a64ee/85704/wordpressExample.webp 240w,
+/static/e5f0aa6338a6db2c83efeef2006a64ee/f403b/wordpressExample.webp 428w&quot;
+              sizes=&quot;(max-width: 428px) 100vw, 428px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/static/e5f0aa6338a6db2c83efeef2006a64ee/85704/wordpressExample.webp 240w,
+/static/e5f0aa6338a6db2c83efeef2006a64ee/f403b/wordpressExample.webp 428w&quot;
+            sizes=&quot;(max-width: 428px) 100vw, 428px&quot;
+            type=&quot;image/webp&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/static/e5f0aa6338a6db2c83efeef2006a64ee/f403b/wordpressExample.webp&quot;
+            alt=&quot;wordpressExample&quot;
+            title=&quot;&quot;
+            loading=&quot;lazy&quot;
+            decoding=&quot;async&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;h2&gt;終わりに&lt;/h2&gt;
+&lt;p&gt;以上で、Gatsby アプリケーションを実行し、構文ハイライトされたコードを確認できるはずです。本記事内のコードも構文ハイライトされて見えているはずです。
+これで、WordPress と Gatsby で構文ハイライトを実装しました。完全な例に興味がある場合は、このブログのソースコードを 以下の GitHub で確認できます。
+&lt;a href=&quot;https://github.com/nisioka/sun0range.com/blob/master/src/templates/blog-post.tsx&quot;&gt;https://github.com/nisioka/sun0range.com/blob/master/src/templates/blog-post.tsx&lt;/a&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;div class=&quot;booklink-box&quot; style=&quot;text-align:left;padding-bottom:20px;font-size:small;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-image&quot; style=&quot;float:left;margin:0 15px 10px 0;&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;&lt;img src=&quot;https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9546/9784844379546.jpg?_ex=200x200&quot; style=&quot;border: none;&quot;&gt;&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;booklink-info&quot; style=&quot;line-height:120%;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-name&quot; style=&quot;margin-bottom:10px;line-height:120%&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;【POD】React &amp;amp; Gatsby開発入門&lt;/a&gt;&lt;div class=&quot;booklink-powered-date&quot; style=&quot;font-size:8pt;margin-top:5px;font-family:verdana;line-height:120%&quot;&gt;posted with &lt;a href=&quot;https://yomereba.com&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot;&gt;ヨメレバ&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-detail&quot; style=&quot;margin-bottom:5px;&quot;&gt;竹本 雄貴 インプレスR&amp;amp;D 2021年04月02日頃    &lt;/div&gt;&lt;div class=&quot;booklink-link2&quot; style=&quot;margin-top:10px;&quot;&gt;&lt;div class=&quot;shoplinkamazon&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fexec%2Fobidos%2FASIN%2F4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Amazon&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;shoplinkkindle&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fgp%2Fsearch%3Fkeywords%3D%25E3%2580%2590POD%25E3%2580%2591React%2520%2526%2520Gatsby%25E9%2596%258B%25E7%2599%25BA%25E5%2585%25A5%25E9%2596%2580%26__mk_ja_JP%3D%2583J%2583%255E%2583J%2583i%26url%3Dnode%253D2275256051&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Kindle&lt;/a&gt;&lt;/div&gt;                               	   	   	  	  &lt;div class=&quot;shoplinktoshokan&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;http://calil.jp/book/4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;図書館&lt;/a&gt;&lt;/div&gt;	&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-footer&quot; style=&quot;clear: left&quot;&gt;&lt;/div&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[AWSにデプロイしていたWordPressサイトをGatsbyJSによるGitHub Pagesでの静的サイトへ移行]]></title><description><![CDATA[はじめに 本ブログは WordPress を AWS にデプロイして運用していましたが、GatsbyJS を使って GitHub Pages…]]></description><link>https://sun0range.tech.server-on.net/information-technology/migrate-from-wordpress</link><guid isPermaLink="false">https://sun0range.tech.server-on.net/information-technology/migrate-from-wordpress</guid><pubDate>Sun, 09 Jun 2024 00:00:00 GMT</pubDate><content:encoded>&lt;h2&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;本ブログは WordPress を AWS にデプロイして運用していましたが、GatsbyJS を使って GitHub Pages での静的サイトへの移行を行いました。その手順をここに残します。&lt;br&gt;
+ちなみに、移行のモチベーションとしては、下記がありました。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;金銭的コストの削減をしたい&lt;/li&gt;
+&lt;li&gt;サイトのパフォーマンス向上を図りたい&lt;/li&gt;
+&lt;li&gt;セキュリティリスクを無くし、運用コストも下げたい&lt;/li&gt;
+&lt;li&gt;AWS の使用経験を活かしつつ、新しい技術スタックへの挑戦も兼ねて(今回は React の実践として良かった)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;Before の運用&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;WordPress を AWS の EC2 で動かす。
+&lt;ul&gt;
+&lt;li&gt;記事は Web 上の WordPress 管理者画面から投稿する。
+&lt;ul&gt;
+&lt;li&gt;（これにより、管理者の乗っ取りやデータベース等への不正アクセスなどのセキュリティリスクが存在していました。）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;CloudFront でキャッシュを効かせて、サイトパフォーマンスの向上を図ってはいた。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3&gt;After の運用&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;既存の WordPress のバックアップをローカル PC で動かす。&lt;/li&gt;
+&lt;li&gt;新規の記事は Markdown ファイルで記述する。&lt;/li&gt;
+&lt;li&gt;上記をソースにして、GatsbyJS で SSG(Static Site Generation)でビルドする。
+&lt;ul&gt;
+&lt;li&gt;静的ファイルを GitHub Pages でホスティングする。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2&gt;移行手順概要&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;WordPress サイトデータのエクスポート&lt;/li&gt;
+&lt;li&gt;WordPress のローカル環境へのインポート&lt;/li&gt;
+&lt;li&gt;GatsbyJS のセットアップ&lt;/li&gt;
+&lt;li&gt;サイトのビルドとデプロイ&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3&gt;1. WordPress サイトデータのエクスポート&lt;/h3&gt;
+&lt;p&gt;まず、WordPress サイトからデータをエクスポートします。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;WordPress 管理ダッシュボード&lt;/strong&gt;にログインします。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;ツール&lt;/strong&gt; &gt; &lt;strong&gt;エクスポート&lt;/strong&gt;を選択します。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;すべてのコンテンツ&lt;/strong&gt;を選び、&lt;strong&gt;エクスポートファイルをダウンロード&lt;/strong&gt;をクリックします。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;これで、投稿、ページ、メディアなどのデータを含む XML ファイルがダウンロードされます。&lt;/p&gt;
+&lt;h3&gt;2. WordPress データのインポート&lt;/h3&gt;
+&lt;p&gt;次に、ローカル環境で WordPress をセットアップし、エクスポートしたデータをインポートします。&lt;/p&gt;
+&lt;p&gt;この&lt;a href=&quot;https://github.com/nisioka/docker-wordpress/blob/develop/docker-compose.yml&quot;&gt;docker-compose.yml&lt;/a&gt;を使って、WordPress をローカル環境でセットアップします。&lt;br&gt;
+これには、WordPress 本体とその DB、phpMyAdmin が含まれているので、起動させて &lt;a href=&quot;http://localhost&quot;&gt;http://localhost&lt;/a&gt; にアクセスすると空の WordPress が表示されます。&lt;br&gt;
+適当に初期設定を行った後、WordPress の管理画面にログインし、エクスポートしたデータをインポートします。&lt;/p&gt;
+&lt;p&gt;そして、WordPress のプラグインについても整理します。&lt;br&gt;
+不要なプラグインは削除しましょう。特に、ローカル環境では正常に動作しないことがある認証系のプラグインは削除することをお勧めします。公開するわけでは無いローカル環境なのでセキュリティを高める必要がありません。
+また、GatsbyJS で WordPress のデータを取得するための以下のプラグインを追加インストールします。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;WP Gatsby&lt;/li&gt;
+&lt;li&gt;WPGraphQL&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;この状態で既存の WordPress 記事がローカルでも表示できていれば、次に進みます。&lt;/p&gt;
+&lt;h3&gt;3. GatsbyJS のセットアップ&lt;/h3&gt;
+&lt;p&gt;次に、GatsbyJS をセットアップします。&lt;/p&gt;
+&lt;p&gt;前提： &lt;code&gt;Node.js&lt;/code&gt;と&lt;code&gt;npm&lt;/code&gt;がインストールされていること。&lt;/p&gt;
+&lt;p&gt;Gatsby CLI をインストールし、新しい Gatsby プロジェクトを作成します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;npm install -g gatsby-cli
+gatsby new my-gatsby-blog
+cd my-gatsby-blog
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;※ ここでの my-gatsby-blog はプロジェクト名として例示していますので、任意の名前に置き換えてください。&lt;/p&gt;
+&lt;p&gt;GatsbyJS で WordPress のデータを取得するためのプラグインをインストールします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;npm install gatsby-source-wordpress
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;gatsby-config.js ファイルを編集して、WordPress サイトのデータを取得するように設定します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;module.exports = {
+  plugins: [
+    {
+      resolve: `gatsby-source-wordpress`,
+      options: {
+        url: `http://localhost/graphql`,
+      },
+    },
+  ],
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;gatsby-node.js ファイルを作成し、WordPress の投稿を Gatsby のページとして生成するスクリプトを追加します。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-javascript&quot;&gt;const path = require(`path`)
+
+exports.createPages = async ({ graphql, actions }) =&gt; {
+  const { createPage } = actions
+
+  const result = await graphql(`
+    {
+      allWpPost {
+        nodes {
+          slug
+        }
+      }
+    }
+  `)
+
+  result.data.allWpPost.nodes.forEach(node =&gt; {
+    createPage({
+      path: node.slug,
+      component: path.resolve(`./src/templates/blog-post.js`),
+      context: {
+        slug: node.slug,
+      },
+    })
+  })
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;4. サイトのビルドとデプロイ&lt;/h2&gt;
+&lt;p&gt;最後に、サイトをビルドし、GitHub Pages にデプロイします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;gatsby build
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;リポジトリを作成し、GitHub Pages にデプロイします。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-bash&quot;&gt;git init
+git remote add origin https://github.com/your-username/your-repo.git
+git add .
+git commit -m &quot;Initial commit&quot;
+git push -u origin master
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;GitHub Pages の設定で、デプロイするブランチを gh-pages に設定します。&lt;/p&gt;
+&lt;p&gt;&lt;span
+      class=&quot;gatsby-resp-image-wrapper&quot;
+      style=&quot;position: relative; display: block; margin-left: auto; margin-right: auto; max-width: 960px; margin-left: initial;&quot;
+    &gt;
+      &lt;span
+    class=&quot;gatsby-resp-image-background-image&quot;
+    style=&quot;padding-bottom: 49.16666666666667%; position: relative; bottom: 0; left: 0; background-image: url(&apos;data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAAAQAwCdASoUAAoAPtFUo0uoJKMhsAgBABoJaQAAetG6tAAA/vHOiC2If0a5ITapUAAAAA==&apos;); background-size: cover; display: block;&quot;
+  &gt;&lt;/span&gt;
+  &lt;picture&gt;
+          &lt;source
+              srcset=&quot;/static/4678034b69a1447288d53841ea6c4435/85704/githubPagesSetting.webp 240w,
+/static/4678034b69a1447288d53841ea6c4435/2d484/githubPagesSetting.webp 480w,
+/static/4678034b69a1447288d53841ea6c4435/ac99e/githubPagesSetting.webp 960w,
+/static/4678034b69a1447288d53841ea6c4435/4df83/githubPagesSetting.webp 1440w,
+/static/4678034b69a1447288d53841ea6c4435/fc987/githubPagesSetting.webp 1920w&quot;
+              sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+              type=&quot;image/webp&quot;
+            /&gt;
+          &lt;source
+            srcset=&quot;/static/4678034b69a1447288d53841ea6c4435/85704/githubPagesSetting.webp 240w,
+/static/4678034b69a1447288d53841ea6c4435/2d484/githubPagesSetting.webp 480w,
+/static/4678034b69a1447288d53841ea6c4435/ac99e/githubPagesSetting.webp 960w,
+/static/4678034b69a1447288d53841ea6c4435/4df83/githubPagesSetting.webp 1440w,
+/static/4678034b69a1447288d53841ea6c4435/fc987/githubPagesSetting.webp 1920w&quot;
+            sizes=&quot;(max-width: 960px) 100vw, 960px&quot;
+            type=&quot;image/webp&quot;
+          /&gt;
+          &lt;img
+            class=&quot;gatsby-resp-image-image&quot;
+            src=&quot;/static/4678034b69a1447288d53841ea6c4435/ac99e/githubPagesSetting.webp&quot;
+            alt=&quot;githubPagesSetting.png&quot;
+            title=&quot;&quot;
+            loading=&quot;lazy&quot;
+            decoding=&quot;async&quot;
+            style=&quot;width:100%;height:100%;margin:0;vertical-align:middle;position:absolute;top:0;left:0;&quot;
+          /&gt;
+        &lt;/picture&gt;
+    &lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;現在、Build and deployment には GitHub Actions の使用が推奨されていますので、/.github/workflows/ に下記のワークフローを置きます。
+これは master ブランチに push されたら./public ディレクトリ(gatsby build で生成される静的ファイルのデフォルトの置き場)を GitHub Pages にデプロイするワークフローです。&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&quot;language-yaml&quot;&gt;name: Deploy static content to Pages
+
+on:
+  push:
+    branches: [&quot;master&quot;]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: &quot;pages&quot;
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: &quot;./public&quot;
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h2&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;この記事では基本的な構成に焦点を当てて説明しましたが、以上の手順で AWS にデプロイされていた WordPress サイトを GatsbyJS と GitHub Pages を用いた静的サイトへと移行することができました。&lt;br&gt;
+静的サイトに移行することで、サイトのパフォーマンス向上とセキュリティ強化を実現できます。ぜひ試してみてください。&lt;/p&gt;
+&lt;hr&gt;
+&lt;div class=&quot;booklink-box&quot; style=&quot;text-align:left;padding-bottom:20px;font-size:small;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-image&quot; style=&quot;float:left;margin:0 15px 10px 0;&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;&lt;img src=&quot;https://thumbnail.image.rakuten.co.jp/@0_mall/book/cabinet/9546/9784844379546.jpg?_ex=200x200&quot; style=&quot;border: none;&quot;&gt;&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;booklink-info&quot; style=&quot;line-height:120%;zoom: 1;overflow: hidden;&quot;&gt;&lt;div class=&quot;booklink-name&quot; style=&quot;margin-bottom:10px;line-height:120%&quot;&gt;&lt;a href=&quot;&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;【POD】React &amp;amp; Gatsby開発入門&lt;/a&gt;&lt;div class=&quot;booklink-powered-date&quot; style=&quot;font-size:8pt;margin-top:5px;font-family:verdana;line-height:120%&quot;&gt;posted with &lt;a href=&quot;https://yomereba.com&quot; rel=&quot;nofollow&quot; target=&quot;_blank&quot;&gt;ヨメレバ&lt;/a&gt;&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-detail&quot; style=&quot;margin-bottom:5px;&quot;&gt;竹本 雄貴 インプレスR&amp;amp;D 2021年04月02日頃    &lt;/div&gt;&lt;div class=&quot;booklink-link2&quot; style=&quot;margin-top:10px;&quot;&gt;&lt;div class=&quot;shoplinkamazon&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fexec%2Fobidos%2FASIN%2F4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Amazon&lt;/a&gt;&lt;/div&gt;&lt;div class=&quot;shoplinkkindle&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;//af.moshimo.com/af/c/click?a_id=1041250&amp;amp;p_id=170&amp;amp;pc_id=185&amp;amp;pl_id=4062&amp;amp;s_v=b5Rz2P0601xu&amp;amp;url=https%3A%2F%2Fwww.amazon.co.jp%2Fgp%2Fsearch%3Fkeywords%3D%25E3%2580%2590POD%25E3%2580%2591React%2520%2526%2520Gatsby%25E9%2596%258B%25E7%2599%25BA%25E5%2585%25A5%25E9%2596%2580%26__mk_ja_JP%3D%2583J%2583%255E%2583J%2583i%26url%3Dnode%253D2275256051&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;Kindle&lt;/a&gt;&lt;/div&gt;                               	   	   	  	  &lt;div class=&quot;shoplinktoshokan&quot; style=&quot;margin:5px 0&quot;&gt;&lt;a href=&quot;http://calil.jp/book/4844379542&quot; target=&quot;_blank&quot; rel=&quot;nofollow&quot;&gt;図書館&lt;/a&gt;&lt;/div&gt;	&lt;/div&gt;&lt;/div&gt;&lt;div class=&quot;booklink-footer&quot; style=&quot;clear: left&quot;&gt;&lt;/div&gt;&lt;/div&gt;</content:encoded></item></channel></rss>

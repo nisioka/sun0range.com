@@ -1,5 +1,4 @@
 import { getImage, IGatsbyImageData } from "gatsby-plugin-image"
-import { AllFile, AllMarkdownOldRemark, AllMarkdownRemark } from "./@types/global"
 
 export function mergePosts(
   allBlogMarkdownRemark: AllMarkdownRemark,
@@ -27,11 +26,11 @@ export function mergePosts(
         date: post.frontmatter.date,
         dateModified: post.frontmatter.dateModified,
         description: post.frontmatter.description,
-        altText: post.frontmatter.featuredImagePath || "",
+        altText: post.frontmatter.title,
         gatsbyImage: getImage(
           allFeaturedImages[
             post.frontmatter.featuredImagePath ||
-              "featured/defaultThumbnail.png"
+              "featured/defaultThumbnail.webp"
           ]
         ),
         category: post.frontmatter.category || "",
@@ -46,7 +45,7 @@ export function mergePosts(
         )
         const imagePath = post.frontmatter.coverImage
           ? `${parentDir}/images/${post.frontmatter.coverImage}`
-          : "featured/defaultThumbnail.png"
+          : "featured/defaultThumbnail.webp"
 
         // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
         let slug = post.fields.slug
@@ -60,7 +59,7 @@ export function mergePosts(
           date: post.frontmatter.date,
           dateModified: post.frontmatter.date || null,
           description: post.frontmatter.title,
-          altText: post.frontmatter.coverImage || "",
+          altText: post.frontmatter.title,
           gatsbyImage: getImage(allFeaturedImages[imagePath]),
           category: post.frontmatter.categories
             ? post.frontmatter.categories[0]
@@ -88,7 +87,7 @@ export function mergePost(md?: MdPost, allFile?: AllFile) {
     date: md?.frontmatter.date,
     dateModified: md?.frontmatter.dateModified,
     description: md?.frontmatter.description,
-    altText: md?.frontmatter.featuredImagePath || "",
+    altText: md?.frontmatter.title || "",
     gatsbyImage:
       getImage(
         allFeaturedImages[
@@ -107,10 +106,13 @@ const categoryNames: { id: number; eng: string; jp: string }[] = [
   { id: 6, eng: "business-efficiency", jp: "業務効率化" },
 ]
 
-export const categoryAll = categoryNames.sort(c => c.id).map(c => c.jp)
+export const categoryAll = categoryNames
+  .slice()
+  .sort((a, b) => a.id - b.id)
+  .map(c => c.jp)
 
-export function convertCategory(name: string): string | undefined {
-  if (!name) return undefined
+export function convertCategory(name: string): string {
+  if (!name) return ""
   const normalizedName = name.replace("/", "")
 
   // まず英語名 (eng) で探す
@@ -125,12 +127,12 @@ export function convertCategory(name: string): string | undefined {
     return foundByJp.eng
   }
 
-  console.log(`Not match convertCategory. Category name is: ${name}`);
+  console.warn(`Not match convertCategory. Category name is: ${name}`)
   return ""
 }
 
-export function convertCategoryJp(name: string): string | undefined {
-  if (!name) return undefined
+export function convertCategoryJp(name: string): string {
+  if (!name) return ""
   const normalizedName = name.replace("/", "")
 
 
@@ -146,11 +148,11 @@ export function convertCategoryJp(name: string): string | undefined {
     return foundByJp.jp
   }
 
-  console.log(`Not match convertCategory. Category name is: ${name}`);
+  console.warn(`Not match convertCategoryJp. Category name is: ${name}`)
   return ""
 }
 
 export function removeHtmlTags(str: string | undefined) {
   if (!str) return ""
-  return str.replace(/<[^a-zA-Z]*\/?>/g, "")
+  return str.replace(/<\/?[a-zA-Z][^>]*>/g, "")
 }

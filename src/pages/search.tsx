@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { graphql, Link } from "gatsby"
 import Layout from "../components/layout"
+import Seo from "../components/seo"
 import { convertCategory, mergePosts } from "../utilFunction"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 import { GatsbyImage } from "gatsby-plugin-image"
@@ -120,6 +121,14 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
 }
 
 export default Search
+
+export const Head = ({ location }: { location: Location }) => (
+  <Seo
+    title="サイト内検索"
+    description="サイト内の記事をキーワードで検索できます"
+    location={location}
+  />
+)
 
 export const pageQuery = graphql`
   query {

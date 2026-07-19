@@ -135,7 +135,7 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
             src="./anger-log.png"
             width={480}
             height={360}
-            alt="Profile picture"
+            alt="アンガーログアプリのスクリーンショット"
           />
         </p>
         <br />

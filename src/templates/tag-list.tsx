@@ -8,7 +8,7 @@ import Seo from "../components/seo"
 import { GatsbyImage } from "gatsby-plugin-image"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
 
-const CategoryList = ({
+const TagList = ({
   pageContext,
   data,
   location,
@@ -24,7 +24,6 @@ const CategoryList = ({
   if (posts.length === 0) {
     return (
       <Layout location={location}>
-        <Seo title={title} location={location} />
         <p>そのタグの記事はありません。</p>
       </Layout>
     )
@@ -75,7 +74,7 @@ const CategoryList = ({
   )
 }
 
-export default CategoryList
+export default TagList
 
 export const Head = ({
   pageContext,

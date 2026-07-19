@@ -47,7 +47,10 @@ const Seo = ({
         name: siteMetadata.author.name,
         description: siteMetadata.author.summary,
         url: siteMetadata.siteUrl,
-        sameAs: [siteMetadata.social.twitter, siteMetadata.social.github],
+        sameAs: [
+          `https://twitter.com/${siteMetadata.social.twitter}`,
+          `https://github.com/${siteMetadata.social.github}`,
+        ],
       },
     ]
 
@@ -63,10 +66,10 @@ const Seo = ({
       },
     }
 
-    let jsonLd = [
+    const jsonLd: object[] = [
       {
         "@context": "http://schema.org",
-        "@type": isRootPath ? "webSite" : "webPage",
+        "@type": isRootPath ? "WebSite" : "WebPage",
         inLanguage: "ja",
         url: canonicalUrl,
         name: title,
@@ -89,7 +92,7 @@ const Seo = ({
         },
         description: post.excerpt,
         datePublished: new Date(post.date),
-        dateModified: new Date(post.dateModified),
+        dateModified: new Date(post.dateModified || post.date),
         mainEntityOfPage: {
           "@type": "WebPage",
           "@id": canonicalUrl,
@@ -97,8 +100,7 @@ const Seo = ({
         author: author,
         publisher: publisher,
       }
-      // @ts-ignore
-      jsonLd = [...jsonLd, article]
+      jsonLd.push(article)
     }
     return JSON.stringify(jsonLd)
   }
@@ -113,23 +115,36 @@ const Seo = ({
       <script type="application/ld+json">{jsonLd}</script>
 
       <meta name="description" content={metaDescription} />
-      {imagePath && (
-        <>
-          <meta property="og:image" content={imageUrl} />
-          <meta property="og:url" content={imageUrl} />
-          <meta property="twitter:image" content={imageUrl} />
-        </>
-      )}
+      <meta property="og:url" content={canonicalUrl} />
+      <meta property="og:image" content={imageUrl} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={metaDescription} />
+      <meta property="og:type" content={post ? "article" : "website"} />
+      <meta property="og:site_name" content={siteMetadata.title} />
+      <meta property="og:locale" content="ja_JP" />
+      {post && (
+        <>
+          <meta
+            property="article:published_time"
+            content={new Date(post.date).toISOString()}
+          />
+          <meta
+            property="article:modified_time"
+            content={new Date(post.dateModified || post.date).toISOString()}
+          />
+        </>
+      )}
       <meta
-        property="og:type"
-        content={`${isRootPath ? "website" : "webpage"}`}
+        name="twitter:card"
+        content={imagePath ? "summary_large_image" : "summary"}
       />
-      <meta name="twitter:card" content="summary" />
-      <meta name="twitter:creator" content={siteMetadata.social.twitter} />
+      <meta
+        name="twitter:creator"
+        content={`@${siteMetadata.social.twitter}`}
+      />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={metaDescription} />
+      <meta name="twitter:image" content={imageUrl} />
       {children}
     </>
   )

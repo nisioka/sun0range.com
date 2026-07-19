@@ -38,14 +38,13 @@ const TagCloud = () => {
     .concat(allOldBlogMarkdownRemark.nodes.map(post => post.frontmatter.tags))
 
   const tagsBase = postTags
-    .reduce((tagCount, post) => {
-      post.map(item => {
-        if (tagCount.find(i => i.name === item)) {
-          tagCount.filter(i => {
-            if (i.name === item) i.count++
-          })
+    .reduce((tagCount, tags) => {
+      tags?.forEach(item => {
+        const found = tagCount.find(i => i.name === item)
+        if (found) {
+          found.count++
         } else {
-          tagCount = [...tagCount, { name: item, count: 1 }]
+          tagCount.push({ name: item, count: 1 })
         }
       })
       return tagCount
@@ -53,8 +52,15 @@ const TagCloud = () => {
     .filter(t => t.count > 1)
     .sort((a, b) => b.count - a.count)
 
-  const largeBoundary = tagsBase[Math.ceil(tagsBase.length / 3)].count
-  const smallBoundary = tagsBase[Math.floor((tagsBase.length * 2) / 3)].count
+  if (tagsBase.length === 0) return <></>
+
+  const largeBoundary =
+    tagsBase[Math.min(Math.ceil(tagsBase.length / 3), tagsBase.length - 1)]
+      .count
+  const smallBoundary =
+    tagsBase[
+      Math.min(Math.floor((tagsBase.length * 2) / 3), tagsBase.length - 1)
+    ].count
   const tagsView = tagsBase.sort(() => Math.random() - 0.5)
 
   return (

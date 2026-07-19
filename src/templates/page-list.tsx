@@ -73,8 +73,22 @@ const PageList = ({
 
 export default PageList
 
-export const Head = ({ location }: { location: Location }) => {
-  return <Seo title={`記事一覧`} location={location} />
+export const Head = ({
+  pageContext,
+  location,
+}: {
+  pageContext: PageContext
+  location: Location
+}) => {
+  const current = pageContext.current as number
+  const title = current > 1 ? `記事一覧 ${current}ページ目` : `記事一覧`
+  return (
+    <Seo
+      title={title}
+      description={`全記事の一覧です(${current}/${pageContext.maxPage}ページ)`}
+      location={location}
+    />
+  )
 }
 
 export const pageQuery = graphql`

@@ -27,12 +27,15 @@ jobs:
       - name: Checkout PR head
         uses: actions/checkout@v4
         with:
+          # npm installより前にトークンを.git/configへ残さない(push時に個別に認証する)
+          persist-credentials: false
           sparse-checkout: |
             public
             scripts/pr-screenshots
       - name: Checkout base public
         uses: actions/checkout@v4
         with:
+          persist-credentials: false
           ref: ${{ github.event.pull_request.base.sha }}
           path: base
           sparse-checkout: |
@@ -69,6 +72,7 @@ jobs:
           BRANCH=pr-screenshots
           PR_DIR="pr-${{ github.event.pull_request.number }}"
           DEST="$PR_DIR/run-${{ github.run_id }}"
+          REMOTE="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git fetch origin "$BRANCH" 2>/dev/null; then
@@ -86,7 +90,13 @@ jobs:
           cd shots
           git add -A
           git commit -m "$PR_DIR: run-${{ github.run_id }}"
-          git push origin "$BRANCH"
+          # 他PRのrunが同時にpushした場合はrebaseして最大3回リトライ
+          for i in 1 2 3; do
+            if git push "$REMOTE" "$BRANCH"; then break; fi
+            [ "$i" = 3 ] && exit 1
+            git fetch origin "$BRANCH"
+            git rebase "origin/$BRANCH"
+          done
           echo "dest=$DEST" >> "$GITHUB_OUTPUT"
       - name: Comment on PR
         if: steps.detect.outputs.count != '0'
@@ -119,14 +129,15 @@ jobs:
             }
 
   cleanup:
-    # PRクローズ時にスクショ画像を削除する
-    if: github.event.action == 'closed'
+    # PRクローズ時にスクショ画像を削除する(forkのPRはトークンが読み取り専用のためスキップ)
+    if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write # pr-screenshotsブランチからの画像削除push
     steps:
       - uses: actions/checkout@v4
         with:
+          persist-credentials: false
           sparse-checkout: |
             .github
       - name: Remove screenshots for this PR
@@ -134,6 +145,7 @@ jobs:
           set -eu
           BRANCH=pr-screenshots
           PR_DIR="pr-${{ github.event.pull_request.number }}"
+          REMOTE="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
           git fetch origin "$BRANCH" 2>/dev/null || exit 0
           git worktree add -B "$BRANCH" shots "origin/$BRANCH"
           git -C shots sparse-checkout disable
@@ -144,4 +156,10 @@ jobs:
           cd shots
           git add -A
           git commit -m "cleanup $PR_DIR"
-          git push origin "$BRANCH"
+          # 他PRのrunが同時にpushした場合はrebaseして最大3回リトライ
+          for i in 1 2 3; do
+            if git push "$REMOTE" "$BRANCH"; then break; fi
+            [ "$i" = 3 ] && exit 1
+            git fetch origin "$BRANCH"
+            git rebase "origin/$BRANCH"
+          done

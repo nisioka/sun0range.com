@@ -119,6 +119,13 @@ const HeaderWrapper = styled.header`
     display: none;
   }
 
+  @media screen and (max-width: 511px) {
+    /* 本文(記事のpadding 12px)とテキストの左右位置を揃える */
+    .global-header {
+      padding: 0 12px;
+    }
+  }
+
   @media screen and (max-width: 768px) {
     .nav-pc {
       display: none;

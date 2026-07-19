@@ -63,6 +63,7 @@ export const Head = ({
 export const pageQuery = graphql`
   query ($category: String) {
     allBlogMarkdownRemark: allMarkdownRemark(
+      sort: { fields: { slug: ASC } }
       filter: { frontmatter: { category: { eq: $category } }, fields: { sourceInstanceName: { eq: "blog" } } }
     ) {
       nodes {
@@ -80,6 +81,7 @@ export const pageQuery = graphql`
       }
     }
     allOldBlogMarkdownRemark: allMarkdownRemark(
+      sort: { fields: { slug: ASC } }
       filter: { frontmatter: { categories: { in: [$category] } }, fields: { sourceInstanceName: { eq: "old-blog" } } }
     ) {
       nodes {
@@ -101,10 +103,14 @@ export const pageQuery = graphql`
         }
       }
     }
-    blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
+    blogImages: allFile(
+      sort: { relativePath: ASC }
+      filter: { sourceInstanceName: { eq: "images" } }
+    ) {
       ...ThumbnailImages
     }
     oldBlogImages: allFile(
+      sort: { relativePath: ASC }
       filter: {
         sourceInstanceName: { eq: "old-blog" }
         extension: { in: ["jpg", "jpeg", "png", "webp"] }

@@ -3,6 +3,10 @@ import styled from "styled-components"
 export const ContentsListHeader = styled.header`
   text-align: center;
 
+  @media screen and (max-width: 511px) {
+    padding: 0 12px;
+  }
+
   h1,
   h2 {
     &:after {
@@ -28,10 +32,12 @@ export const ContentsOrderedListWrapper = styled.ol`
   li {
     padding: 5px;
     margin: var(--spacing-1);
+    width: 100%;
+    overflow-wrap: anywhere;
     box-sizing: border-box;
-    border: 1px solid var(--black);
     border-radius: 5px;
     background-color: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 
     a {
       color: var(--black);

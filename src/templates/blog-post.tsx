@@ -371,8 +371,12 @@ const getCode = (node: any) => {
 
 const Article = styled.article`
   margin: 0 auto;
-  padding: 20px 20px 0;
+  padding: 16px 16px 0;
   background-color: #fff;
+
+  @media screen and (max-width: 511px) {
+    padding: 12px 12px 0;
+  }
 
   .time {
     text-align: right;
@@ -432,6 +436,10 @@ const BlogPostNav = styled.nav`
     display: flex;
     justify-content: space-between;
     list-style: none;
+  }
+
+  @media screen and (max-width: 511px) {
+    padding: 0 12px;
   }
 `
 const Dl = styled.dl`

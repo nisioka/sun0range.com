@@ -1,0 +1,165 @@
+# PRで実質的に変更されたページのスクリーンショットをPRコメントに投稿する
+# 検出: base/head の public/ を正規化比較(webpackハッシュ・タグクラウド・前後ナビを無視)
+# 撮影: 最大3ページ × 2ビューポート(スマホ390px / PC1280px)= 最大6枚
+# 投稿: pr-screenshots ブランチに画像をコミットし、raw URL をコメントに埋め込む
+name: PR screenshots
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pr-screenshots-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  screenshots:
+    # fork からのPRはトークンが読み取り専用のためスキップ
+    if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # pr-screenshotsブランチへの画像push
+      pull-requests: write # スクショコメントの投稿・更新
+    steps:
+      - name: Checkout PR head
+        uses: actions/checkout@v4
+        with:
+          # npm installより前にトークンを.git/configへ残さない(push時に個別に認証する)
+          persist-credentials: false
+          sparse-checkout: |
+            public
+            scripts/pr-screenshots
+      - name: Checkout base public
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.base.sha }}
+          path: base
+          sparse-checkout: |
+            public
+      - name: Detect changed pages
+        id: detect
+        run: |
+          python3 scripts/pr-screenshots/detect.py base/public public > selected.txt 2> detect.log
+          cat detect.log selected.txt
+          echo "count=$(grep -c . selected.txt || true)" >> "$GITHUB_OUTPUT"
+          echo "total=$(grep -o '[0-9]*' detect.log)" >> "$GITHUB_OUTPUT"
+      - name: Setup Node
+        if: steps.detect.outputs.count != '0'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install Playwright
+        if: steps.detect.outputs.count != '0'
+        working-directory: scripts/pr-screenshots
+        run: |
+          npm install --no-audit --no-fund
+          npx playwright install --with-deps chromium
+      - name: Take screenshots
+        if: steps.detect.outputs.count != '0'
+        run: |
+          python3 -m http.server 9000 --directory public &
+          sleep 2
+          node scripts/pr-screenshots/screenshot.mjs http://localhost:9000 shots-out $(cat selected.txt)
+      - name: Push screenshots to pr-screenshots branch
+        if: steps.detect.outputs.count != '0'
+        id: push
+        run: |
+          set -eu
+          BRANCH=pr-screenshots
+          PR_DIR="pr-${{ github.event.pull_request.number }}"
+          DEST="$PR_DIR/run-${{ github.run_id }}"
+          REMOTE="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git fetch origin "$BRANCH" 2>/dev/null; then
+            git worktree add -B "$BRANCH" shots "origin/$BRANCH"
+          else
+            INIT=$(git commit-tree -m "init" "$(git mktree </dev/null)")
+            git branch "$BRANCH" "$INIT"
+            git worktree add shots "$BRANCH"
+          fi
+          # メインcheckoutのsparse設定がworktreeに継承されaddが拒否されるため解除する
+          git -C shots sparse-checkout disable
+          rm -rf "shots/$PR_DIR"
+          mkdir -p "shots/$DEST"
+          cp shots-out/*.png "shots/$DEST/"
+          cd shots
+          git add -A
+          git commit -m "$PR_DIR: run-${{ github.run_id }}"
+          # 他PRのrunが同時にpushした場合はrebaseして最大3回リトライ
+          for i in 1 2 3; do
+            if git push "$REMOTE" "$BRANCH"; then break; fi
+            [ "$i" = 3 ] && exit 1
+            git fetch origin "$BRANCH"
+            git rebase "origin/$BRANCH"
+          done
+          echo "dest=$DEST" >> "$GITHUB_OUTPUT"
+      - name: Comment on PR
+        if: steps.detect.outputs.count != '0'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require("fs")
+            const marker = "<!-- pr-screenshots -->"
+            const dest = "${{ steps.push.outputs.dest }}"
+            const total = "${{ steps.detect.outputs.total }}"
+            const rawBase = `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY}/pr-screenshots/${dest}`
+            const pages = fs.readFileSync("selected.txt", "utf8").trim().split("\n")
+            let body = `${marker}\n## 📸 変更画面のスクリーンショット\n\n`
+            for (const p of pages) {
+              const name = p === "/" ? "top" : p.replace(/^\//, "").replace(/\//g, "_")
+              body += `### \`${p}\`\n\n`
+              body += `| スマホ (390px) | PC (1280px) |\n|---|---|\n`
+              body += `| <img src="${rawBase}/mobile-${name}.png" width="240"> | <img src="${rawBase}/desktop-${name}.png" width="480"> |\n\n`
+            }
+            const sha = context.payload.pull_request.head.sha.slice(0, 7)
+            body += `<sub>コミット ${sha} 時点 / 実質変更 ${total} ページ中 最大3画面を表示</sub>\n`
+            const { data: comments } = await github.rest.issues.listComments({
+              ...context.repo, issue_number: context.issue.number, per_page: 100,
+            })
+            const prev = comments.find(c => c.body.startsWith(marker))
+            if (prev) {
+              await github.rest.issues.updateComment({ ...context.repo, comment_id: prev.id, body })
+            } else {
+              await github.rest.issues.createComment({ ...context.repo, issue_number: context.issue.number, body })
+            }
+
+  cleanup:
+    # PRクローズ時にスクショ画像を削除する(forkのPRはトークンが読み取り専用のためスキップ)
+    if: github.event.action == 'closed' && github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # pr-screenshotsブランチからの画像削除push
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          sparse-checkout: |
+            .github
+      - name: Remove screenshots for this PR
+        run: |
+          set -eu
+          BRANCH=pr-screenshots
+          PR_DIR="pr-${{ github.event.pull_request.number }}"
+          REMOTE="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git"
+          git fetch origin "$BRANCH" 2>/dev/null || exit 0
+          git worktree add -B "$BRANCH" shots "origin/$BRANCH"
+          git -C shots sparse-checkout disable
+          [ -d "shots/$PR_DIR" ] || exit 0
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          rm -rf "shots/$PR_DIR"
+          cd shots
+          git add -A
+          git commit -m "cleanup $PR_DIR"
+          # 他PRのrunが同時にpushした場合はrebaseして最大3回リトライ
+          for i in 1 2 3; do
+            if git push "$REMOTE" "$BRANCH"; then break; fi
+            [ "$i" = 3 ] && exit 1
+            git fetch origin "$BRANCH"
+            git rebase "origin/$BRANCH"
+          done

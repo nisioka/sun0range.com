@@ -278,7 +278,7 @@ a:focus {
 
 .container {
   margin: 0;
-  padding: var(--paddingBaseVertical) var(--paddingBaseHorizontal);
+  padding: var(--paddingBaseVertical) 8px;
 }
 
 .main-heading {
@@ -331,6 +331,10 @@ a:focus {
   border-radius: 100%;
 }
 
+.blog-post section {
+  overflow-wrap: break-word;
+}
+
 .blog-post header h1 {
   margin: var(--spacing-0) var(--spacing-0) var(--spacing-4) var(--spacing-0);
 }
@@ -365,6 +369,23 @@ a:focus {
 }
 
 /* Media queries */
+
+/* スマホ(1カラム表示)ではフォントサイズと余白を縮小する */
+@media (max-width: 511px) {
+  :root {
+    --fontSize-4: 1.2rem;
+    --fontSize-5: 1.32rem;
+    --fontSize-6: 1.44rem;
+    --fontSize-7: 1.62rem;
+    --paddingBaseTop: 8px;
+    --paddingBaseLeft: 8px;
+  }
+
+  /* ヘッダの白帯と本文の白箱の左端を揃える(横paddingはヘッダ・記事側で12pxに統一) */
+  .container {
+    padding: var(--paddingBaseVertical) 0;
+  }
+}
 
 @media (max-width: 42rem) {
   blockquote {

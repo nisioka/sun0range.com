@@ -9,8 +9,7 @@ on:
     types: [opened, synchronize, reopened, closed]
 
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
 
 concurrency:
   group: pr-screenshots-${{ github.event.pull_request.number }}
@@ -21,6 +20,9 @@ jobs:
     # fork からのPRはトークンが読み取り専用のためスキップ
     if: github.event.action != 'closed' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # pr-screenshotsブランチへの画像push
+      pull-requests: write # スクショコメントの投稿・更新
     steps:
       - name: Checkout PR head
         uses: actions/checkout@v4
@@ -120,6 +122,8 @@ jobs:
     # PRクローズ時にスクショ画像を削除する
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # pr-screenshotsブランチからの画像削除push
     steps:
       - uses: actions/checkout@v4
         with:

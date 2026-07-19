@@ -374,6 +374,10 @@ const Article = styled.article`
   padding: 20px 20px 0;
   background-color: #fff;
 
+  @media screen and (max-width: 511px) {
+    padding: 12px 12px 0;
+  }
+
   .time {
     text-align: right;
   }

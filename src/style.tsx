@@ -28,6 +28,8 @@ export const ContentsOrderedListWrapper = styled.ol`
   li {
     padding: 5px;
     margin: var(--spacing-1);
+    width: 100%;
+    overflow-wrap: anywhere;
     box-sizing: border-box;
     border: 1px solid var(--black);
     border-radius: 5px;

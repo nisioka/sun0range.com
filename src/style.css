@@ -331,6 +331,10 @@ a:focus {
   border-radius: 100%;
 }
 
+.blog-post section {
+  overflow-wrap: break-word;
+}
+
 .blog-post header h1 {
   margin: var(--spacing-0) var(--spacing-0) var(--spacing-4) var(--spacing-0);
 }
@@ -365,6 +369,18 @@ a:focus {
 }
 
 /* Media queries */
+
+/* スマホ(1カラム表示)ではフォントサイズと余白を縮小する */
+@media (max-width: 511px) {
+  :root {
+    --fontSize-4: 1.32rem;
+    --fontSize-5: 1.44rem;
+    --fontSize-6: 1.62rem;
+    --fontSize-7: 1.944rem;
+    --paddingBaseTop: 8px;
+    --paddingBaseLeft: 8px;
+  }
+}
 
 @media (max-width: 42rem) {
   blockquote {

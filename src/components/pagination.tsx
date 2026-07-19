@@ -80,7 +80,7 @@ const Pagination = ({ maxPage, current, type = "" }: PaginationProps) => {
         <ul>
           {first}
           {prev}
-          <li key="pagination2">
+          <li className="page-count" key="pagination2">
             page {current}/{maxPage}
           </li>
           {next}
@@ -100,27 +100,45 @@ const PaginationWrapper = styled.nav`
     display: flex;
     list-style: none;
     justify-content: center;
+    flex-wrap: wrap;
+    gap: var(--spacing-2);
+    padding: 0;
 
     li {
-      padding: 0 10px;
+      padding: 0;
+      margin: 0;
+
+      &.page-count {
+        display: flex;
+        align-items: center;
+        color: var(--color-text-light);
+        padding: 0 var(--spacing-2);
+      }
 
       &.not-work span {
-        text-decoration: none;
-        background: var(--orange);
-        color: #fff;
-        opacity: 0.5;
+        background: var(--color-surface-2);
+        color: var(--color-text-light);
+        border-color: var(--color-border);
       }
 
       span,
       a {
-        text-decoration: underline;
+        text-decoration: none;
         display: flex;
         align-items: center;
+        height: 100%;
         font-weight: 700;
-        color: var(--orange);
-        border-radius: 5px;
-        border: 1px solid var(--orange);
-        padding: 0 10px;
+        color: var(--color-text);
+        background: var(--color-surface);
+        border-radius: 8px;
+        border: 1px solid var(--color-border);
+        padding: var(--spacing-1) var(--spacing-3);
+        transition: border-color 0.15s ease, color 0.15s ease;
+      }
+
+      a:hover {
+        border-color: var(--color-accent);
+        color: var(--color-accent-strong);
       }
     }
   }

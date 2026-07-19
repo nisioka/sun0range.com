@@ -20,12 +20,10 @@ const Layout = ({ location, children }: LayoutProps) => {
       <div className="grid-main">
         <main className="container">{children}</main>
       </div>
-      <div className="grid-category">
+      <aside className="grid-sidebar">
         <CategoryAll />
-      </div>
-      <div className="grid-tag">
         <TagCloud />
-      </div>
+      </aside>
       <div className="grid-footer">
         <Footer />
       </div>

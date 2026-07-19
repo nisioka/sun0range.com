@@ -1,9 +1,9 @@
 import * as React from "react"
-import { Link, useStaticQuery, graphql } from "gatsby"
+import { useStaticQuery, graphql } from "gatsby"
 
-import { convertCategory, mergePosts } from "../utilFunction"
-import { GatsbyImage } from "gatsby-plugin-image"
+import { mergePosts } from "../utilFunction"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
+import PostList from "./post-list"
 
 type RelatedListProps = {
   slug: string
@@ -68,9 +68,9 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
           }
         }
         blogImages: allFile(
-      sort: { relativePath: ASC }
-      filter: { sourceInstanceName: { eq: "images" } }
-    ) {
+          sort: { relativePath: ASC }
+          filter: { sourceInstanceName: { eq: "images" } }
+        ) {
           ...ThumbnailImages
         }
         oldBlogImages: allFile(
@@ -123,36 +123,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
         <h2>関連記事</h2>
       </ContentsListHeader>
       <ContentsOrderedListWrapper>
-        {posts.map(post => {
-          return (
-            <li key={post.slug}>
-              <article>
-                <Link to={`/${convertCategory(post.category)}/${post.slug}`}>
-                  <h2>
-                    <span>{post.title}</span>
-                  </h2>
-                  <section>
-                    <div>
-                      <small>
-                        <time>{post.dateModified}</time>
-                      </small>
-                    </div>
-                    <div className="thumbnail">
-                      {typeof post.gatsbyImage === "undefined" || (
-                        <GatsbyImage
-                          alt={post.altText}
-                          image={post.gatsbyImage}
-                          className="thumbnail"
-                        />
-                      )}
-                    </div>
-                    <p dangerouslySetInnerHTML={{ __html: post.excerpt }} />
-                  </section>
-                </Link>
-              </article>
-            </li>
-          )
-        })}
+        <PostList posts={posts} />
       </ContentsOrderedListWrapper>
     </>
   )

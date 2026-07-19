@@ -38,22 +38,14 @@ const Bio = () => {
           target="_blank"
           rel="noopener"
         >
-          <FontAwesomeIcon
-            icon={faGithub}
-            fontSize={24}
-            style={{ color: "black" }}
-          />
+          <FontAwesomeIcon icon={faGithub} fontSize={24} />
         </Link>
         <Link
           to={`https://twitter.com/${social.twitter}`}
           target="_blank"
           rel="noopener"
         >
-          <FontAwesomeIcon
-            icon={faXTwitter}
-            fontSize={24}
-            style={{ color: "black" }}
-          />
+          <FontAwesomeIcon icon={faXTwitter} fontSize={24} />
         </Link>
       </p>
     </div>

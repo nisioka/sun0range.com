@@ -1,9 +1,29 @@
 /* CSS Custom Properties Definitions */
 
+/*
+ * ブレークポイント規約(メディアクエリにCSS変数は使えないためリテラルで統一):
+ *   511px / 512px … サイドバー表示の境界 (max / min のペア)
+ *   768px         … ハンバーガーメニュー ↔ フルナビ
+ *   1024px        … カードグリッド2列
+ *   1280px        … カードグリッド3列・コンテンツ最大幅
+ */
+
 :root {
+  --spacing-px: 1px;
+  --spacing-0: 0;
   --spacing-1: 0.25rem;
   --spacing-2: 0.5rem;
   --spacing-3: 0.75rem;
+  --spacing-4: 1rem;
+  --spacing-5: 1.25rem;
+  --spacing-6: 1.5rem;
+  --spacing-8: 2rem;
+  --spacing-10: 2.5rem;
+  --spacing-12: 3rem;
+  --spacing-16: 4rem;
+  --spacing-20: 5rem;
+  --spacing-24: 6rem;
+  --spacing-32: 8rem;
   --fontFamily: "游ゴシック体", YuGothic, "游ゴシック", "Yu Gothic", "メイリオ",
   "MontserratVariable", system-ui, -apple-system,
   BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans",
@@ -24,22 +44,41 @@
   --fontSize-5: 2.074rem;
   --fontSize-6: 2.488rem;
   --fontSize-7: 2.986rem;
-  --color-primary: #005b99;
-  --color-text: #333;
-  --color-text-light: #4f5969;
+  color-scheme: light;
+  --color-bg: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-surface-2: #f1f5f9;
+  --color-text: #333333;
+  --color-text-light: #5f6b7a;
   --color-heading: #1a202c;
-  --color-heading-black: black;
-  --color-accent: #d1dce5;
-  --black: #333;
-  --orange: #FF8C00FF;
+  --color-border: #e2e8f0;
+  --color-accent: #f97316;
+  --color-accent-strong: #c2410c;
+  --color-accent-contrast: #ffffff;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.1);
   --paddingBaseTop: 16px;
   --paddingBaseLeft: 20px;
   --paddingBase: var(--paddingBaseTop);
   --paddingBaseVertical: var(--paddingBaseTop);
   --paddingBaseHorizontal: var(--paddingBaseLeft);
-  --hight-grid-header: 40px;
-  --hight-grid-category: 220px;
-  --hight-grid-tag: 760px;
+  --height-header: 56px;
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-surface-2: #283548;
+  --color-text: #e2e8f0;
+  --color-text-light: #94a3b8;
+  --color-heading: #f1f5f9;
+  --color-border: #334155;
+  --color-accent: #fb923c;
+  --color-accent-strong: #fdba74;
+  --color-accent-contrast: #1a202c;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 6px 16px rgba(0, 0, 0, 0.55);
 }
 
 /* HTML elements */
@@ -59,20 +98,7 @@ html {
 }
 body {
   color: var(--color-text);
-}
-
-body:before {
-  content: '';
-  background-size: 100% 100%;
-  background-image: url(../static/background.webp);
-  background-repeat: no-repeat;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  filter: blur(50px);
-  z-index: -1;
+  background: var(--color-bg);
 }
 
 footer {
@@ -80,7 +106,7 @@ footer {
 }
 
 hr {
-  background: var(--color-accent);
+  background: var(--color-border);
   height: 1px;
   border: 0;
 }
@@ -111,7 +137,7 @@ h6 {
 h1 {
   font-weight: var(--fontWeight-black);
   font-size: var(--fontSize-6);
-  color: var(--color-heading-black);
+  color: var(--color-heading);
 }
 
 h2 {
@@ -192,7 +218,7 @@ blockquote {
   margin-left: var(--spacing-2);
   margin-right: var(--spacing-2);
   padding: var(--spacing-0) var(--spacing-0) var(--spacing-0) var(--spacing-6);
-  border-left: var(--spacing-1) solid var(--color-primary);
+  border-left: var(--spacing-1) solid var(--color-accent);
   font-size: var(--fontSize-2);
   font-style: italic;
   margin-bottom: var(--spacing-8);
@@ -218,23 +244,24 @@ table {
 table th,
 table td {
   padding: 0.5em 0.8em;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border);
 }
 
 table th {
-  background-color: #f0f4f8;
+  background-color: var(--color-surface-2);
   font-weight: var(--fontWeight-bold);
   text-align: left;
 }
 
 table tr:hover {
-  background-color: #f7fafc;
+  background-color: var(--color-surface-2);
 }
 
 /* Link */
 
 a {
-  color: var(--color-primary);
+  color: var(--color-accent-strong);
+  transition: color 0.15s ease;
 }
 
 a:hover,
@@ -242,38 +269,55 @@ a:focus {
   text-decoration: none;
 }
 
+/* Accessibility */
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 /* Custom classes */
 .global-wrapper {
   margin: var(--spacing-0) auto;
-  max-width: 100%;
+  max-width: 1280px;
   padding: var(--paddingBase);
   display: grid;
-  gap: 0;
+  gap: var(--spacing-6);
   grid-template-columns: 100%;
-  grid-template-rows: var(--hight-grid-header) 1fr var(--hight-grid-category) var(--hight-grid-tag) var(--hight-grid-header);
   grid-template-areas:
     "grid-header"
     "grid-main"
-    "grid-category"
-    "grid-tag"
+    "grid-sidebar"
     "grid-footer";
 
   @media screen and (min-width: 512px) {
     grid-template-columns: 240px 1fr;
-    grid-template-rows: var(--hight-grid-header) var(--hight-grid-category) var(--hight-grid-tag) 1fr var(--hight-grid-header);
+    grid-template-rows: auto 1fr auto;
     grid-template-areas:
-    "grid-header grid-header"
-    "grid-category grid-main"
-    "grid-tag grid-main"
-    ". grid-main"
-    "grid-footer grid-footer";
+      "grid-header grid-header"
+      "grid-sidebar grid-main"
+      "grid-footer grid-footer";
   }
 }
 
 .grid-header { grid-area: grid-header; }
 .grid-main { grid-area: grid-main; }
-.grid-category { grid-area: grid-category; }
-.grid-tag { grid-area: grid-tag; }
+.grid-sidebar {
+  grid-area: grid-sidebar;
+  align-self: start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
 .grid-footer { grid-area: grid-footer; }
 
 .container {
@@ -286,25 +330,6 @@ a:focus {
   margin: 0;
 }
 
-.post-list-item {
-  margin-bottom: var(--spacing-8);
-}
-
-.post-list-item p {
-  margin-bottom: var(--spacing-0);
-}
-
-.post-list-item h2 {
-  font-size: var(--fontSize-4);
-  color: var(--color-primary);
-  margin-bottom: var(--spacing-2);
-  margin-top: var(--spacing-0);
-}
-
-.post-list-item header {
-  margin-bottom: var(--spacing-4);
-}
-
 .header-link-home {
   font-weight: var(--fontWeight-bold);
   text-decoration: none;
@@ -314,10 +339,19 @@ a:focus {
 .bio {
   display: flex;
   margin-bottom: var(--spacing-16);
-  padding: var(--spacing-2);
+  padding: var(--spacing-4);
   overflow: hidden;
-  border-radius: 8px;
-  box-shadow: 0 4px 15px rgba(0,0,0,.2);
+  border-radius: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+}
+
+.bio a {
+  color: var(--color-text);
+}
+
+.bio a:hover {
+  color: var(--color-accent-strong);
 }
 
 .bio p {

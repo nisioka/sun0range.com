@@ -6,15 +6,16 @@ const gsm7bitChars =
   "@£$¥èéùìòÇØøÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !\"#%&'()*+,-./0123456789:;<=>?ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÄÖÑÜ§äöñüà"
 
 const Container = styled.div`
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  color: #333;
-  background-color: #fff;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
   max-width: 800px;
   padding: 20px;
 `
 
 const Title = styled.h1`
-  color: #0056b3;
+  color: var(--color-heading);
   text-align: center;
   margin-bottom: 30px;
 `
@@ -23,25 +24,35 @@ const Label = styled.label`
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
-  color: #555;
+  color: var(--color-text-light);
 `
 
 const TextArea = styled.textarea`
   width: 100%;
   padding: 12px;
   margin-bottom: 20px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   font-size: 16px;
+  font-family: inherit;
   box-sizing: border-box;
   resize: vertical;
   min-height: 150px;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px
+      color-mix(in srgb, var(--color-accent) 25%, transparent);
+  }
 `
 
 const Results = styled.div`
-  background-color: #e9f7ef;
-  border: 1px solid #d4edda;
-  border-radius: 5px;
+  background-color: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
   padding: 15px;
   margin-top: 20px;
 
@@ -52,7 +63,7 @@ const Results = styled.div`
   }
 
   strong {
-    color: #007bff;
+    color: var(--color-accent-strong);
   }
 `
 
@@ -63,7 +74,7 @@ const Warning = styled.p`
 
 const EncodingInfo = styled.span`
   font-size: 0.9em;
-  color: #6c757d;
+  color: var(--color-text-light);
 `
 
 type SmsResult = {
@@ -145,32 +156,31 @@ const SmsChecker = () => {
 
   return (
     <Container>
-        <Title>AWS SMS 文字数チェッカー</Title>
-        <Label htmlFor="messageInput">メッセージを入力してください:</Label>
-        <TextArea
-          id="messageInput"
-          placeholder="ここにメッセージを入力..."
-          value={message}
-          onChange={e => setMessage(e.target.value)}
-        />
+      <Title>AWS SMS 文字数チェッカー</Title>
+      <Label htmlFor="messageInput">メッセージを入力してください:</Label>
+      <TextArea
+        id="messageInput"
+        placeholder="ここにメッセージを入力..."
+        value={message}
+        onChange={e => setMessage(e.target.value)}
+      />
 
-        <Results>
-          <p>
-            文字数: <strong>{result.charCount}</strong>
-          </p>
-          <p>
-            エンコーディング: <strong>{result.encodingType}</strong>{" "}
-            <EncodingInfo>{result.encodingInfo}</EncodingInfo>
-          </p>
-          <p>
-            メッセージ分割数: <strong>{result.numSegments}</strong>
-          </p>
-          <p>
-            現在のメッセージの残り文字数:{" "}
-            <strong>{result.remainingChars}</strong>
-          </p>
-          {result.warning && <Warning>{result.warning}</Warning>}
-        </Results>
+      <Results>
+        <p>
+          文字数: <strong>{result.charCount}</strong>
+        </p>
+        <p>
+          エンコーディング: <strong>{result.encodingType}</strong>{" "}
+          <EncodingInfo>{result.encodingInfo}</EncodingInfo>
+        </p>
+        <p>
+          メッセージ分割数: <strong>{result.numSegments}</strong>
+        </p>
+        <p>
+          現在のメッセージの残り文字数: <strong>{result.remainingChars}</strong>
+        </p>
+        {result.warning && <Warning>{result.warning}</Warning>}
+      </Results>
     </Container>
   )
 }

@@ -125,7 +125,10 @@ export const createPages: GatsbyNode["createPages"] = async ({
     .concat(
       result.data.allOldBlogMarkdownRemark.nodes.map(post => {
         // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
-        const slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "")
+        const slug = post.fields.slug
+          .replace(/^\//, "")
+          .replace(/\/$/, "")
+          .replace(/^posts\//, "")
 
         const parentDir = path.dirname(post.parent.relativePath)
         const featuredImagePath = post.frontmatter.coverImage
@@ -137,7 +140,9 @@ export const createPages: GatsbyNode["createPages"] = async ({
           slug: slug,
           component: `${blogPost}`,
           featuredImagePath: featuredImagePath,
-          category: post.frontmatter.categories ? post.frontmatter.categories[0] : null,
+          category: post.frontmatter.categories
+            ? post.frontmatter.categories[0]
+            : "",
           tags: post.frontmatter.tags || [],
           description: post.frontmatter.title,
           date: post.frontmatter.date,
@@ -265,7 +270,7 @@ export const onCreateNode: GatsbyNode["onCreateNode"] = ({
 
     const parent = node.parent ? getNode(node.parent) : undefined
     if (parent && parent.sourceInstanceName) {
-      const sourceName = parent.sourceInstanceName as string;
+      const sourceName = parent.sourceInstanceName as string
       createNodeField({
         name: `sourceInstanceName`,
         node,

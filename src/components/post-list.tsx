@@ -17,24 +17,24 @@ const PostList = ({ posts }: { posts: CommonPost[] }) => (
             to={`/${convertCategory(post.category)}/${post.slug}`}
             itemProp="url"
           >
-            <h2>
-              <span itemProp="headline">{post.title}</span>
-            </h2>
-            <section>
-              <div style={{ textAlign: "right" }}>
-                <small>
-                  <time>{post.dateModified}</time>
-                </small>
-              </div>
-              <div className="thumbnail">
-                {typeof post.gatsbyImage === "undefined" || (
-                  <GatsbyImage alt={post.altText} image={post.gatsbyImage} />
-                )}
-              </div>
+            <div className="thumbnail">
+              {typeof post.gatsbyImage === "undefined" || (
+                <GatsbyImage alt={post.altText} image={post.gatsbyImage} />
+              )}
+            </div>
+            <section className="card-body">
+              <h2>
+                <span itemProp="headline">{post.title}</span>
+              </h2>
               <p
                 dangerouslySetInnerHTML={{ __html: post.excerpt }}
                 itemProp="description"
               />
+              <div className="card-date">
+                <small>
+                  <time>{post.dateModified}</time>
+                </small>
+              </div>
             </section>
           </Link>
         </article>
@@ -53,8 +53,8 @@ export const thumbnailImagesFragment = graphql`
         relativePath
         childImageSharp {
           gatsbyImageData(
-            width: 100
-            height: 100
+            width: 480
+            aspectRatio: 1.7778
             formats: [AUTO, WEBP, AVIF]
             placeholder: BLURRED
           )

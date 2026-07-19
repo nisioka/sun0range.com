@@ -142,7 +142,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
           featuredImagePath: featuredImagePath,
           category: post.frontmatter.categories
             ? post.frontmatter.categories[0]
-            : null,
+            : "",
           tags: post.frontmatter.tags || [],
           description: post.frontmatter.title,
           date: post.frontmatter.date,

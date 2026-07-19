@@ -12,9 +12,11 @@ const themeInitScript = `(function () {
   try {
     var theme = localStorage.getItem("theme");
     if (theme !== "light" && theme !== "dark") {
-      theme = window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
+      theme =
+        window.matchMedia &&
+        window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
     }
     document.documentElement.dataset.theme = theme;
   } catch (e) {}

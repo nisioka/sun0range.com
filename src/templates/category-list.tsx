@@ -18,7 +18,12 @@ const CategoryList = ({
   location: Location
 }) => {
   const categoryName = pageContext.category as string
-  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.blogImages, data.oldBlogImages)
+  const posts = mergePosts(
+    data.allBlogMarkdownRemark,
+    data.allOldBlogMarkdownRemark,
+    data.blogImages,
+    data.oldBlogImages
+  )
   const title = `【${convertCategoryJp(categoryName)}】カテゴリー 一覧`
 
   if (posts.length === 0) {
@@ -54,7 +59,9 @@ export const Head = ({
   return (
     <Seo
       title={`【${convertCategoryJp(pageContext.category)}】カテゴリー 一覧`}
-      description={`【${convertCategoryJp(pageContext.category)}】カテゴリーの記事一覧です`}
+      description={`【${convertCategoryJp(
+        pageContext.category
+      )}】カテゴリーの記事一覧です`}
       location={location}
     />
   )
@@ -64,7 +71,10 @@ export const pageQuery = graphql`
   query ($category: String) {
     allBlogMarkdownRemark: allMarkdownRemark(
       sort: { fields: { slug: ASC } }
-      filter: { frontmatter: { category: { eq: $category } }, fields: { sourceInstanceName: { eq: "blog" } } }
+      filter: {
+        frontmatter: { category: { eq: $category } }
+        fields: { sourceInstanceName: { eq: "blog" } }
+      }
     ) {
       nodes {
         excerpt
@@ -82,7 +92,10 @@ export const pageQuery = graphql`
     }
     allOldBlogMarkdownRemark: allMarkdownRemark(
       sort: { fields: { slug: ASC } }
-      filter: { frontmatter: { categories: { in: [$category] } }, fields: { sourceInstanceName: { eq: "old-blog" } } }
+      filter: {
+        frontmatter: { categories: { in: [$category] } }
+        fields: { sourceInstanceName: { eq: "old-blog" } }
+      }
     ) {
       nodes {
         excerpt

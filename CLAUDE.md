@@ -3,6 +3,7 @@
 ## Project overview
 
 Japanese tech blog built on Gatsby v5, hosted on GitHub Pages.
+
 - **Published URL**: https://sun0range.tech.server-on.net
 - **Author**: nisioka
 - **Language**: Japanese (HTML `lang` attribute is also `ja`)
@@ -16,8 +17,16 @@ Japanese tech blog built on Gatsby v5, hosted on GitHub Pages.
 - **Image optimization**: gatsby-plugin-image / gatsby-plugin-sharp (WebP, quality: 70)
 - **Code highlighting**: react-syntax-highlighter (androidstudio theme)
 - **Icons**: FontAwesome (react-fontawesome)
-- **Fonts**: Montserrat (Variable), Merriweather
+- **Fonts**: Montserrat (Variable)
 - **Formatter**: Prettier
+
+### Styling conventions
+
+- グローバル CSS (`src/style.css`): デザイントークン(CSS 変数)、要素デフォルト、markdown 本文のタイポグラフィ、ページグリッドのみを担当
+- styled-components: コンポーネントスコープのスタイルすべてを担当
+- 色は必ずセマンティックトークン(`--color-surface`, `--color-text`, `--color-accent` など)を使う。ハードコード色は禁止(ダークモードが壊れるため)
+- ダークモードは `html[data-theme="dark"]` で切り替え。`gatsby-ssr.tsx` のインラインスクリプトが paint 前にテーマを確定させる
+- ブレークポイントはリテラルで統一: 511/512px(サイドバー)、768px(ハンバーガー)、1024px(カード 2 列)、1280px(カード 3 列・最大幅)
 
 ## Commands
 
@@ -105,14 +114,14 @@ tags: ["tag1", "tag2"]
 
 ### 3. Category list
 
-| Japanese name | URL slug |
-|---|---|
-| 技術 | information-technology |
-| イベントレポート | event-report |
-| 生活 | life |
-| 用語集 | glossary |
-| 書評 | book-report |
-| 業務効率化 | business-efficiency |
+| Japanese name    | URL slug               |
+| ---------------- | ---------------------- |
+| 技術             | information-technology |
+| イベントレポート | event-report           |
+| 生活             | life                   |
+| 用語集           | glossary               |
+| 書評             | book-report            |
+| 業務効率化       | business-efficiency    |
 
 Use the **Japanese name** in the frontmatter `category` field. URL conversion is handled by `convertCategory()` in `src/utilFunction.ts`.
 
@@ -138,12 +147,12 @@ Posts from the new and old blogs are merged via `mergePosts()` and sorted by dat
 
 ## Differences from the old blog (content/old-blog)
 
-| | New blog (blog) | Old blog (old-blog) |
-|---|---|---|
-| Category | `category: "技術"` (string) | `categories: ["information-technology"]` (array) |
-| Image | `featuredImagePath` | `coverImage` |
-| Modified date | `dateModified` present | `date` only |
-| Description | `description` present | title is used as a substitute |
+|               | New blog (blog)             | Old blog (old-blog)                              |
+| ------------- | --------------------------- | ------------------------------------------------ |
+| Category      | `category: "技術"` (string) | `categories: ["information-technology"]` (array) |
+| Image         | `featuredImagePath`         | `coverImage`                                     |
+| Modified date | `dateModified` present      | `date` only                                      |
+| Description   | `description` present       | title is used as a substitute                    |
 
 ## Deploy
 
@@ -170,6 +179,7 @@ Posts from the new and old blogs are merged via `mergePosts()` and sorted by dat
 - `trailingSlash: "never"` — URLs have no trailing slash
 
 ## Rules
+
 - Do not write unit tests (Jest, etc.). This repository is primarily blog content, and the cost of maintaining tests does not justify it.
 
 ## Stream idle timeout mitigation

@@ -196,6 +196,12 @@ const config: GatsbyConfig = {
       options: {
         printRejected: true, // Print removed selectors and processed file names
         develop: false, // Enable while using `gatsby develop`
+        // data-theme はランタイムでしか付与されないため、ダークモード用CSSが purge されないよう保護する
+        purgeCSSOptions: {
+          safelist: {
+            deep: [/data-theme/],
+          },
+        },
         // whitelist: ['whitelist'], // Don't remove this selector
         // ignore: ['/ignored.css', 'prismjs/', 'docsearch.js/'], // Ignore files/folders
         // purgeOnly : ['components/', '/main.css', 'bootstrap/'], // Purge only these files/folders

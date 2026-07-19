@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { graphql } from "gatsby"
+import styled from "styled-components"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { mergePosts } from "../utilFunction"
@@ -72,22 +73,23 @@ const Search = ({
 
   return (
     <Layout location={location}>
-      <input
-        type="text"
-        aria-label="Search"
-        placeholder="検索ワードを入力..."
-        onChange={handleInputChange}
-        value={query}
-      />
-      <div className="result-inner__res">
-        {query !== ""
-          ? query + " の検索結果: " + filteredData.length + "件"
-          : filteredData.length + "件の記事があります"}
-      </div>
       <ContentsListHeader>
         <h1>サイト内検索</h1>
-        <p>{filteredData.length} 記事あります</p>
       </ContentsListHeader>
+      <SearchBox>
+        <input
+          type="text"
+          aria-label="Search"
+          placeholder="検索ワードを入力..."
+          onChange={handleInputChange}
+          value={query}
+        />
+        <div className="result-count">
+          {query !== ""
+            ? query + " の検索結果: " + filteredData.length + "件"
+            : filteredData.length + "件の記事があります"}
+        </div>
+      </SearchBox>
       <ContentsOrderedListWrapper>
         <PostList posts={filteredData} />
       </ContentsOrderedListWrapper>
@@ -96,6 +98,41 @@ const Search = ({
 }
 
 export default Search
+
+const SearchBox = styled.div`
+  margin: var(--spacing-4) auto var(--spacing-6);
+  text-align: center;
+
+  input {
+    width: 100%;
+    max-width: 480px;
+    padding: var(--spacing-3) var(--spacing-4);
+    font-size: var(--fontSize-1);
+    font-family: inherit;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+    &::placeholder {
+      color: var(--color-text-light);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px
+        color-mix(in srgb, var(--color-accent) 25%, transparent);
+    }
+  }
+
+  .result-count {
+    margin-top: var(--spacing-2);
+    color: var(--color-text-light);
+    font-size: var(--fontSize-0);
+  }
+`
 
 export const Head = ({ location }: { location: Location }) => (
   <Seo

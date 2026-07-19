@@ -89,12 +89,11 @@ export function mergePost(md?: MdPost, allFile?: AllFile) {
     dateModified: md?.frontmatter.dateModified,
     description: md?.frontmatter.description,
     altText: md?.frontmatter.title || "",
-    gatsbyImage:
-      getImage(
-        allFeaturedImages[
-          md?.frontmatter.featuredImagePath || "featured/defaultThumbnail.webp"
-        ]
-      ),
+    gatsbyImage: getImage(
+      allFeaturedImages[
+        md?.frontmatter.featuredImagePath || "featured/defaultThumbnail.webp"
+      ]
+    ),
   } as CommonPost
 }
 
@@ -135,7 +134,6 @@ export function convertCategory(name: string): string {
 export function convertCategoryJp(name: string): string {
   if (!name) return ""
   const normalizedName = name.replace("/", "")
-
 
   // まず英語名 (eng) で探す
   const foundByEng = categoryNames.find(c => c.eng === normalizedName)

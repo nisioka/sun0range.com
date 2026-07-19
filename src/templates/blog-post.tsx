@@ -5,7 +5,12 @@ import Layout from "../components/layout"
 import Seo from "../components/seo"
 import { GatsbyImage, getImage } from "gatsby-plugin-image"
 import styled from "styled-components"
-import { convertCategory, convertCategoryJp, mergePost, removeHtmlTags } from "../utilFunction"
+import {
+  convertCategory,
+  convertCategoryJp,
+  mergePost,
+  removeHtmlTags,
+} from "../utilFunction"
 import RelatedList from "../components/related-list"
 import SyntaxHighlighter from "react-syntax-highlighter"
 import parse, { domToReact } from "html-react-parser"
@@ -45,13 +50,7 @@ type BlogPostTemplateProps = {
 }
 
 const BlogPostTemplate = ({
-  data: {
-    blogImage,
-    oldBlogImage,
-    markdownRemark: md,
-    mdPrevious,
-    mdNext,
-  },
+  data: { blogImage, oldBlogImage, markdownRemark: md, mdPrevious, mdNext },
   location,
 }: BlogPostTemplateProps) => {
   const { siteMetadata } = config as { siteMetadata: SiteMetadata }
@@ -89,9 +88,7 @@ const BlogPostTemplate = ({
     slug: mdNext?.fields.slug.replace(/^\//, "").replace(/\/$/, ""),
     category:
       mdNext?.frontmatter.category ||
-      (mdNext?.frontmatter.categories
-        ? mdNext?.frontmatter.categories[0]
-        : ""),
+      (mdNext?.frontmatter.categories ? mdNext?.frontmatter.categories[0] : ""),
   }
   const [isClient, setIsClient] = React.useState(false)
   React.useEffect(() => {
@@ -145,15 +142,7 @@ const BlogPostTemplate = ({
         <hr />
       </Article>
       <BlogPostNav className="blog-post-nav">
-        <ul
-          style={{
-            display: `flex`,
-            flexWrap: `wrap`,
-            justifyContent: `space-between`,
-            listStyle: `none`,
-            padding: 0,
-          }}
-        >
+        <ul>
           <li>
             {previous.slug && (
               <Link
@@ -371,71 +360,70 @@ const getCode = (node: any) => {
 
 const Article = styled.article`
   margin: 0 auto;
-  padding: 16px 16px 0;
-  background-color: #fff;
+  padding: var(--spacing-6);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
 
   @media screen and (max-width: 511px) {
-    padding: 12px 12px 0;
+    padding: var(--spacing-3);
   }
 
   .time {
     text-align: right;
+    color: var(--color-text-light);
   }
 
   .featuredImage {
     text-align: center;
+
+    .gatsby-image-wrapper {
+      border-radius: 8px;
+      overflow: hidden;
+    }
   }
 `
 const BlogEntry = styled.div`
-  margin: 16px 0 40px;
-  padding: 16px 0;
-  border-top: 1px solid #ccc;
-  border-bottom: 1px solid #ccc;
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1.5rem;
-  }
-
-  table thead tr th {
-    background-color: #ff9933;
-    color: #fff;
-    font-weight: 700;
-    padding: 0.5rem 0.75rem;
-    text-align: left;
-    border-right: 1px solid rgba(255, 255, 255, 0.3);
-  }
-
-  table thead tr th:last-child {
-    border-right: none;
-  }
-
-  table tbody tr td {
-    padding: 0.5rem 0.75rem;
-    border-bottom: 1px solid var(--color-accent);
-    border-right: 1px solid var(--color-accent);
-  }
-
-  table tbody tr td:last-child {
-    border-right: none;
-  }
-
-  table tbody tr:nth-child(even) {
-    background-color: #f7fafc;
-  }
-
-  table tbody tr:hover {
-    background-color: #edf2f7;
-  }
+  margin: var(--spacing-4) 0 var(--spacing-10);
+  padding: var(--spacing-8) 0;
 `
 const BlogPostNav = styled.nav`
-  margin: 0 auto;
+  margin: var(--spacing-6) auto;
 
   ul {
     display: flex;
+    flex-wrap: wrap;
     justify-content: space-between;
+    gap: var(--spacing-3);
     list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+    flex: 1 1 240px;
+
+    &:last-child {
+      text-align: right;
+    }
+
+    a {
+      display: block;
+      padding: var(--spacing-3) var(--spacing-4);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      background: var(--color-surface);
+      color: var(--color-text);
+      text-decoration: none;
+      transition: border-color 0.15s ease, color 0.15s ease;
+
+      &:hover {
+        border-color: var(--color-accent);
+        color: var(--color-accent-strong);
+      }
+    }
   }
 
   @media screen and (max-width: 511px) {
@@ -444,7 +432,9 @@ const BlogPostNav = styled.nav`
 `
 const Dl = styled.dl`
   display: flex;
-  margin: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 0 0 var(--spacing-2);
 
   dt {
     width: 80px;
@@ -457,19 +447,24 @@ const Dl = styled.dl`
     padding-left: 0;
 
     & + dd {
-      margin-left: 15px;
-      margin-bottom: 5px;
+      margin-left: var(--spacing-3);
     }
 
     a {
+      display: inline-block;
       text-decoration: none;
-      border-radius: 3px;
-      color: #fff;
-      background: var(--orange);
-      padding: 2px 5px;
+      border-radius: 999px;
+      color: var(--color-accent-strong);
+      background: var(--color-surface-2);
+      border: 1px solid var(--color-border);
+      padding: 2px 10px;
+      transition: background 0.15s ease, color 0.15s ease,
+        border-color 0.15s ease;
 
       &:hover {
-        opacity: 0.5;
+        background: var(--color-accent);
+        border-color: var(--color-accent);
+        color: var(--color-accent-contrast);
       }
     }
   }

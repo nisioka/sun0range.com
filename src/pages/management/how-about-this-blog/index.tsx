@@ -10,7 +10,7 @@ import {
   faGolang,
   faJava,
   faPython,
-  faReact
+  faReact,
 } from "@fortawesome/free-brands-svg-icons"
 import styled from "styled-components"
 import { StaticImage } from "gatsby-plugin-image"
@@ -49,28 +49,28 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
         <ul>
           <li>
             Java
-            <FontAwesomeIcon icon={faJava} />
-            ： 業務レベル
+            <FontAwesomeIcon icon={faJava} />： 業務レベル
           </li>
           <li>SQL： 業務レベル</li>
           <li>
             Go
-            <FontAwesomeIcon icon={faGolang} />
-            ： 趣味レベル(趣味でWebアプリケーションを実装。業務でも使えるレベル)
+            <FontAwesomeIcon icon={faGolang} />：
+            趣味レベル(趣味でWebアプリケーションを実装。業務でも使えるレベル)
           </li>
           <li>
             React(Typescript)
-            <FontAwesomeIcon icon={faReact} />
-            ： 趣味レベル(趣味でWebアプリケーションを実装。業務でも少し読むレベル)
+            <FontAwesomeIcon icon={faReact} />：
+            趣味レベル(趣味でWebアプリケーションを実装。業務でも少し読むレベル)
           </li>
           <li>
-            HTML/CSS/JavaScript： 趣味レベル(Webアプリ実装経験があるためそれなりに。)
+            HTML/CSS/JavaScript：
+            趣味レベル(Webアプリ実装経験があるためそれなりに。)
           </li>
           <li>C/C#： 趣味レベル(学生時代に使用していた)</li>
           <li>
             Python
-            <FontAwesomeIcon icon={faPython} />
-            ： 趣味レベル(趣味で簡単なツールを書いたり)
+            <FontAwesomeIcon icon={faPython} />：
+            趣味レベル(趣味で簡単なツールを書いたり)
           </li>
           <li>Ruby： 趣味レベル(Ruby on Railsのチュートリアルをやった)</li>
         </ul>
@@ -87,12 +87,8 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
 
         <h3>略歴</h3>
         <ul>
-          <li>
-            2011年3月：千葉大学 工学部 画像科学科 卒業。
-          </li>
-          <li>
-            2013年3月：千葉大学 大学院融合科学研究科(修士課程) 卒業。
-          </li>
+          <li>2011年3月：千葉大学 工学部 画像科学科 卒業。</li>
+          <li>2013年3月：千葉大学 大学院融合科学研究科(修士課程) 卒業。</li>
           <li>
             2013年4月：独立系SIer(システムインテグレータ)会社に就職。主に金融・カード関連のWebアプリケーション開発(Java)案件に従事。社内新人研修講師を担当したりも。
           </li>
@@ -104,15 +100,9 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
             2019年5月：Alpaca
             Japan株式会社というAI技術を用いた金融サービス系の会社に転職。Alpaca証券という証券サービスのWebアプリケーション開発案件で、開発者やQA(クオリティアシュアランス:品質保証)、SRE(サイトリライアビリティエンジニア)として従事。
           </li>
-          <li>
-            2020年11月：育休を取得して育児に参加。
-          </li>
-          <li>
-            2021年4月：育休から職場復帰。
-          </li>
-          <li>
-            2024年1月：第二子誕生。再度育休を取得。
-          </li>
+          <li>2020年11月：育休を取得して育児に参加。</li>
+          <li>2021年4月：育休から職場復帰。</li>
+          <li>2024年1月：第二子誕生。再度育休を取得。</li>
           <li>
             2024年8月：育休から職場復帰。引き続き、主にJavaやGolangを使った開発に従事。
           </li>
@@ -121,7 +111,8 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
         <h3>ポートフォリオ</h3>
         <h4>アンガーログ</h4>
         <p>
-          Angularで実装した、怒りをコントロールするために記録をつけるWebアプリ。<br />
+          Angularで実装した、怒りをコントロールするために記録をつけるWebアプリ。
+          <br />
           <Link
             to="https://nisioka.github.io/anger-log"
             target="_blank"
@@ -140,7 +131,9 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
         </p>
         <br />
 
-        <h4>公開停止<s>DroidJump</s></h4>
+        <h4>
+          公開停止<s>DroidJump</s>
+        </h4>
         <p>
           簡単アクションゲーム（Android用アプリケーション）
           <br />
@@ -154,7 +147,9 @@ const HowAboutThisBlog = ({ location }: { location: Location }) => {
         </p>
         <br />
 
-        <h4>公開停止<s>割り勘-Warikan-</s></h4>
+        <h4>
+          公開停止<s>割り勘-Warikan-</s>
+        </h4>
         <p>
           割り勘計算ツール（Android用アプリケーション）
           <br />
@@ -179,7 +174,10 @@ export default HowAboutThisBlog
 
 const Article = styled.article`
   margin: 0 auto;
-  background-color: #fff;
+  padding: var(--spacing-6);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
 
   .time {
     text-align: right;

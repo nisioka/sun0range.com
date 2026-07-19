@@ -18,7 +18,12 @@ const TagList = ({
   location: Location
 }) => {
   const tagName = pageContext.tag as string
-  const posts = mergePosts(data.allBlogMarkdownRemark, data.allOldBlogMarkdownRemark, data.blogImages, data.oldBlogImages)
+  const posts = mergePosts(
+    data.allBlogMarkdownRemark,
+    data.allOldBlogMarkdownRemark,
+    data.blogImages,
+    data.oldBlogImages
+  )
   const title = `【${tagName}】タグ 一覧`
 
   if (posts.length === 0) {
@@ -64,7 +69,10 @@ export const pageQuery = graphql`
   query ($tag: String) {
     allBlogMarkdownRemark: allMarkdownRemark(
       sort: [{ frontmatter: { date: DESC } }, { fields: { slug: ASC } }]
-      filter: { frontmatter: { tags: { in: [$tag] } }, fields: { sourceInstanceName: { eq: "blog" } } }
+      filter: {
+        frontmatter: { tags: { in: [$tag] } }
+        fields: { sourceInstanceName: { eq: "blog" } }
+      }
     ) {
       nodes {
         excerpt
@@ -82,7 +90,10 @@ export const pageQuery = graphql`
     }
     allOldBlogMarkdownRemark: allMarkdownRemark(
       sort: [{ frontmatter: { date: DESC } }, { fields: { slug: ASC } }]
-      filter: { frontmatter: { tags: { in: [$tag] } }, fields: { sourceInstanceName: { eq: "old-blog" } } }
+      filter: {
+        frontmatter: { tags: { in: [$tag] } }
+        fields: { sourceInstanceName: { eq: "old-blog" } }
+      }
     ) {
       nodes {
         excerpt

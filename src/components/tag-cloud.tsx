@@ -7,9 +7,11 @@ const TagCloud = () => {
   const {
     allBlogMarkdownRemark,
     allOldBlogMarkdownRemark,
-  }: { allBlogMarkdownRemark: AllMarkdownRemark; allOldBlogMarkdownRemark: AllMarkdownOldRemark } =
-    useStaticQuery(
-      graphql`
+  }: {
+    allBlogMarkdownRemark: AllMarkdownRemark
+    allOldBlogMarkdownRemark: AllMarkdownOldRemark
+  } = useStaticQuery(
+    graphql`
       query {
         allBlogMarkdownRemark: allMarkdownRemark(
           sort: { fields: { slug: ASC } }
@@ -33,7 +35,7 @@ const TagCloud = () => {
         }
       }
     `
-    )
+  )
 
   const postTags = allBlogMarkdownRemark.nodes
     .map(post => post.frontmatter.tags)
@@ -100,11 +102,24 @@ export default TagCloud
 
 const TagCloudList = styled.ul`
   list-style: none;
-  background-color: #fff;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: var(--spacing-4);
+  margin: 0;
+
+  h5 {
+    margin: 0 0 var(--spacing-3);
+    font-size: var(--fontSize-1);
+    color: var(--color-heading);
+    padding-left: var(--spacing-2);
+    border-left: 3px solid var(--color-accent);
+  }
 
   li {
     display: inline-block;
     padding: 3px 6px;
+    margin: 0;
   }
 
   .tagSmall {
@@ -118,13 +133,14 @@ const TagCloudList = styled.ul`
   }
 
   a {
-    line-height: 1;
+    line-height: 1.2;
     display: block;
     text-decoration: none;
+    color: var(--color-text-light);
+    transition: color 0.15s ease;
 
     &:hover {
-      color: var(--orange);
-      text-decoration: underline;
+      color: var(--color-accent-strong);
     }
   }
 `

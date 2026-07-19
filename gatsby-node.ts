@@ -203,9 +203,10 @@ export const createPages: GatsbyNode["createPages"] = async ({
 
     // カテゴリ一覧追加
     const categories = posts.reduce((categories, post) => {
-      return post.category && !categories.includes(post.category)
-        ? categories.concat(post.category)
-        : categories
+      if (post.category && !categories.includes(post.category)) {
+        categories.push(post.category)
+      }
+      return categories
     }, [] as string[])
     // カテゴリ分ページを作成
     categories.forEach(category => {
@@ -221,7 +222,9 @@ export const createPages: GatsbyNode["createPages"] = async ({
     // tag一覧追加
     const tags = posts.reduce((tags, post) => {
       post.tags.forEach(tag => {
-        tags = tag && !tags.includes(tag) ? tags.concat(tag) : tags
+        if (tag && !tags.includes(tag)) {
+          tags.push(tag)
+        }
       })
       return tags
     }, [] as string[])

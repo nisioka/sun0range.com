@@ -20,12 +20,8 @@ const Header = ({ location }: { location: Location }) => {
       </p>
     )
   }
-  const handleClick = () => {
-    const hamburger = document.querySelector(".hamburger")
-    const navMobile = document.querySelector(".nav-mobile")
-    hamburger?.classList.toggle("toggle")
-    navMobile?.classList.toggle("toggle")
-  }
+  const [menuOpen, setMenuOpen] = React.useState(false)
+  const toggleMenu = () => setMenuOpen(open => !open)
   return (
     <HeaderWrapper>
       <div className="global-header">
@@ -54,10 +50,16 @@ const Header = ({ location }: { location: Location }) => {
             </li>
           </ul>
         </nav>
-        <div className="hamburger" onClick={handleClick}>
+        <button
+          type="button"
+          className={`hamburger${menuOpen ? " toggle" : ""}`}
+          onClick={toggleMenu}
+          aria-label="メニューを開く"
+          aria-expanded={menuOpen}
+        >
           <span></span>
-        </div>
-        <nav className="nav-mobile">
+        </button>
+        <nav className={`nav-mobile${menuOpen ? " toggle" : ""}`}>
           <ul>
             <li>
               <Link to="/category/information-technology">技術系</Link>
@@ -79,8 +81,10 @@ const Header = ({ location }: { location: Location }) => {
                 このブログについて
               </Link>
             </li>
-            <li className="close" onClick={handleClick}>
-              <span>閉じる</span>
+            <li className="close">
+              <button type="button" onClick={toggleMenu}>
+                <span>閉じる</span>
+              </button>
             </li>
           </ul>
         </nav>
@@ -143,6 +147,10 @@ const HeaderWrapper = styled.header`
       width: 30px;
       height: 25px;
       margin: 0 0 0 auto;
+      padding: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
 
       &:before {
         content: "";
@@ -212,6 +220,13 @@ const HeaderWrapper = styled.header`
       }
       .close {
         cursor: pointer;
+
+        button {
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+        }
       }
     }
     .toggle {

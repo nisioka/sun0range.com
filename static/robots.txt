@@ -1,2 +1,4 @@
 User-agent: *
 Disallow:
+
+Sitemap: https://sun0range.tech.server-on.net/sitemap-index.xml

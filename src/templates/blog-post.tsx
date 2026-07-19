@@ -12,7 +12,6 @@ import parse, { domToReact } from "html-react-parser"
 import { androidstudio } from "react-syntax-highlighter/dist/cjs/styles/hljs"
 import DisqusComments from "../components/disqus-comments"
 import config from "../../gatsby-config"
-import { AllFile, MdPost, SiteMetadata } from "../@types/global"
 
 type BlogPostTemplateProps = {
   data: {
@@ -108,13 +107,11 @@ const BlogPostTemplate = ({
       >
         <header>
           <h1 itemProp="headline">{post.title}</h1>
-          <p>
-            <div className="time">
-              <small>
-                <time>{post.date}</time>
-              </small>
-            </div>
-          </p>
+          <div className="time">
+            <small>
+              <time>{post.date}</time>
+            </small>
+          </div>
         </header>
         {post.gatsbyImage && (
           <div className="featuredImage">
@@ -134,7 +131,7 @@ const BlogPostTemplate = ({
           {post.tags.map((tag, index) => {
             return (
               <dd key={`tag${index}`}>
-                <Link to={`/tag/${tag}/`}>{tag}</Link>
+                <Link to={`/tag/${tag}`}>{tag}</Link>
               </dd>
             )
           })}
@@ -295,7 +292,7 @@ export const Head = ({
       description={post.excerpt}
       location={location}
       imagePath={
-        post.gatsbyImage ? post.gatsbyImage.images.fallback?.src : undefined
+        getImage(allFile.edges[0]?.node.childImageSharp)?.images.fallback?.src
       }
       post={post}
     />

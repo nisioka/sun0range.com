@@ -5,7 +5,7 @@ dateModified: "2026-01-12"
 description: "AWS SNSでSMSを送信する際の文字数とメッセージ分割数をチェックするツールです。GSM 03.38とUCS-2エンコーディングに対応しています。"
 featuredImagePath: "featured/logo-amazon-sns.webp"
 nodeType: blog
-category: information-technology
+category: 技術
 tags: ["AWS", "SMS", "SNS", "便利ツール"]
 ---
 

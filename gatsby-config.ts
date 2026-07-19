@@ -4,6 +4,7 @@
  * See: https://www.gatsbyjs.com/docs/reference/config-files/gatsby-config/
  */
 import type { GatsbyConfig } from "gatsby"
+import { convertCategory } from "./src/utilFunction"
 
 type feedArgument = {
   query: {
@@ -19,6 +20,7 @@ type allMarkdownRemark = {
     frontmatter: {
       title: string
       dateModified: string
+      category: string
     }
     excerpt: string
     html: string
@@ -138,17 +140,23 @@ const config: GatsbyConfig = {
               query: { site, allMarkdownRemark },
             }: feedArgument) => {
               return allMarkdownRemark.nodes.map(node => {
+                const slug = node.fields.slug
+                  .replace(/^\//, "")
+                  .replace(/\/$/, "")
+                const postUrl = `${site.siteMetadata.siteUrl}/${convertCategory(
+                  node.frontmatter.category
+                )}/${slug}`
                 return Object.assign({}, node.frontmatter, {
                   description: node.excerpt,
                   date: node.frontmatter.dateModified,
-                  url: site.siteMetadata.siteUrl + node.fields.slug,
-                  guid: site.siteMetadata.siteUrl + node.fields.slug,
+                  url: postUrl,
+                  guid: postUrl,
                   custom_elements: [{ "content:encoded": node.html }],
                 })
               })
             },
             query: `{
-              allMarkdownRemark(sort: {frontmatter: {dateModified: DESC}}, filter: {sourceInstanceName: {eq: "blog"}}) {
+              allMarkdownRemark(sort: {frontmatter: {dateModified: DESC}}, filter: {fields: {sourceInstanceName: {eq: "blog"}}}) {
                 nodes {
                   excerpt
                   html
@@ -158,12 +166,13 @@ const config: GatsbyConfig = {
                   frontmatter {
                     title
                     dateModified
+                    category
                   }
                 }
               }
             }`,
             output: "/rss.xml",
-            title: "Gatsby Starter Blog RSS Feed",
+            title: "分かりやすい技術ブログ RSSフィード",
           },
         ],
       },
@@ -186,7 +195,7 @@ const config: GatsbyConfig = {
       resolve: `gatsby-plugin-purgecss`,
       options: {
         printRejected: true, // Print removed selectors and processed file names
-        develop: true, // Enable while using `gatsby develop`
+        develop: false, // Enable while using `gatsby develop`
         // whitelist: ['whitelist'], // Don't remove this selector
         // ignore: ['/ignored.css', 'prismjs/', 'docsearch.js/'], // Ignore files/folders
         // purgeOnly : ['components/', '/main.css', 'bootstrap/'], // Purge only these files/folders

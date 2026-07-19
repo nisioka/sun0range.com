@@ -42,7 +42,7 @@ type CommonPost = {
   dateModified: string
   description?: string
   altText: string
-  gatsbyImage: IGatsbyImageData | undefined
+  gatsbyImage: import("gatsby-plugin-image").IGatsbyImageData | undefined
   category: string
   tags: string[]
 }
@@ -64,6 +64,8 @@ type MdPost = {
     description: string
     featuredImagePath: string
     category: string
+    // old-blog の記事は categories(配列)を持つ
+    categories?: string[]
     tags: string[]
   }
 }
@@ -77,6 +79,9 @@ type MdOldPost = {
   }
   fields: {
     slug: string
+  }
+  parent: {
+    relativePath: string
   }
   frontmatter: {
     title: string

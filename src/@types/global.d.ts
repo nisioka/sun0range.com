@@ -34,6 +34,14 @@ type AllFile = {
   }[]
 }
 
+// 記事一覧系ページの pageQuery 結果
+type PostListQueryResult = {
+  allBlogMarkdownRemark: AllMarkdownRemark
+  allOldBlogMarkdownRemark: AllMarkdownOldRemark
+  blogImages: AllFile
+  oldBlogImages: AllFile
+}
+
 type CommonPost = {
   title: string
   excerpt: string

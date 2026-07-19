@@ -1,16 +1,13 @@
 import * as React from "react"
 
-import config from "../../gatsby-config"
-
 const Age = ({ birthday }: { birthday: string }) => {
-  return (
-    <>
-      {
-        Math.floor(
-          (new Date().valueOf() - new Date(birthday).valueOf()) / 31536000000
-        ) as number
-      }
-    </>
-  )
+  const birth = new Date(birthday)
+  const now = new Date()
+  let age = now.getFullYear() - birth.getFullYear()
+  const beforeAnniversary =
+    now.getMonth() < birth.getMonth() ||
+    (now.getMonth() === birth.getMonth() && now.getDate() < birth.getDate())
+  if (beforeAnniversary) age--
+  return <>{age}</>
 }
 export default Age

@@ -6,7 +6,7 @@ export function mergePosts(
   blogImages?: AllFile,
   oldBlogImages?: AllFile
 ) {
-  let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
+  const allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
   blogImages?.edges.forEach(node => {
     allFeaturedImages[node.node.relativePath] =
       node.node.childImageSharp.gatsbyImageData
@@ -48,7 +48,7 @@ export function mergePosts(
           : "featured/defaultThumbnail.webp"
 
         // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
-        let slug = post.fields.slug
+        const slug = post.fields.slug
           .replace(/^\//, "")
           .replace(/\/$/, "")
           .replace(/^posts\//, "")
@@ -74,12 +74,11 @@ export function mergePosts(
 }
 
 export function mergePost(md?: MdPost, allFile?: AllFile) {
-  let allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
-  allFile &&
-    allFile.edges.forEach(node => {
-      allFeaturedImages[node.node.relativePath] =
-        node.node.childImageSharp.gatsbyImageData
-    })
+  const allFeaturedImages: { [key: string]: IGatsbyImageData } = {}
+  allFile?.edges.forEach(node => {
+    allFeaturedImages[node.node.relativePath] =
+      node.node.childImageSharp.gatsbyImageData
+  })
   return {
     title: md?.frontmatter.title,
     excerpt: removeHtmlTags(md?.excerpt),

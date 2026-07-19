@@ -108,7 +108,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
 
   const posts = result.data?.allBlogMarkdownRemark.nodes
     .map(post => {
-      let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "")
+      const slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "")
       return {
         id: post.id,
         slug: slug,
@@ -125,7 +125,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
     .concat(
       result.data.allOldBlogMarkdownRemark.nodes.map(post => {
         // old-blog の記事の場合、slug から 'old-blog/posts/' などのプレフィックスを削除する
-        let slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "")
+        const slug = post.fields.slug.replace(/^\//, "").replace(/\/$/, "").replace(/^posts\//, "")
 
         const parentDir = path.dirname(post.parent.relativePath)
         const featuredImagePath = post.frontmatter.coverImage
@@ -202,7 +202,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
     }
 
     // カテゴリ一覧追加
-    let categories = posts.reduce((categories, post) => {
+    const categories = posts.reduce((categories, post) => {
       return post.category && !categories.includes(post.category)
         ? categories.concat(post.category)
         : categories
@@ -219,7 +219,7 @@ export const createPages: GatsbyNode["createPages"] = async ({
     })
 
     // tag一覧追加
-    let tags = posts.reduce((tags, post) => {
+    const tags = posts.reduce((tags, post) => {
       post.tags.forEach(tag => {
         tags = tag && !tags.includes(tag) ? tags.concat(tag) : tags
       })

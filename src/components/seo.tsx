@@ -105,7 +105,7 @@ const Seo = ({
     return JSON.stringify(jsonLd)
   }
 
-  let jsonLd = createJsonLd()
+  const jsonLd = createJsonLd()
 
   return (
     <>

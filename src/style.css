@@ -373,12 +373,17 @@ a:focus {
 /* スマホ(1カラム表示)ではフォントサイズと余白を縮小する */
 @media (max-width: 511px) {
   :root {
-    --fontSize-4: 1.32rem;
-    --fontSize-5: 1.44rem;
-    --fontSize-6: 1.62rem;
-    --fontSize-7: 1.944rem;
+    --fontSize-4: 1.2rem;
+    --fontSize-5: 1.32rem;
+    --fontSize-6: 1.44rem;
+    --fontSize-7: 1.62rem;
     --paddingBaseTop: 8px;
     --paddingBaseLeft: 8px;
+  }
+
+  /* ヘッダの白帯と本文の白箱の左端を揃える(横paddingはヘッダ・記事側で12pxに統一) */
+  .container {
+    padding: var(--paddingBaseVertical) 0;
   }
 }
 

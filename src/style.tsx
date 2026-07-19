@@ -3,6 +3,10 @@ import styled from "styled-components"
 export const ContentsListHeader = styled.header`
   text-align: center;
 
+  @media screen and (max-width: 511px) {
+    padding: 0 12px;
+  }
+
   h1,
   h2 {
     &:after {

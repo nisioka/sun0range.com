@@ -437,6 +437,10 @@ const BlogPostNav = styled.nav`
     justify-content: space-between;
     list-style: none;
   }
+
+  @media screen and (max-width: 511px) {
+    padding: 0 12px;
+  }
 `
 const Dl = styled.dl`
   display: flex;

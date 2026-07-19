@@ -371,7 +371,7 @@ const getCode = (node: any) => {
 
 const Article = styled.article`
   margin: 0 auto;
-  padding: 20px 20px 0;
+  padding: 16px 16px 0;
   background-color: #fff;
 
   @media screen and (max-width: 511px) {

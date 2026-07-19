@@ -35,9 +35,9 @@ export const ContentsOrderedListWrapper = styled.ol`
     width: 100%;
     overflow-wrap: anywhere;
     box-sizing: border-box;
-    border: 1px solid var(--black);
     border-radius: 5px;
     background-color: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
 
     a {
       color: var(--black);

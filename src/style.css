@@ -278,7 +278,7 @@ a:focus {
 
 .container {
   margin: 0;
-  padding: var(--paddingBaseVertical) var(--paddingBaseHorizontal);
+  padding: var(--paddingBaseVertical) 8px;
 }
 
 .main-heading {

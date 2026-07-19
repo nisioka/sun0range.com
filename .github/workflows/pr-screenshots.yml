@@ -76,6 +76,8 @@ jobs:
             git branch "$BRANCH" "$INIT"
             git worktree add shots "$BRANCH"
           fi
+          # メインcheckoutのsparse設定がworktreeに継承されaddが拒否されるため解除する
+          git -C shots sparse-checkout disable
           rm -rf "shots/$PR_DIR"
           mkdir -p "shots/$DEST"
           cp shots-out/*.png "shots/$DEST/"
@@ -130,6 +132,7 @@ jobs:
           PR_DIR="pr-${{ github.event.pull_request.number }}"
           git fetch origin "$BRANCH" 2>/dev/null || exit 0
           git worktree add -B "$BRANCH" shots "origin/$BRANCH"
+          git -C shots sparse-checkout disable
           [ -d "shots/$PR_DIR" ] || exit 0
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

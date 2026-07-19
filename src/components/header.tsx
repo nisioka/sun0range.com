@@ -5,6 +5,27 @@ import styled from "styled-components"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons"
 
+const NAV_LINKS = [
+  { to: "/category/information-technology", label: "技術系" },
+  { to: "/category/event-report", label: "イベントレポート" },
+  { to: "/category/life", label: "生活" },
+  { to: "/search", label: "検索", icon: faMagnifyingGlass },
+  { to: "/management/how-about-this-blog", label: "このブログについて" },
+]
+
+const NavLinkItems = () => (
+  <>
+    {NAV_LINKS.map(link => (
+      <li key={link.to}>
+        <Link to={link.to}>
+          {link.icon && <FontAwesomeIcon icon={link.icon} />}
+          {link.label}
+        </Link>
+      </li>
+    ))}
+  </>
+)
+
 const Header = ({ location }: { location: Location }) => {
   const rootPath = `${__PATH_PREFIX__}/`
   const isRootPath = location.pathname === rootPath
@@ -28,26 +49,7 @@ const Header = ({ location }: { location: Location }) => {
         {siteName}
         <nav className="nav-pc">
           <ul>
-            <li>
-              <Link to="/category/information-technology">技術系</Link>
-            </li>
-            <li>
-              <Link to="/category/event-report">イベントレポート</Link>
-            </li>
-            <li>
-              <Link to="/category/life">生活</Link>
-            </li>
-            <li>
-              <Link to="/search">
-                <FontAwesomeIcon icon={faMagnifyingGlass} />
-                検索
-              </Link>
-            </li>
-            <li>
-              <Link to="/management/how-about-this-blog">
-                このブログについて
-              </Link>
-            </li>
+            <NavLinkItems />
           </ul>
         </nav>
         <button
@@ -61,26 +63,7 @@ const Header = ({ location }: { location: Location }) => {
         </button>
         <nav className={`nav-mobile${menuOpen ? " toggle" : ""}`}>
           <ul>
-            <li>
-              <Link to="/category/information-technology">技術系</Link>
-            </li>
-            <li>
-              <Link to="/category/event-report">イベントレポート</Link>
-            </li>
-            <li>
-              <Link to="/category/life">生活</Link>
-            </li>
-            <li>
-              <Link to="/search">
-                <FontAwesomeIcon icon={faMagnifyingGlass} />
-                検索
-              </Link>
-            </li>
-            <li>
-              <Link to="/management/how-about-this-blog">
-                このブログについて
-              </Link>
-            </li>
+            <NavLinkItems />
             <li className="close">
               <button type="button" onClick={toggleMenu}>
                 <span>閉じる</span>

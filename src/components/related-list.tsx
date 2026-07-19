@@ -66,19 +66,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
           }
         }
         blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
-          edges {
-            node {
-              relativePath
-              childImageSharp {
-                gatsbyImageData(
-                  width: 100
-                  height: 100
-                  formats: [AUTO, WEBP, AVIF]
-                  placeholder: BLURRED
-                )
-              }
-            }
-          }
+          ...ThumbnailImages
         }
         oldBlogImages: allFile(
           filter: {
@@ -86,19 +74,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
             extension: { in: ["jpg", "jpeg", "png", "webp"] }
           }
         ) {
-          edges {
-            node {
-              relativePath
-              childImageSharp {
-                gatsbyImageData(
-                  width: 100
-                  height: 100
-                  formats: [AUTO, WEBP, AVIF]
-                  placeholder: BLURRED
-                )
-              }
-            }
-          }
+          ...ThumbnailImages
         }
       }
     `
@@ -142,7 +118,7 @@ const RelatedList = ({ slug, category, tags }: RelatedListProps) => {
         <h2>関連記事</h2>
       </ContentsListHeader>
       <ContentsOrderedListWrapper>
-        {posts.map((post, index) => {
+        {posts.map(post => {
           return (
             <li key={post.slug}>
               <article>

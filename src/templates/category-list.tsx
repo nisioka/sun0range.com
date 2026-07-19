@@ -1,12 +1,12 @@
 import * as React from "react"
 
-import { graphql, Link } from "gatsby"
+import { graphql } from "gatsby"
 import { PageContext } from "gatsby/internal"
-import { convertCategory, convertCategoryJp, mergePosts } from "../utilFunction"
+import { convertCategoryJp, mergePosts } from "../utilFunction"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { GatsbyImage } from "gatsby-plugin-image"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
+import PostList from "../components/post-list"
 
 const CategoryList = ({
   pageContext,
@@ -14,7 +14,7 @@ const CategoryList = ({
   location,
 }: {
   pageContext: PageContext
-  data: any
+  data: PostListQueryResult
   location: Location
 }) => {
   const categoryName = pageContext.category as string
@@ -36,39 +36,7 @@ const CategoryList = ({
         <p>{posts.length} 記事あります</p>
       </ContentsListHeader>
       <ContentsOrderedListWrapper>
-        {posts.map(post => {
-          return (
-            <li key={post.slug}>
-              <article
-                className="post-list-item"
-                itemType="http://schema.org/Article"
-              >
-                <Link to={`/${convertCategory(categoryName)}/${post.slug}`}>
-                  <h2>
-                    <span>{post.title}</span>
-                  </h2>
-                  <section>
-                    <div>
-                      <small>
-                        <time>{post.dateModified}</time>
-                      </small>
-                    </div>
-                    <div className="thumbnail">
-                      {typeof post.gatsbyImage === "undefined" || (
-                        <GatsbyImage
-                          alt={post.altText}
-                          image={post.gatsbyImage}
-                          className="thumbnail"
-                        />
-                      )}
-                    </div>
-                    <p dangerouslySetInnerHTML={{ __html: post.excerpt }} />
-                  </section>
-                </Link>
-              </article>
-            </li>
-          )
-        })}
+        <PostList posts={posts} />
       </ContentsOrderedListWrapper>
     </Layout>
   )
@@ -134,19 +102,7 @@ export const pageQuery = graphql`
       }
     }
     blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
-      edges {
-        node {
-          relativePath
-          childImageSharp {
-            gatsbyImageData(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
-        }
-      }
+      ...ThumbnailImages
     }
     oldBlogImages: allFile(
       filter: {
@@ -154,19 +110,7 @@ export const pageQuery = graphql`
         extension: { in: ["jpg", "jpeg", "png", "webp"] }
       }
     ) {
-      edges {
-        node {
-          relativePath
-          childImageSharp {
-            gatsbyImageData(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
-        }
-      }
+      ...ThumbnailImages
     }
   }
 `

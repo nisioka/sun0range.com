@@ -1,12 +1,12 @@
 import * as React from "react"
-import { Link, graphql } from "gatsby"
+import { graphql } from "gatsby"
 
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { GatsbyImage } from "gatsby-plugin-image"
-import { convertCategory, mergePosts } from "../utilFunction"
+import { mergePosts } from "../utilFunction"
 import { ContentsOrderedListWrapper } from "../style"
 import Pagination from "../components/pagination"
+import PostList from "../components/post-list"
 
 type BlogIndexProps = {
   data: {
@@ -44,44 +44,7 @@ const BlogIndex = ({ data, location }: BlogIndexProps) => {
   return (
     <Layout location={location}>
       <ContentsOrderedListWrapper>
-        {posts.slice(0, POST_PER_PAGE).map(post => {
-          return (
-            <li key={post.slug}>
-              <article
-                className="post-list-item"
-                itemType="https://schema.org/Article"
-              >
-                <Link
-                  to={`/${convertCategory(post.category)}/${post.slug}`}
-                  itemProp="url"
-                >
-                  <h2>
-                    <span itemProp="headline">{post.title}</span>
-                  </h2>
-                  <section>
-                    <div style={{ textAlign: "right" }}>
-                      <small>
-                        <time>{post.dateModified}</time>
-                      </small>
-                    </div>
-                    <div className="thumbnail">
-                      {typeof post.gatsbyImage === "undefined" || (
-                        <GatsbyImage
-                          alt={post.altText}
-                          image={post.gatsbyImage}
-                        />
-                      )}
-                    </div>
-                    <p
-                      dangerouslySetInnerHTML={{ __html: post.excerpt }}
-                      itemProp="description"
-                    />
-                  </section>
-                </Link>
-              </article>
-            </li>
-          )
-        })}
+        <PostList posts={posts.slice(0, POST_PER_PAGE)} />
       </ContentsOrderedListWrapper>
       <Pagination maxPage={maxPage} current={1} />
     </Layout>
@@ -102,19 +65,7 @@ export const Head = ({ location }: BlogIndexProps) => (
 export const pageQuery = graphql`
   {
     blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
-      edges {
-        node {
-          relativePath
-          childImageSharp {
-            gatsbyImageData(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
-        }
-      }
+      ...ThumbnailImages
     }
     oldBlogImages: allFile(
       filter: {
@@ -122,19 +73,7 @@ export const pageQuery = graphql`
         extension: { in: ["jpg", "jpeg", "png", "webp"] }
       }
     ) {
-      edges {
-        node {
-          relativePath
-          childImageSharp {
-            gatsbyImageData(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
-        }
-      }
+      ...ThumbnailImages
     }
     allBlogMarkdownRemark: allMarkdownRemark(
       filter: { fields: { sourceInstanceName: { eq: "blog" } } }

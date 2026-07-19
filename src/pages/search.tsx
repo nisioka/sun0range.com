@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from "react"
-import { graphql, Link } from "gatsby"
+import { graphql } from "gatsby"
 import Layout from "../components/layout"
 import Seo from "../components/seo"
-import { convertCategory, mergePosts } from "../utilFunction"
+import { mergePosts } from "../utilFunction"
 import { ContentsListHeader, ContentsOrderedListWrapper } from "../style"
-import { GatsbyImage } from "gatsby-plugin-image"
+import PostList from "../components/post-list"
 
-const Search = ({ data, location }: { data: any; location: Location }) => {
+const Search = ({
+  data,
+  location,
+}: {
+  data: PostListQueryResult
+  location: Location
+}) => {
   const posts = mergePosts(
     data.allBlogMarkdownRemark,
     data.allOldBlogMarkdownRemark,
@@ -17,10 +23,10 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
   const initQuery = decodeURI(
     location.href?.split("?q=")[1] || ""
   ).toLowerCase()
-  const [state, setState] = useState({
-    filteredData: filterByQuery(initQuery.split(/\s+/)),
-    query: initQuery,
-  })
+  const [query, setQuery] = useState(initQuery)
+  const [filteredData, setFilteredData] = useState(() =>
+    filterByQuery(initQuery.split(/\s+/))
+  )
 
   function filterByQuery(queryWords: string[]) {
     return posts.filter(post => {
@@ -37,16 +43,17 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
   }
 
   function handleInputChange(event: React.ChangeEvent<HTMLInputElement>) {
-    const queryWords = event.target.value.toLowerCase().split(/\s+/)
-
-    setState(prevState => ({
-      ...prevState,
-      filteredData: filterByQuery(queryWords),
-      query: queryWords.join(" "),
-    }))
+    setQuery(event.target.value.toLowerCase())
   }
 
-  const { filteredData, query } = state
+  // 入力が落ち着いてから絞り込む(全記事走査を毎キー入力で行わない)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setFilteredData(filterByQuery(query.split(/\s+/)))
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [query])
+
   useEffect(() => {
     // ユーザーの入力があるたびにURLのクエリパラメータを更新
     const params = new URLSearchParams()
@@ -61,7 +68,7 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
       location.href.split("?")[0] +
         (params.size > 0 ? "?" + params.toString() : "")
     )
-  }, [state.query])
+  }, [query])
 
   return (
     <Layout location={location}>
@@ -82,39 +89,7 @@ const Search = ({ data, location }: { data: any; location: Location }) => {
         <p>{filteredData.length} 記事あります</p>
       </ContentsListHeader>
       <ContentsOrderedListWrapper>
-        {filteredData.map(post => {
-          return (
-            <li key={post.slug}>
-              <article
-                className="post-list-item"
-                itemType="http://schema.org/Article"
-              >
-                <Link to={`/${convertCategory(post.category)}/${post.slug}`}>
-                  <h2>
-                    <span>{post.title}</span>
-                  </h2>
-                  <section>
-                    <div>
-                      <small>
-                        <time>{post.date}</time>
-                      </small>
-                    </div>
-                    <div className="thumbnail">
-                      {typeof post.gatsbyImage === "undefined" || (
-                        <GatsbyImage
-                          alt={post.altText}
-                          image={post.gatsbyImage}
-                          className="thumbnail"
-                        />
-                      )}
-                    </div>
-                    <p dangerouslySetInnerHTML={{ __html: post.excerpt }} />
-                  </section>
-                </Link>
-              </article>
-            </li>
-          )
-        })}
+        <PostList posts={filteredData} />
       </ContentsOrderedListWrapper>
     </Layout>
   )
@@ -171,19 +146,7 @@ export const pageQuery = graphql`
       }
     }
     blogImages: allFile(filter: { sourceInstanceName: { eq: "images" } }) {
-      edges {
-        node {
-          relativePath
-          childImageSharp {
-            gatsbyImageData(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
-        }
-      }
+      ...ThumbnailImages
     }
     oldBlogImages: allFile(
       filter: {
@@ -191,19 +154,7 @@ export const pageQuery = graphql`
         extension: { in: ["jpg", "jpeg", "png", "webp"] }
       }
     ) {
-      edges {
-        node {
-          relativePath
-          childImageSharp {
-            gatsbyImageData(
-              width: 100
-              height: 100
-              formats: [AUTO, WEBP, AVIF]
-              placeholder: BLURRED
-            )
-          }
-        }
-      }
+      ...ThumbnailImages
     }
   }
 `

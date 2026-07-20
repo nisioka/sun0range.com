@@ -319,3 +319,28 @@ export const createSchemaCustomization: GatsbyNode["createSchemaCustomization"] 
     }
   `)
   }
+
+/**
+ * @type {import('gatsby').GatsbyNode['onCreateWebpackConfig']}
+ */
+export const onCreateWebpackConfig: GatsbyNode["onCreateWebpackConfig"] = ({
+  actions,
+  stage,
+}) => {
+  // styled-components v6 は import(ESM)と require(CJS)で別ファイルに解決される。
+  // SSR 時にアプリ側(ESM)と gatsby-plugin-styled-components(CJS)が別インスタンスになると
+  // ServerStyleSheet がスタイルを収集できず、HTML に <style data-styled> が出力されない
+  // (= 初期表示時に styled-components 部分が一瞬未スタイルでチラつく)。
+  // HTML 生成ステージでは単一ファイルに寄せて同一インスタンスを保証する。
+  if (stage === "build-html" || stage === "develop-html") {
+    actions.setWebpackConfig({
+      resolve: {
+        alias: {
+          "styled-components$": path.resolve(
+            "node_modules/styled-components/dist/styled-components.cjs.js"
+          ),
+        },
+      },
+    })
+  }
+}

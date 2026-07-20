@@ -1,3 +1,0 @@
-/*! For license information please see 5ff3ec2e-0c5b02f3d3716a081544.js.LICENSE.txt */
-"use strict";(self.webpackChunksun0range_com=self.webpackChunksun0range_com||[]).push([[172],{2980:function(n,c,s){s.d(c,{$UM:function(){return e}});const e={prefix:"fas",iconName:"magnifying-glass",icon:[512,512,[128269,"search"],"f002","M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"]}}}]);
-//# sourceMappingURL=5ff3ec2e-0c5b02f3d3716a081544.js.map

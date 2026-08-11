@@ -67,3 +67,7 @@ yarn-error.log
 .pnp.js
 # Yarn Integrity file
 .yarn-integrity
+
+# site-ops のスナップショット。
+# 本リポジトリは public のため、検索クエリ・流入数を公開しないよう追跡しない。
+.site-ops/

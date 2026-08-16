@@ -54,6 +54,7 @@
     "gatsby"
   ],
   "license": "0BSD",
+  "packageManager": "pnpm@11.18.0",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/nisioka/sun0range.com.git"
@@ -67,19 +68,5 @@
     "clean": "gatsby clean",
     "typecheck": "tsc --noEmit",
     "lint": "eslint ."
-  },
-  "pnpm": {
-    "overrides": {
-      "sharp": "$sharp"
-    },
-    "ignoredBuiltDependencies": [
-      "core-js",
-      "core-js-pure",
-      "gatsby",
-      "sharp"
-    ],
-    "onlyBuiltDependencies": [
-      "sharp"
-    ]
   }
 }

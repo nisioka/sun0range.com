@@ -1,0 +1,24 @@
+# pnpm 10 以降、これらの設定は package.json の "pnpm" フィールドではなく
+# pnpm-workspace.yaml から読まれる。pnpm 11 は "pnpm" フィールドを一切読まない。
+# https://pnpm.io/settings
+
+# 推移的依存も含めて sharp のバージョンを package.json の dependencies に揃える
+overrides:
+  sharp: $sharp
+
+# インストール時のビルドスクリプト実行可否。
+# pnpm 11 では onlyBuiltDependencies / ignoredBuiltDependencies に代わり
+# allowBuilds で明示する。未記載のパッケージがあると install が
+# ERR_PNPM_IGNORED_BUILDS で失敗するため、対象は全て列挙する。
+allowBuilds:
+  # ネイティブバイナリの取得・生成が必要なもの
+  '@parcel/watcher': true # gatsby develop のファイル監視
+  lmdb: true # gatsby のデータストア
+  msgpackr-extract: true # lmdb のシリアライズ高速化
+  sharp: true # 画像最適化
+  # postinstall が案内メッセージを出すだけで、実行しなくても動作に影響しないもの
+  core-js: false
+  core-js-pure: false
+  es5-ext: false
+  gatsby: false
+  gatsby-cli: false

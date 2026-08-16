@@ -16,6 +16,7 @@ import SyntaxHighlighter from "react-syntax-highlighter"
 import parse, { domToReact } from "html-react-parser"
 import { androidstudio } from "react-syntax-highlighter/dist/cjs/styles/hljs"
 import DisqusComments from "../components/disqus-comments"
+import AffiliateCard from "../components/affiliate-card"
 import config from "../../gatsby-config"
 
 type BlogPostTemplateProps = {
@@ -136,7 +137,7 @@ const BlogPostTemplate = ({
 
         <BlogEntry>
           <section itemProp="articleBody">
-            {parse(post.content, { replace: replaceCode })}
+            {parse(post.content, { replace: replaceContent })}
           </section>
         </BlogEntry>
         <hr />
@@ -286,6 +287,23 @@ export const Head = ({
       post={post}
     />
   )
+}
+
+/**
+ * 記事本文のHTMLノードをReactコンポーネントへ差し替える。
+ *
+ * アフィリエイトカードは記事側に `<div data-affiliate="ID"></div>` と1行書くだけでよい。
+ * カスタム要素(`<affiliate-card />`)ではなく div を使うのは、ブラウザの DOMParser が
+ * 未知要素の自己終了タグを閉じずに後続の本文をすべて子として飲み込んでしまい、
+ * 記事が壊れるため。div なら SSR とブラウザのどちらでも同じ木になる。
+ */
+const replaceContent = (node: any) => {
+  if (!node) return node
+  const affiliateId = node.attribs?.["data-affiliate"]
+  if (node.name === "div" && affiliateId) {
+    return <AffiliateCard id={affiliateId} />
+  }
+  return replaceCode(node)
 }
 
 const replaceCode = (node: any) => {

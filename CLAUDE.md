@@ -64,7 +64,7 @@ pnpm run format     # format with Prettier
 │   │   ├── footer.tsx
 │   │   ├── age.tsx
 │   │   ├── disqus-comments.tsx  # (currently disabled)
-│   │   └── google-adsense.tsx   # (placeholder)
+│   │   └── affiliate-card.tsx   # affiliate card (see "Affiliate cards")
 │   ├── pages/
 │   │   ├── index.tsx      # top page
 │   │   ├── search.tsx     # search page
@@ -136,6 +136,27 @@ Use the **Japanese name** in the frontmatter `category` field. URL conversion is
 
 `/{category-slug}/{slug}` (e.g. `/information-technology/mcp-slack-setup`)
 
+### 6. Affiliate cards
+
+Never paste ASP-provided raw HTML (iframe / script / table) into `index.md`.
+Write a single line referencing an ID instead:
+
+```markdown
+<div data-affiliate="beelink-gtr9-pro"></div>
+```
+
+- Put it on its own line with a blank line above and below (CommonMark HTML block rule)
+- The ID must exist in `src/data/affiliates.ts`, which is the single source of truth
+  for the product name, link, ASP, and image
+- `src/templates/blog-post.tsx` swaps the div for `<AffiliateCard>` via the
+  `replaceContent` hook, the same mechanism already used for code blocks
+- Entries with `enabled: false` render nothing, so an article never has to be edited
+  when a partnership starts or ends
+- Use `div`, not a custom element like `<affiliate-card />`. The browser's DOMParser
+  does not close unknown self-closing tags and would swallow the rest of the article
+- The "PR" label required by the Japanese stealth-marketing regulation is rendered by
+  the component itself and cannot be omitted per article
+
 ## Page generation logic (gatsby-node.ts)
 
 - Individual posts: `/{categoryPath}/{slug}` → `blog-post.tsx`
@@ -175,7 +196,8 @@ Posts from the new and old blogs are merged via `mergePosts()` and sorted by dat
 
 - The `public/` directory is the build output and is committed, because CI deploys it as-is without building
 - Disqus comments code exists but is currently disabled
-- Google AdSense is a placeholder only
+- Google AdSense is not used. Monetization goes through affiliate ASPs; the catalog in
+  `src/data/affiliates.ts` currently holds placeholder entries only (`enabled: false`)
 - `trailingSlash: "never"` — URLs have no trailing slash
 
 ## Rules

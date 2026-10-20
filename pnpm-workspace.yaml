@@ -20,5 +20,6 @@ allowBuilds:
   core-js: false
   core-js-pure: false
   es5-ext: false
+  esbuild: false # tsx 経由。バイナリはプラットフォーム別の optional 依存で入る
   gatsby: false
   gatsby-cli: false

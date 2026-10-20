@@ -1,5 +1,5 @@
 # site-ops スキルが読むサイト設定。
-# 収集: npx -y github:nisioka/site-ops-ai#v0.2.0 collect
+# 収集: pnpm site-ops collect（CLI は scripts/site-ops/ に取り込み済み）
 
 name: "sun0range"
 
